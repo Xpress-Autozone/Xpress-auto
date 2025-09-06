@@ -8,7 +8,7 @@ import Navbar from '../Components/Navbar/navBar'
 export default function MainLayout() {
 
   return (
-    <BrowserRouter basename='/Xpress-auto'>
+    <BrowserRouter basename='/Xpress-auto/'>
       <Navbar />
       <Routes>
         <Route path="/*" element={<Home />} />
