@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 
 const CategoriesSidebar = () => {
-    const [isMobile, setIsMobile] = React.useState(false);
 
   const categories = [
     {
@@ -48,7 +47,7 @@ const CategoriesSidebar = () => {
   ];
 
   return (
-    <div className=" bg-white border border-gray-200 rounded-lg shadow-sm h-full fixed top-17 left-0">
+    <div className=" bg-white border border-gray-200 rounded-lg shadow-sm h-full fixed top-17 left-0 ">
       {/* Header */}
       <div className="p-4 border-b border-purple-300 mt-6">
         <h2 className="text-lg font-semibold text-gray-800 bg-purple-100 border-2 border-purple-300 px-3 py-2 inline-block">
@@ -72,6 +71,19 @@ const CategoriesSidebar = () => {
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="md:hidden">
+        <div className="grid grid-cols-4 gap-4 p-4">
+            {/* Mobile-specific content can go here */}
+          {categories.map((category, index) => (
+            <div key={index} className="bg-green h-15 w-15 flex items-center justify-center rounded-lg shadow-md  transition-colors duration-200">
+                <div>
+                    {category.icon}
+                </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
