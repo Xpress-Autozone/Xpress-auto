@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Search, Menu, X } from 'lucide-react';
+import React, { useState } from "react";
+import { Search, Menu, X, ShoppingCart } from "lucide-react";
+import XpressLogo from "../../assets/Xpress-Autozone-Logo.png";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -9,27 +10,57 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-yellow-400 p-3 shadow-md fixed w-full">
+    <nav className="bg-yellow-400 p-3 shadow-md fixed w-full z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button
+            onClick={toggleMobileMenu}
+            className="text-black hover:text-gray-700 focus:outline-none"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <div className="text-black text-2xl font-bold">
-            ✱ XpressAutozone
+        <div className="flex items-center md:ml-0 ml-2">
+          <div className="flex-shrink-0">
+            <img
+              src={XpressLogo}
+              alt="Xpress Autozone Logo"
+              className="h-10 w-auto"
+            />
           </div>
         </div>
 
         {/* Desktop Navigation Menu */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+          <a
+            href="#"
+            className="text-black hover:text-gray-700 font-medium transition-colors"
+          >
             Home
           </a>
-          <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+          <a
+            href="#"
+            className="text-black hover:text-gray-700 font-medium transition-colors"
+          >
             Categories
           </a>
-          <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+          <a
+            href="#"
+            className="text-black hover:text-gray-700 font-medium transition-colors"
+          >
             About Us
           </a>
-          <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+          <a
+            href="#"
+            className="text-black hover:text-gray-700 font-medium transition-colors"
+          >
             Contact
           </a>
         </div>
@@ -47,46 +78,51 @@ const Navbar = () => {
               className="pl-10 pr-4 py-2 w-64 border border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
             />
           </div>
-
-          {/* Auth Buttons */}
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium">
-            Login
-          </button>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium">
-            Sign Up
+          {/* Cart Icon */}
+          <button className="text-black hover:text-gray-700 transition-colors">
+            <ShoppingCart className="h-6 w-6" />
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Cart Icon for Mobile */}
         <div className="md:hidden">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-black hover:text-gray-700 focus:outline-none"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+          <button className="text-black hover:text-gray-700 transition-colors">
+            <ShoppingCart className="h-6 w-6" />
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 pb-4 border-t border-yellow-500">
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${
+          isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="mt-4 pb-4 border-t border-yellow-500">
           <div className="flex flex-col space-y-4 pt-4">
             {/* Mobile Navigation Links */}
-            <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+            <a
+              href="#"
+              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
+            >
               Home
             </a>
-            <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+            <a
+              href="#"
+              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
+            >
               Categories
             </a>
-            <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+            <a
+              href="#"
+              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
+            >
               About Us
             </a>
-            <a href="#" className="text-black hover:text-gray-700 font-medium transition-colors">
+            <a
+              href="#"
+              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
+            >
               Contact
             </a>
 
@@ -101,19 +137,9 @@ const Navbar = () => {
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               />
             </div>
-
-            {/* Mobile Auth Buttons */}
-            <div className="flex flex-col space-y-2 mt-4">
-              <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium">
-                Login
-              </button>
-              <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium">
-                Sign Up
-              </button>
-            </div>
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };
