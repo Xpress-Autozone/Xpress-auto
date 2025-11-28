@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import MainLayout from './MainLayout/mainLayout'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import MainLayout from "./MainLayout/mainLayout";
+import { CartProvider } from "./Context/CartContext";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <MainLayout />
-  </StrictMode>,
-)
+    <CartProvider>
+      <MainLayout />
+    </CartProvider>
+  </StrictMode>
+);

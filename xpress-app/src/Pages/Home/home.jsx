@@ -7,10 +7,13 @@ import {
   Car,
   Settings,
   Zap,
+  Check,
 } from "lucide-react";
 import slideImage from "../../assets/slide.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
   const categories = [
     {
       icon: <Package className="h-6 w-6" />,
@@ -46,8 +49,71 @@ function Home() {
     },
   ];
 
+  const products = [
+    {
+      id: 1,
+      name: "Monroe OESpectrum Front Strut Assembly",
+      price: 189.99,
+      status: "In Stock",
+      verified: true,
+    },
+    {
+      id: 2,
+      name: "KYB Excel-G Gas Strut - Rear Left - Toyota",
+      price: 125.5,
+      status: "In Stock",
+      verified: true,
+    },
+    {
+      id: 3,
+      name: "Moog K80673 Front Lower Control Arm",
+      price: 245.0,
+      status: "In Stock",
+      verified: true,
+    },
+    {
+      id: 4,
+      name: "ACDelco Gold 45G0400 Professional Front",
+      price: 38.99,
+      status: "Low Stock",
+      verified: true,
+    },
+    {
+      id: 5,
+      name: "Gabriel ReadyMount Loaded Strut Assembly",
+      price: 175.75,
+      status: "In Stock",
+      verified: true,
+    },
+    {
+      id: 6,
+      name: "Bilstein B4 OE Replacement Shock",
+      price: 98.5,
+      status: "In Stock",
+      verified: true,
+    },
+  ];
+
+  const handleNavigate = () => {
+    navigate("/product");
+  };
+
+  const handleCategoryClick = (categoryName) => {
+    const categoryRoutes = {
+      "Engine Parts": "/engine-parts",
+      "Suspension & Steering": "/suspension-steering",
+      "Tires & Wheels": "/tires-wheels",
+      "Electrical Components": "/electrical-components",
+      Brakes: "/brakes",
+      "Exhaust Systems": "/exhaust-systems",
+      "Interior Accessories": "/interior-accessories",
+      "Exterior Accessories": "/exterior-accessories",
+    };
+    navigate(categoryRoutes[categoryName]);
+  };
+
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full py-20 lg:py-20 px-4 md:px-8 lg:px-12">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full py-16 lg:py-16 ">
       {/* Hero Image Section with Overlay */}
       <div className="max-w-7xl mx-auto mb-12 ">
         <div className="relative h-64 md:h-80 lg:h-100 w-full overflow-hidden shadow-lg ">
@@ -69,7 +135,10 @@ function Home() {
               ensuring authenticity, quality, and your complete satisfaction.
               Shop with confidence.
             </p>
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg transition-colors duration-300 text-base md:text-lg shadow-lg hover:shadow-xl">
+            <button
+              onClick={handleNavigate}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg transition-colors duration-300 text-base md:text-lg shadow-lg hover:shadow-xl"
+            >
               Shop Verified Parts
             </button>
           </div>
@@ -94,7 +163,10 @@ function Home() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {categories.map((category, index) => (
                 <div key={index}>
-                  <button className="flex items-center space-x-4 text-left w-full p-4 h-20 rounded-xl bg-gray-50 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-yellow-50 hover:shadow-md transition-all duration-300 group border border-gray-100 hover:border-yellow-200">
+                  <button
+                    onClick={() => handleCategoryClick(category.name)}
+                    className="flex items-center space-x-4 text-left w-full p-4 h-20 rounded-xl bg-gray-50 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-yellow-50 hover:shadow-md transition-all duration-300 group border border-gray-100 hover:border-yellow-200"
+                  >
                     <span className="text-gray-600 group-hover:text-yellow-300 flex-shrink-0 transition-colors duration-300">
                       {category.icon}
                     </span>
@@ -113,6 +185,7 @@ function Home() {
               {categories.map((category, index) => (
                 <button
                   key={index}
+                  onClick={() => handleCategoryClick(category.name)}
                   className="bg-gradient-to-br from-white to-gray-50 h-24 flex flex-col items-center justify-center rounded-xl shadow-md hover:shadow-lg hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 border border-gray-100 hover:border-blue-200 group"
                 >
                   <div className="mb-2 text-gray-600 group-hover:text-blue-600 transition-colors duration-300">
@@ -126,22 +199,6 @@ function Home() {
             </div>
           </div>
         </div>
-
-        {/* Main Content */}
-        {/* <div className="bg-white rounded-2xl  p-8 md:p-12 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-6 leading-tight">
-              Welcome to Xpress Auto!
-            </h1>
-            <div className="h-1 w-32 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mx-auto mb-6"></div>
-            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              Your one-stop solution for all your automotive needs. Experience
-              premium quality parts and exceptional service that keeps you
-              moving forward.
-            </p>
-          </div>
-        </div> */}
-
         {/* Featured Parts */}
         <div className="bg-white rounded-2xl  p-6 md:p-12 text-center mt-4">
           <div className="max-w-3xl mx-auto">
@@ -151,44 +208,50 @@ function Home() {
             <div className="h-1 w-32 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mx-auto mb-6"></div>
           </div>
 
-          {/* Categories List - Desktop */}
-          <div className="hidden md:block">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category, index) => (
-                <div key={index}>
-                  <button className="flex items-center space-x-4 text-left w-full p-4 h-60 rounded-xl bg-gray-50 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-yellow-50 hover:shadow-md transition-all duration-300 group border border-gray-100 hover:border-yellow-200">
-                    <span className="text-gray-600 group-hover:text-yellow-300 flex-shrink-0 transition-colors duration-300">
-                      {category.icon}
-                    </span>
-                    <span className="text-gray-700 group-hover:text-gray-900 font-medium text-sm lg:text-base transition-colors duration-300">
-                      {category.name}
-                    </span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Categories Grid - Mobile */}
-          <div className="md:hidden">
-            <div className="grid grid-cols-2 gap-4">
-              {categories.map((category, index) => (
-                <button
-                  key={index}
-                  className="bg-gradient-to-br from-gray to-yellow-200 h-50 flex flex-col items-center justify-center rounded-xs hover:shadow-lg hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 border border-gray-100 hover:border-blue-200 group"
-                >
-                  <div className="mb-2 text-gray-600 group-hover:text-blue-600 transition-colors duration-300">
-                    {category.icon}
+          {/* Products Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
+              >
+                <div className="aspect-[4/5] bg-gray-200 flex items-center justify-center p-4">
+                  <div className="w-full h-full bg-gray-300 rounded flex items-center justify-center text-gray-500 text-xs md:text-sm">
+                    Image
                   </div>
-                  <span className="text-xs text-center font-medium text-gray-700 group-hover:text-gray-900 px-2 leading-tight transition-colors duration-300">
-                    {category.name}
-                  </span>
-                </button>
-              ))}
-            </div>
+                </div>
+                <div className="p-3 md:p-4">
+                  <h3 className="font-semibold text-xs md:text-sm text-gray-800 mb-2 line-clamp-2 min-h-8 md:min-h-10">
+                    {product.name}
+                  </h3>
+                  {product.verified && (
+                    <div className="flex items-center gap-1 text-xs text-green-600 mb-3">
+                      <Check className="w-3 h-3" />
+                      <span className="hidden md:inline">
+                        Verified by Xpress Autozone
+                      </span>
+                      <span className="md:hidden">Verified</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-lg md:text-2xl font-bold text-black">
+                      ${product.price.toFixed(2)}
+                    </span>
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
+                        product.status === "In Stock"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-orange-100 text-orange-700"
+                      }`}
+                    >
+                      {product.status === "In Stock" ? "In Stock" : "Low Stock"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-
+        </div>{" "}
         <div className=" bg-white rounded-2xl  p-5 md:p-12 text-center mt-3">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent  leading-tight">
