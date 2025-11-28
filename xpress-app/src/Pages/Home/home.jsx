@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Package,
   Wrench,
@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import slideImage from "../../assets/slide.jpg";
 import { useNavigate } from "react-router-dom";
+import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 
 function Home() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const categories = [
     {
       icon: <Package className="h-6 w-6" />,
@@ -111,6 +113,14 @@ function Home() {
     };
     navigate(categoryRoutes[categoryName]);
   };
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 1500);
+  }, []);
+
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full py-16 lg:py-16 ">
@@ -213,6 +223,9 @@ function Home() {
             {products.map((product) => (
               <div
                 key={product.id}
+                onClick={() =>
+                  navigate(`/product/${product.id}`, { state: { product } })
+                }
                 className="bg-white hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
               >
                 <div className="aspect-[4/5] bg-gray-200 flex items-center justify-center p-4">
@@ -235,7 +248,7 @@ function Home() {
                   )}
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-lg md:text-2xl font-bold text-black">
-                      ${product.price.toFixed(2)}
+                      GH₵{product.price.toFixed(2)}
                     </span>
                     <span
                       className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${

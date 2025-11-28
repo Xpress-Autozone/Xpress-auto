@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ChevronDown,
   Grid3x3,
@@ -8,10 +8,12 @@ import {
   Filter,
   Check,
 } from "lucide-react";
-import slideImage from "../../assets/productsStrip.jpg";
+import { useNavigate } from "react-router-dom";
+import slideImage from "../../assets/ProductsBanner.jpg";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 
 export default function ProductsPage() {
+  const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState([0, 1500]);
   const [selectedPartTypes, setSelectedPartTypes] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -349,6 +351,9 @@ export default function ProductsPage() {
               {products.map((product) => (
                 <div
                   key={product.id}
+                  onClick={() =>
+                    navigate(`/product/${product.id}`, { state: { product } })
+                  }
                   className="bg-white hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
                 >
                   <div className="aspect-[4/5] bg-gray-200 flex items-center justify-center p-4">
@@ -371,7 +376,7 @@ export default function ProductsPage() {
                     )}
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-lg md:text-2xl font-bold text-black">
-                        ${product.price.toFixed(2)}
+                        GH₵{product.price.toFixed(2)}
                       </span>
                       <span
                         className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${

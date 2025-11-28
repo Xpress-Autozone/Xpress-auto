@@ -70,7 +70,7 @@ export default function CartPage() {
                         {item.name}
                       </h3>
                       <p className="text-lg md:text-xl font-bold text-black mb-3">
-                        ${item.price.toFixed(2)}
+                        GH₵{item.price.toFixed(2)}
                       </p>
 
                       {/* Quantity Controls */}
@@ -100,7 +100,7 @@ export default function CartPage() {
                     {/* Total and Remove */}
                     <div className="text-right">
                       <p className="text-base md:text-lg font-bold text-gray-800 mb-3">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        GH₵{(item.price * item.quantity).toFixed(2)}
                       </p>
                       <button
                         onClick={() => removeItem(item.id)}
@@ -125,11 +125,11 @@ export default function CartPage() {
                 <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
                   <div className="flex justify-between text-sm text-gray-700">
                     <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>GH₵{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-700">
                     <span>Tax (8%)</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>GH₵{tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
                     <span>Shipping</span>
@@ -144,7 +144,7 @@ export default function CartPage() {
                       Total
                     </span>
                     <span className="text-xl md:text-2xl font-bold text-black">
-                      ${total.toFixed(2)}
+                      GH₵{total.toFixed(2)}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   Grid3x3,
@@ -8,10 +9,11 @@ import {
   Filter,
   Check,
 } from "lucide-react";
-import slideImage from "../../assets/productsStrip.jpg";
+import slideImage from "../../assets/exterior.jpg";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 
 export default function ExteriorAccessoriesPage() {
+  const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState([0, 1500]);
   const [selectedPartTypes, setSelectedPartTypes] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -149,7 +151,7 @@ export default function ExteriorAccessoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-17">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-16">
       {/* Hero Image Section with Overlay */}
       <div className="max-w-7xl mx-auto mb-12 ">
         <div className="relative h-34 md:h-30 lg:h-100 w-full overflow-hidden ">
@@ -350,6 +352,9 @@ export default function ExteriorAccessoriesPage() {
               {products.map((product) => (
                 <div
                   key={product.id}
+                  onClick={() =>
+                    navigate(`/product/${product.id}`, { state: { product } })
+                  }
                   className="bg-white hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
                 >
                   <div className="aspect-[4/5] bg-gray-200 flex items-center justify-center p-4">
@@ -372,7 +377,7 @@ export default function ExteriorAccessoriesPage() {
                     )}
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-lg md:text-2xl font-bold text-black">
-                        ${product.price.toFixed(2)}
+                        GH₵{product.price.toFixed(2)}
                       </span>
                       <span
                         className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
