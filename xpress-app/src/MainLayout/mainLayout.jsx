@@ -56,7 +56,7 @@ function LayoutContent() {
 
 export default function MainLayout() {
   return (
-    <BrowserRouter basename="/Xpress-auto/">
+    <BrowserRouter basename="/">
       <LayoutContent />
     </BrowserRouter>
   );

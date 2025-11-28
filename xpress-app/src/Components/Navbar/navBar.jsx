@@ -131,7 +131,7 @@ const Navbar = () => {
               Home
             </a>
             <a
-              href="/Xpress-auto/categories"
+              href="/categories"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
               Categories
