@@ -6,6 +6,7 @@ import ProductsPage from "../Pages/Product/productPage";
 import CategoriesPage from "../Pages/Categories/categoriesPage";
 import CartPage from "../Pages/Cart/cartPage";
 import ActiveProductPage from "../Components/ActiveProductPage/activeProductPage";
+import SearchResultsPage from "../Pages/Search/searchResultsPage";
 import EnginePartsPage from "../Pages/Categories/enginePartsPage";
 import SuspensionSteeringPage from "../Pages/Categories/suspensionSteeringPage";
 import TiresWheelsPage from "../Pages/Categories/tiresWheelsPage";
@@ -27,6 +28,7 @@ function LayoutContent() {
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/product" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ActiveProductPage />} />
+        <Route path="/search" element={<SearchResultsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/engine-parts" element={<EnginePartsPage />} />
         <Route

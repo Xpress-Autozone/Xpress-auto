@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import slideImage from "../../assets/exhaust.jpg";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
+import EmptyState from "../../Components/EmptyState/EmptyState";
 
 export default function ExhaustSystemsPage() {
   const navigate = useNavigate();
@@ -27,8 +28,37 @@ export default function ExhaustSystemsPage() {
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
 
-  const products = [
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: "exhaust", pageSize: 100 }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.data.map(p => ({
+            id: p.id,
+            name: p.itemName,
+            price: p.price,
+            image: p.mainImage?.url || "/api/placeholder/200/200",
+            status: p.quantity > 10 ? "In Stock" : "Low Stock",
+            verified: true,
+          })));
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const oldProducts = [
     {
       id: 1,
       name: "Monroe OESpectrum Front Strut Assembly",
@@ -141,10 +171,7 @@ export default function ExhaustSystemsPage() {
     </div>
   );
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+
 
   if (isLoading) {
     return <SkeletonLoader />;
@@ -348,6 +375,9 @@ export default function ExhaustSystemsPage() {
 
           {/* Products Grid */}
           <div className="flex-1">
+            {products.length === 0 ? (
+              <EmptyState />
+            ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
               {products.map((product) => (
                 <div
@@ -395,6 +425,7 @@ export default function ExhaustSystemsPage() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       </div>

@@ -138,7 +138,9 @@ function Home() {
           {/* Overlay Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 rounded-2xl">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-              Discover Quality Parts, Verified by Xpress AutoZone
+              Discover Quality Parts, Verified by 
+              
+             <span className="text-yellow-500"> Xpress AutoZone</span> 
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-100 mb-6 max-w-2xl leading-relaxed">
               Every part listed goes through a rigorous admin review process,

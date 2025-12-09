@@ -151,7 +151,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-17">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-16">
       {/* Hero Image Section with Overlay */}
       <div className="max-w-7xl mx-auto mb-12 ">
         <div className="relative h-34 md:h-30 lg:h-100 w-full overflow-hidden ">

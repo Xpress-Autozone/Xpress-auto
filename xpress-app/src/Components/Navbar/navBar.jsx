@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Search, Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import SearchBar from "../Search/searchBar";
 import XpressLogo from "../../assets/Xpress-Autozone-Logo.png";
 
 const Navbar = () => {
@@ -44,13 +45,13 @@ const Navbar = () => {
         {/* Desktop Navigation Menu */}
         <div className="hidden md:flex items-center space-x-8">
           <a
-            href="#"
+            href="/"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
             Home
           </a>
           <a
-            href="#"
+            href="/catergories"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
             Categories
@@ -59,29 +60,20 @@ const Navbar = () => {
             href="#"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
-            About Us
+            Products
           </a>
           <a
             href="#"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
-            Contact
+            Xplore
           </a>
         </div>
 
         {/* Search Bar and Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {/* Search Bar */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-500" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search for auto parts..."
-              className="pl-10 pr-4 py-2 w-64 border border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
-            />
-          </div>
+          <SearchBar className="w-64" />
           {/* Cart Icon */}
           <button
             onClick={() => navigate("/cart")}
@@ -140,25 +132,18 @@ const Navbar = () => {
               href="#"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
-              About Us
+              Products
             </a>
             <a
               href="#"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
-              Contact
+              Xplore
             </a>
 
             {/* Mobile Search Bar */}
-            <div className="relative mt-4">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-500" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search for auto parts..."
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-              />
+            <div className="mt-4">
+              <SearchBar className="w-full" />
             </div>
           </div>
         </div>

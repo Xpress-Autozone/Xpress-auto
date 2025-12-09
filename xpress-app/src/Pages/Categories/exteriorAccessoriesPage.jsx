@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import slideImage from "../../assets/exterior.jpg";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
+import EmptyState from "../../Components/EmptyState/EmptyState";
 
 export default function ExteriorAccessoriesPage() {
   const navigate = useNavigate();
@@ -27,73 +28,35 @@ export default function ExteriorAccessoriesPage() {
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
 
-  const products = [
-    {
-      id: 1,
-      name: "Monroe OESpectrum Front Strut Assembly",
-      price: 189.99,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 2,
-      name: "KYB Excel-G Gas Strut - Rear Left - Toyota",
-      price: 125.5,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 3,
-      name: "Moog K80673 Front Lower Control Arm",
-      price: 245.0,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 4,
-      name: "ACDelco Gold 45G0400 Professional Front",
-      price: 38.99,
-      image: "/api/placeholder/200/200",
-      status: "Low Stock",
-      verified: true,
-    },
-    {
-      id: 5,
-      name: "Gabriel ReadyMount Loaded Strut Assembly",
-      price: 175.75,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 6,
-      name: "Bilstein B4 OE Replacement Shock",
-      price: 98.5,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 7,
-      name: "TRW JTC1440 Suspension Control Arm",
-      price: 210.2,
-      image: "/api/placeholder/200/200",
-      status: "In Stock",
-      verified: true,
-    },
-    {
-      id: 8,
-      name: "Dorman OE Solutions Suspension Stabilizer",
-      price: 48.0,
-      image: "/api/placeholder/200/200",
-      status: "Low Stock",
-      verified: true,
-    },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: "exterior accessories", pageSize: 100 }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.data.map(p => ({
+            id: p.id,
+            name: p.itemName,
+            price: p.price,
+            image: p.mainImage?.url || "/api/placeholder/200/200",
+            status: p.quantity > 10 ? "In Stock" : "Low Stock",
+            verified: true,
+          })));
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const partTypes = [
     "Shock Absorbers",
@@ -141,10 +104,7 @@ export default function ExteriorAccessoriesPage() {
     </div>
   );
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+
 
   if (isLoading) {
     return <SkeletonLoader />;
@@ -348,6 +308,9 @@ export default function ExteriorAccessoriesPage() {
 
           {/* Products Grid */}
           <div className="flex-1">
+            {products.length === 0 ? (
+              <EmptyState />
+            ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
               {products.map((product) => (
                 <div
@@ -395,6 +358,7 @@ export default function ExteriorAccessoriesPage() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       </div>
