@@ -34,6 +34,17 @@
     <link rel="manifest" href="/site.webmanifest">
     
     <title>Xpress Autozone | Premium Auto Parts & Accessories</title>
+    
+    <!-- Handle GitHub Pages routing with custom domain -->
+    <script type="text/javascript">
+      (function() {
+        const redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== window.location.href) {
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body class="min-h-screen bg-gray-50">
     <div id="root"></div>

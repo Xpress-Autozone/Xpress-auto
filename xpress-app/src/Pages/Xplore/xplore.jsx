@@ -61,10 +61,10 @@ const ProductCard = ({ product, navigate, badge }) => (
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" 
             />
             {badge && (
-                <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm
-                    ${badge === 'New' ? 'bg-blue-500' : 
-                      badge === 'Hot' ? 'bg-red-500' : 
-                      'bg-yellow-500'}`
+                <div className={`absolute top-3 left-3 text-xs font-bold opacity-70
+                    ${badge === 'New' ? 'text-blue-500' : 
+                      badge === 'Hot' ? 'text-red-500' : 
+                      'text-yellow-500'}`
                 }>
                     {badge}
                 </div>
@@ -128,7 +128,7 @@ export default function XplorePage() {
         <main className="min-h-screen bg-gray-50 pb-20">
             
             {/* HERO SECTION */}
-            <section className="relative h-[400px] w-full overflow-hidden">
+            <section className="relative h-[400px] w-full overflow-hidden pt-20 md:pt-0">
                 <div 
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${productsSrip})` }}
@@ -136,16 +136,13 @@ export default function XplorePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20" />
                 
                 <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
-                    <span className="inline-block px-3 py-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-fit mb-4">
-                        PREMIUM AUTO PARTS
-                    </span>
+
                     <h1 className="text-5xl md:text-6xl font-bold mb-4 max-w-2xl">
-                        Upgrade Your Ride. <br/>
-                        <span className="text-gray-300">Maintain The Value.</span>
+                        Upgrade Your Ride <br/>
+                        <span className="text-gray-300">Maintain The Value</span>
                     </h1>
-                    <p className="text-lg text-gray-300 mb-8 max-w-xl">
-                        Find the exact parts you need with our guaranteed fitment system. 
-                        Free shipping on orders over $100.
+                    <p className="text-lg text-gray-100 mb-8 max-w-xl">
+                        Find exact parts of the highest quality. Trusted by hundreds of vehicle owners and inspected by our team. 
                     </p>
                 </div>
             </section>
@@ -240,7 +237,7 @@ export default function XplorePage() {
                                 </button>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                                {allProducts.filter(p => p.tag === 'popular' || p.reviews > 150).slice(0, 5).map(product => (
+                                {allProducts.filter(p => p.tag === 'popular' || p.reviews > 150).slice(0, 4).map(product => (
                                     <ProductCard key={product.id} product={product} navigate={navigate} badge="Hot" />
                                 ))}
                             </div>

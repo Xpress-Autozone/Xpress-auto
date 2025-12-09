@@ -8,6 +8,7 @@ import {
   Settings,
   Zap,
   Check,
+  ArrowRight,
 } from "lucide-react";
 import slideImage from "../../assets/slide.jpg";
 import { useNavigate } from "react-router-dom";
@@ -97,7 +98,7 @@ function Home() {
   ];
 
   const handleNavigate = () => {
-    navigate("/product");
+    navigate("/xplore");
   };
 
   const handleCategoryClick = (categoryName) => {
@@ -144,8 +145,8 @@ function Home() {
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-100 mb-6 max-w-2xl leading-relaxed">
               Every part listed goes through a rigorous admin review process,
-              ensuring authenticity, quality, and your complete satisfaction.
-              Shop with confidence.
+              ensuring authenticity, quality, and your satisfaction.
+              Shop with confidence on Ghana's premier Aftermarket platform for Vehicle parts.
             </p>
             <button
               onClick={handleNavigate}
@@ -266,7 +267,34 @@ function Home() {
               </div>
             ))}
           </div>
+          {/* View All Featured Products Button */}
+          <button
+            onClick={() => navigate("/xplore/featured")}
+            className="mt-8 flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg transition-colors duration-300 text-base md:text-lg shadow-lg hover:shadow-xl mx-auto"
+          >
+            View All Featured Products
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>{" "}
+        
+
+        
+        {/* Xplore Autozone CTA Section */}
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Discover More with Xplore
+          </h2>
+          <p className="text-gray-600 text-base md:text-lg mb-8 max-w-2xl mx-auto">
+            Explore our curated collections of featured products, trending items, and new arrivals. Find exactly what you need.
+          </p>
+          <button
+            onClick={() => navigate("/xplore")}
+            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg transition-colors duration-300 text-base md:text-lg shadow-lg hover:shadow-xl"
+          >
+            Xplore Autozone
+          </button>
+        </div>
+
         <div className=" bg-white rounded-2xl  p-5 md:p-12 text-center mt-3">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent  leading-tight">
@@ -274,6 +302,7 @@ function Home() {
             </h2>
           </div>
 
+          
           {/* Trust Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             {/* Card 1: Admin Reviewed Parts */}
@@ -313,6 +342,7 @@ function Home() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
