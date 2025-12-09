@@ -12,17 +12,23 @@ import {
   ShieldCheck,
   Truck,
   Wrench,
-  ShoppingCart
+  ShoppingCart,
+  Package,
+  Circle,
+  Battery,
+  Settings,
+  Zap,
+  ArrowRight
 } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import productsSrip from "../../assets/productsStrip.jpg";
 
 // --- MOCK DATA ---
 const categories = [
-    { name: "Engine Parts", id: "engine-parts", icon: "🔧" },
-    { name: "Suspension & Steering", id: "suspension-steering", icon: "🚙" },
-    { name: "Tires & Wheels", id: "tires-wheels", icon: "🛞" },
-    { name: "Lighting", id: "lighting", icon: "💡" },
+    { name: "Engine Parts", id: "engine-parts", icon: Package },
+    { name: "Suspension & Steering", id: "suspension-steering", icon: Wrench },
+    { name: "Tires & Wheels", id: "tires-wheels", icon: Circle },
+    { name: "Electrical Components", id: "electrical-components", icon: Battery },
 ];
 
 const allProducts = [
@@ -109,14 +115,7 @@ const TrustItem = ({ icon: Icon, title, desc }) => (
 
 export default function XplorePage() {
     const [isLoading, setIsLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [vehicle, setVehicle] = useState({ year: "", make: "", model: "" });
     const navigate = useNavigate();
-
-    // Mock filtered data
-    const filteredProducts = allProducts.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -152,7 +151,7 @@ export default function XplorePage() {
             </section>
 
             {/* VEHICLE FITMENT BAR (Overlapping Hero) */}
-            <div className="relative -mt-10 px-6 z-20">
+          {/* <div className="relative -mt-10 px-6 z-20">
                 <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-2 md:p-4 border border-gray-200">
                     <div className="flex flex-col md:flex-row items-center gap-4">
                         <div className="flex items-center gap-2 px-4 border-r border-gray-200 w-full md:w-auto">
@@ -171,72 +170,57 @@ export default function XplorePage() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
-            {/* SEARCH & CATEGORIES */}
+            {/* CATEGORIES */}
             <div className="max-w-7xl mx-auto px-6 mt-12">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                    <h2 className="text-2xl font-bold text-gray-800">Explore Components</h2>
-                    <div className="relative w-full md:w-96">
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by part name or ID..."
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        />
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    </div>
-                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-8">Explore Components</h2>
 
                 {/* Categories Grid */}
-                {!searchQuery && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-                        {categories.map((cat) => (
-                            <div 
-                                key={cat.id} 
-                                onClick={() => navigate(`/${cat.id}`)}
-                                className="bg-white p-6 rounded-xl border border-gray-100 hover:border-yellow-400 hover:shadow-md cursor-pointer transition-all text-center group"
-                            >
-                                <span className="text-4xl mb-3 block group-hover:scale-110 transition-transform">{cat.icon}</span>
-                                <h3 className="font-semibold text-gray-700 group-hover:text-black">{cat.name}</h3>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            {categories.map((cat) => {
+                                const IconComponent = cat.icon;
+                                return (
+                                    <div 
+                                        key={cat.id} 
+                                        onClick={() => navigate(`/${cat.id}`)}
+                                        className="bg-white p-6 rounded-xl border border-gray-100 hover:border-yellow-400 hover:shadow-md cursor-pointer transition-all text-center group"
+                                    >
+                                        <IconComponent className="w-10 h-10 mx-auto mb-3 text-gray-700 group-hover:text-yellow-500 transition-colors group-hover:scale-110" />
+                                        <h3 className="font-semibold text-gray-700 group-hover:text-black">{cat.name}</h3>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <button
+                            onClick={() => navigate("/categories")}
+                            className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors mb-12"
+                        >
+                            View All Categories
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                </div>
             </div>
 
             {/* DYNAMIC PRODUCT LISTS */}
             <div className="max-w-7xl mx-auto px-6 space-y-16">
-                
-                {/* Search Results (Shows only if typing) */}
-                {searchQuery && (
-                    <section>
-                        <h2 className="text-xl font-bold mb-6">Search Results</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {filteredProducts.map(product => (
-                                <ProductCard key={product.id} product={product} navigate={navigate} />
-                            ))}
-                            {filteredProducts.length === 0 && (
-                                <p className="col-span-full text-center text-gray-500 py-10">No parts found matching "{searchQuery}"</p>
-                            )}
-                        </div>
-                    </section>
-                )}
-
-                {/* Default Sections (Hidden if searching) */}
-                {!searchQuery && (
-                    <>
+                <>
                         {/* Featured */}
                         <section>
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-bold flex items-center gap-2">
                                     <Sparkles className="text-yellow-500" /> Featured This Week
                                 </h2>
-                                <button className="text-sm font-semibold text-yellow-600 hover:text-yellow-700">View All</button>
+                                <button 
+                                    onClick={() => navigate("/xplore/featured")}
+                                    className="flex items-center gap-1 text-sm font-semibold text-yellow-600 hover:text-yellow-700">
+                                    See all featured products
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {allProducts.filter(p => p.tag === 'featured').map(product => (
+                                {allProducts.filter(p => p.tag === 'featured').slice(0, 4).map(product => (
                                     <ProductCard key={product.id} product={product} navigate={navigate} badge="Featured" />
                                 ))}
                             </div>
@@ -248,6 +232,12 @@ export default function XplorePage() {
                                 <h2 className="text-2xl font-bold flex items-center gap-2">
                                     <Flame className="text-red-500" /> Hot Right Now
                                 </h2>
+                                <button 
+                                    onClick={() => navigate("/xplore/trending")}
+                                    className="flex items-center gap-1 text-sm font-semibold text-yellow-600 hover:text-yellow-700">
+                                    See all trending
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                                 {allProducts.filter(p => p.tag === 'popular' || p.reviews > 150).slice(0, 5).map(product => (
@@ -263,16 +253,21 @@ export default function XplorePage() {
                                 <h2 className="text-2xl font-bold flex items-center gap-2">
                                     <TrendingUp className="text-blue-500" /> New Arrivals
                                 </h2>
+                                <button 
+                                    onClick={() => navigate("/xplore/new")}
+                                    className="flex items-center gap-1 text-sm font-semibold text-yellow-600 hover:text-yellow-700">
+                                    See all new
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                                {allProducts.filter(p => p.tag === 'new' || p.tag === 'editor').map(product => (
+                                {allProducts.filter(p => p.tag === 'new' || p.tag === 'editor').slice(0, 4).map(product => (
                                     <ProductCard key={product.id} product={product} navigate={navigate} badge="New" />
                                 ))}
                             </div>                           
    
                         </section>
-                    </>
-                )}
+                </>
             </div>
         </main>
     );

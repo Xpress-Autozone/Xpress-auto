@@ -17,6 +17,10 @@ import InteriorAccessoriesPage from "../Pages/Categories/interiorAccessoriesPage
 import ExteriorAccessoriesPage from "../Pages/Categories/exteriorAccessoriesPage";
 import PrivacyPolicy from "../Pages/PrivacyPolicy/privacyPolicy";
 import TermsOfService from "../Pages/TermsOfService/termsOfService";
+import XplorePage from "../Pages/Xplore/xplore";
+import FeaturedProducts from "../Pages/Xplore/FeaturedProducts/featuredProducts";
+import TrendingProducts from "../Pages/Xplore/TrendingProducts/trendingProducts";
+import NewProducts from "../Pages/Xplore/NewProducts/newProducts";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 
 function LayoutContent() {
@@ -54,6 +58,10 @@ function LayoutContent() {
         />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/xplore" element={<XplorePage />} />
+        <Route path="/xplore/featured" element={<FeaturedProducts />} />
+        <Route path="/xplore/trending" element={<TrendingProducts />} />
+        <Route path="/xplore/new" element={<NewProducts />} />
       </Routes>
       <Footer />
     </>

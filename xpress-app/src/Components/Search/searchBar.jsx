@@ -44,7 +44,7 @@ const SearchBar = ({ className = "", placeholder = "Search auto parts...", place
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={currentPlaceholder}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-200 focus:border-white outline-none bg-white"
         />
         {query && (
           <button

@@ -64,13 +64,13 @@ const Navbar = () => {
             Categories
           </a>
           <a
-            href="#"
+            href="xplore"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
             Xplore
           </a>
           <a
-            href="#"
+            href="partner"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
           Partner With Us
@@ -136,13 +136,13 @@ const Navbar = () => {
               Categories
             </a>
             <a
-              href="#"
+              href="/xplore"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
               Xplore
             </a>
             <a
-              href="#"
+              href="partner"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
              Partner With Us
