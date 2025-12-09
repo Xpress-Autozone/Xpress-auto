@@ -41,7 +41,10 @@
         const redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== window.location.href) {
-          window.history.replaceState(null, null, redirect);
+          const decodedRedirect = redirect
+            .replace(/~and~/g, '&')
+            .replace(/~eq~/g, '=');
+          window.history.replaceState(null, null, '/' + decodedRedirect);
         }
       })();
     </script>
