@@ -10,6 +10,13 @@ const Navbar = () => {
   const { getTotalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const searchPlaceholders = [
+    "Search for auto parts…",
+    "Try: 'brake pads for Corolla 2012'",
+    "Type: 'Toyota filters under 80 cedis'",
+    "Ask like a human… it works."
+  ];
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -51,7 +58,7 @@ const Navbar = () => {
             Home
           </a>
           <a
-            href="/catergories"
+            href="/categories"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
             Categories
@@ -60,20 +67,20 @@ const Navbar = () => {
             href="#"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
-            Products
+            Xplore
           </a>
           <a
             href="#"
             className="text-black hover:text-gray-700 font-medium transition-colors"
           >
-            Xplore
+          Partner With Us
           </a>
         </div>
 
         {/* Search Bar and Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {/* Search Bar */}
-          <SearchBar className="w-64" />
+          <SearchBar className="w-64" placeholders={searchPlaceholders} />
           {/* Cart Icon */}
           <button
             onClick={() => navigate("/cart")}
@@ -132,18 +139,18 @@ const Navbar = () => {
               href="#"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
-              Products
+              Xplore
             </a>
             <a
               href="#"
               className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
             >
-              Xplore
+             Partner With Us
             </a>
 
             {/* Mobile Search Bar */}
             <div className="mt-4">
-              <SearchBar className="w-full" />
+              <SearchBar className="w-full" placeholders={searchPlaceholders} />
             </div>
           </div>
         </div>

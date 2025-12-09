@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 
-const SearchBar = ({ className = "", placeholder = "Search auto parts..." }) => {
+const SearchBar = ({ className = "", placeholder = "Search auto parts...", placeholders = null }) => {
   const [query, setQuery] = useState('');
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholder);
   const navigate = useNavigate();
+
+  // Rotating placeholder effect
+  useEffect(() => {
+    if (!placeholders || placeholders.length === 0) {
+      return;
+    }
+
+    let currentIndex = 0;
+    setCurrentPlaceholder(placeholders[0]);
+
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % placeholders.length;
+      setCurrentPlaceholder(placeholders[currentIndex]);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [placeholders]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,7 +43,7 @@ const SearchBar = ({ className = "", placeholder = "Search auto parts..." }) => 
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholder}
+          placeholder={currentPlaceholder}
           className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
         />
         {query && (

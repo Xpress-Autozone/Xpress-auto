@@ -10,9 +10,17 @@ import {
 } from "lucide-react";
 import slideImage from "../../assets/productsStrip.jpg";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../Components/Search/searchBar";
 
 export default function CategoriesPage() {
   const navigate = useNavigate();
+
+  const searchPlaceholders = [
+    "Search for auto parts…",
+    "Try: 'brake pads for Corolla 2012'",
+    "Type: 'Toyota filters under 80 cedis'",
+    "Ask like a human… it works."
+  ];
 
   const categories = [
     {
@@ -145,53 +153,20 @@ export default function CategoriesPage() {
           </div>
         </div>
 
-        {/* Info Section */}
-        <div className="bg-white rounded-2xl p-5 md:p-12 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent leading-tight">
-              Why Browse Categories?
-            </h2>
-          </div>
-
-          {/* Trust Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            {/* Card 1: Organized Selection */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-50">
-              <div className="text-4xl mb-4 text-center">📂</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Organized Selection
-              </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                Browse parts by category for an organized and efficient shopping
-                experience. Find what you need faster.
-              </p>
-            </div>
-
-            {/* Card 2: Verified Quality */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-50">
-              <div className="text-4xl mb-4 text-center">✓</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Verified Quality
-              </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                Every part across all categories is verified by our expert team
-                for authenticity and quality assurance.
-              </p>
-            </div>
-
-            {/* Card 3: Expert Support */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-50">
-              <div className="text-4xl mb-4 text-center">💬</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Expert Support
-              </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                Need help choosing the right part? Our expert team is here to
-                guide you through each category.
-              </p>
+        {/* Search Tip Section */}
+          <div className="max-w-3xl mx-auto text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3">
+              Not sure what category your part is in?
+            </h3>
+            <p className="text-gray-700 text-sm md:text-base leading-relaxed mb-6">
+              Use our advanced <span className="font-semibold text-yellow-600">Xpress Search</span> to find what you're looking for easily! Just use the search bar below.
+            </p>
+            <div className="max-w-md mx-auto">
+              <SearchBar placeholders={searchPlaceholders} />
             </div>
           </div>
-        </div>
+
+     
       </div>
     </div>
   );

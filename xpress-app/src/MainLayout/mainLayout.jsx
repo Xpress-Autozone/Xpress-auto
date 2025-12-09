@@ -15,6 +15,8 @@ import BrakesPage from "../Pages/Categories/brakesPage";
 import ExhaustSystemsPage from "../Pages/Categories/exhaustSystemsPage";
 import InteriorAccessoriesPage from "../Pages/Categories/interiorAccessoriesPage";
 import ExteriorAccessoriesPage from "../Pages/Categories/exteriorAccessoriesPage";
+import PrivacyPolicy from "../Pages/PrivacyPolicy/privacyPolicy";
+import TermsOfService from "../Pages/TermsOfService/termsOfService";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 
 function LayoutContent() {
@@ -50,6 +52,8 @@ function LayoutContent() {
           path="/exterior-accessories"
           element={<ExteriorAccessoriesPage />}
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
       <Footer />
     </>

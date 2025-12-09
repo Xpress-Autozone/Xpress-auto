@@ -1,7 +1,9 @@
 import React from "react";
 import { Mail, Phone, MapPin, Facebook, Instagram } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -127,12 +129,18 @@ const Footer = () => {
               &copy; {currentYear} Xpress AutoZone. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-yellow-400 transition-colors">
+              <button
+                onClick={() => navigate("/privacy-policy")}
+                className="hover:text-yellow-400 transition-colors"
+              >
                 Privacy
-              </a>
-              <a href="#" className="hover:text-yellow-400 transition-colors">
+              </button>
+              <button
+                onClick={() => navigate("/terms-of-service")}
+                className="hover:text-yellow-400 transition-colors"
+              >
                 Terms
-              </a>
+              </button>
               <a href="#" className="hover:text-yellow-400 transition-colors">
                 Cookies
               </a>
