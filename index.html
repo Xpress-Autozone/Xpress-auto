@@ -34,8 +34,19 @@
     <link rel="manifest" href="/site.webmanifest">
     
     <title>Xpress Autozone | Premium Auto Parts & Accessories</title>
-    <script type="module" crossorigin src="/assets/index-T1kHqOCF.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-oHqUHMLa.css">
+    
+    <!-- Handle GitHub Pages routing with custom domain -->
+    <script type="text/javascript">
+      (function() {
+        const redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== window.location.href) {
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-DV5_k0lm.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BPeNE6P-.css">
   </head>
   <body class="min-h-screen bg-gray-50">
     <div id="root"></div>
