@@ -16,10 +16,26 @@ import productsSrip from "../../assets/productsStrip.jpg";
 
 // --- MOCK DATA ---
 const categories = [
-    { name: "Body & Parts", id: "body-chassis", icon: Car },
-    { name: "Engine & Performance", id: "engine-performance", icon: Settings },
-    { name: "Lighting & Electronics", id: "lighting-electronics", icon: Zap },
-    { name: "Accessories", id: "accessories", icon: Sparkles }
+    { 
+        name: "Body & Parts", 
+        id: "body-chassis", 
+        icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="w-8 h-8 mx-auto" /> 
+    },
+    { 
+        name: "Engine & Performance", 
+        id: "engine-performance", 
+        icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="w-10 h-8 mx-auto" /> 
+    },
+    { 
+        name: "Lighting & Electronics", 
+        id: "lighting-electronics", 
+        icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="w-10 h-8 mx-auto" /> 
+    },
+    { 
+        name: "Accessories", 
+        id: "accessories", 
+        icon: <img src="/assets/icons/steer.png" alt="Accessories" className="w-8 h-8 mx-auto" /> 
+    }
 ];
 
 const allProducts = [
@@ -115,19 +131,18 @@ export default function XplorePage() {
             {/* CATEGORIES GRID */}
             <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-200 bg-white">
-                    {categories.map((cat) => {
-                        const IconComponent = cat.icon;
-                        return (
-                            <div 
-                                key={cat.id} 
-                                onClick={() => navigate(`/${cat.id}`)}
-                                className="p-8 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
-                            >
-                                <IconComponent className="w-8 h-8 mx-auto mb-4 text-black group-hover:scale-110 transition-transform" />
-                                <h3 className="font-black text-xs uppercase tracking-widest text-gray-900">{cat.name}</h3>
+                    {categories.map((cat) => (
+                        <div 
+                            key={cat.id} 
+                            onClick={() => navigate(`/${cat.id}`)}
+                            className="p-8 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
+                        >
+                            <div className="w-10 h-10 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                {cat.icon}
                             </div>
-                        );
-                    })}
+                            <h3 className="font-black text-xs uppercase tracking-widest text-gray-900">{cat.name}</h3>
+                        </div>
+                    ))}
                 </div>
                 <button
                     onClick={() => navigate("/categories")}
@@ -135,6 +150,13 @@ export default function XplorePage() {
                 >
                     View All Categories <ArrowRight size={16} />
                 </button>
+                
+                {/* XPLORE AUTOPARTS Text */}
+                <div className="text-center mt-16 mb-24">
+                    <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-gray-900">
+                        XPLORE <span className="text-yellow-500">AUTOPARTS</span>
+                    </h2>
+                </div>
             </div>
 
             {/* PRODUCT SECTIONS */}
@@ -181,11 +203,17 @@ export default function XplorePage() {
                 </section>
 
                 {/* New Arrivals */}
-                <section className="bg-gray-50 p-8 border border-gray-200">
-                    <div className="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
-                        <h2 className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-2">
-                            <TrendingUp size={24} className="text-black" /> New Arrivals
-                        </h2>
+                <section>
+                    <div className="flex items-end justify-between mb-8 border-b-2 border-black pb-4">
+                        <div>
+                            <span className="text-blue-500 font-black uppercase tracking-widest text-[10px]">Just Added</span>
+                            <h2 className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-2">
+                                <TrendingUp size={24} className="text-black" /> New Arrivals
+                            </h2>
+                        </div>
+                        <button onClick={() => navigate("/xplore/new")} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-yellow-600">
+                            See All <ArrowRight size={14} />
+                        </button>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {allProducts.filter(p => p.tag === 'new' || p.tag === 'editor').slice(0, 4).map(product => (

@@ -3,8 +3,47 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { searchProducts } from "../../lib/api";
 import SearchBar from "../../Components/Search/searchBar";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
-import { ChevronDown, Filter, Check } from "lucide-react";
+import { ChevronDown, Filter, Check, X, AlertTriangle, RefreshCw, Home } from "lucide-react";
 
+// --- 1. INTEGRATED ERROR BOUNDARY ---
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error, errorInfo) {
+    console.error("Search Page Crash:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-white flex items-center justify-center px-6 py-20">
+          <div className="max-w-md w-full border-2 border-black p-10 text-center space-y-6">
+            <AlertTriangle size={48} className="text-red-600 mx-auto" />
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter leading-none">
+              Search <span className="text-red-600">Engine Error</span>
+            </h2>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 leading-relaxed">
+              A critical error occurred while processing the search data. This may be due to an incompatible API response or data formatting.
+            </p>
+            <div className="flex flex-col gap-3 pt-4">
+              <button onClick={() => window.location.reload()} className="bg-black text-white py-4 font-black uppercase italic tracking-widest flex items-center justify-center gap-2 hover:bg-yellow-500 hover:text-black transition-all">
+                <RefreshCw size={16} /> Reboot Search
+              </button>
+              <a href="/" className="border border-gray-200 py-4 font-black uppercase italic tracking-widest flex items-center justify-center gap-2 text-[10px]">
+                <Home size={14} /> Return to Base
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// --- 2. MAIN PAGE COMPONENT ---
 const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -19,8 +58,8 @@ const SearchResultsPage = () => {
     priceMax: "",
   });
   const [expandedFilters, setExpandedFilters] = useState({
-    price: false,
-    category: false,
+    price: true,
+    category: true,
   });
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
@@ -34,17 +73,9 @@ const SearchResultsPage = () => {
   const performSearch = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([_, value]) => value !== "")
-      );
-
-      console.log(
-        "🔍 Starting search with query:",
-        query,
-        "filters:",
-        cleanFilters
       );
 
       const timeoutPromise = new Promise((_, reject) =>
@@ -56,31 +87,18 @@ const SearchResultsPage = () => {
         timeoutPromise,
       ]);
 
-      console.log("📡 Frontend received search response:", {
-        response: response,
-        success: response?.success,
-        dataLength: response?.data?.length,
-        totalItems: response?.pagination?.totalItems,
-        parsedEntities: response?.parsedEntities,
-      });
-
+      // DEFENSIVE FIX: Check for response existence and success before setting data
       if (response && response.success !== false) {
-        console.log("📦 Setting results:", response.data);
-        console.log("📊 Results length:", response.data?.length);
-        setResults(response.data || []);
+        setResults(Array.isArray(response.data) ? response.data : []);
         setPagination(response.pagination || {});
         setParsedEntities(response.parsedEntities || {});
-      } else if (!response) {
-        console.warn("⚠️ No response received from search");
+      } else {
         setResults([]);
       }
     } catch (err) {
-      setError(
-        err.message === "Search request timed out"
-          ? "Search took too long. Please try again."
-          : "Failed to search products. Please try again."
-      );
-      console.error("❌ Search error:", err);
+      setError(err.message === "Search request timed out" 
+        ? "Search took too long. Please try again." 
+        : "Failed to fetch results. Please try again.");
       setResults([]);
     } finally {
       setLoading(false);
@@ -91,336 +109,209 @@ const SearchResultsPage = () => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
 
-  const clearFilters = () => {
-    setFilters({ category: "", priceMin: "", priceMax: "" });
-  };
-
-  const handlePageChange = (newPage) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", newPage.toString());
-    navigate(`/search?${params.toString()}`);
-    window.scrollTo(0, 0);
-  };
-
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
-  };
-
   const toggleFilter = (filterName) => {
-    setExpandedFilters((prev) => ({
-      ...prev,
-      [filterName]: !prev[filterName],
-    }));
+    setExpandedFilters((prev) => ({ ...prev, [filterName]: !prev[filterName] }));
   };
-
-  const FilterSection = ({ title, filterName, children }) => (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <button
-        onClick={() => toggleFilter(filterName)}
-        className="flex items-center justify-between w-full py-4 hover:bg-gray-50 transition-colors"
-      >
-        <h3 className="font-semibold text-gray-800">{title}</h3>
-        <ChevronDown
-          className={`w-5 h-5 transition-transform ${
-            expandedFilters[filterName] ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {expandedFilters[filterName] && <div className="pb-4">{children}</div>}
-    </div>
-  );
 
   const renderPagination = () => {
-    if (!pagination.totalPages || pagination.totalPages <= 1) return null;
+    if (!pagination?.totalPages || pagination.totalPages <= 1) return null;
     const { currentPage, totalPages } = pagination;
     const pages = [];
-
-    if (currentPage > 2) {
-      pages.push(1);
-      if (currentPage > 3) pages.push("...");
-    }
-
-    for (
-      let i = Math.max(1, currentPage - 1);
-      i <= Math.min(totalPages, currentPage + 1);
-      i++
-    ) {
+    for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) {
       pages.push(i);
     }
 
-    if (currentPage < totalPages - 1) {
-      if (currentPage < totalPages - 2) pages.push("...");
-      pages.push(totalPages);
-    }
-
     return (
-      <div className="flex items-center justify-center space-x-2 mt-8">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage <= 1}
-          className="px-3 py-2 rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          Previous
-        </button>
-
-        {pages.map((p, index) => (
+      <div className="flex items-center justify-center space-x-4 mt-12 border-t border-gray-100 pt-8">
+        {pages.map((p) => (
           <button
-            key={index}
-            onClick={() => typeof p === "number" && handlePageChange(p)}
-            disabled={p === "..."}
-            className={`px-3 py-2 rounded-lg border ${
-              p === currentPage
-                ? "bg-yellow-500 text-black border-yellow-500"
-                : "hover:bg-gray-50"
-            } ${p === "..." ? "cursor-default" : ""}`}
+            key={p}
+            onClick={() => {
+              const params = new URLSearchParams(searchParams);
+              params.set("page", p.toString());
+              navigate(`/search?${params.toString()}`);
+            }}
+            className={`text-xs font-black uppercase italic tracking-widest transition-all ${
+              p === currentPage ? "text-yellow-500 border-b-2 border-yellow-500" : "text-gray-400 hover:text-black"
+            }`}
           >
-            {p}
+            {p.toString().padStart(2, '0')}
           </button>
         ))}
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages}
-          className="px-3 py-2 rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          Next
-        </button>
       </div>
     );
   };
 
+  const FilterSection = ({ title, filterName, children }) => (
+    <div className="border-b border-gray-100 last:border-0">
+      <button
+        onClick={() => toggleFilter(filterName)}
+        className="flex items-center justify-between w-full py-4 text-left group"
+      >
+        <span className="text-xs font-black uppercase tracking-widest text-gray-900 group-hover:text-yellow-600 transition-colors">
+          {title}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-300 ${
+            expandedFilters[filterName] ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${expandedFilters[filterName] ? "max-h-96 pb-4" : "max-h-0"}`}>
+        {children}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-20">
-      <div className="bg-white shadow-sm border-b sticky top-16 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <SearchBar className="max-w-2xl mx-auto" />
+    <div className="min-h-screen bg-white pb-20">
+      {/* Top Search Header */}
+      <div className="bg-black py-12 px-6 border-b border-white/10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-white space-y-2">
+            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Results for</span>
+            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none italic">
+              "{query}"
+            </h1>
+          </div>
+          <div className="w-full md:w-1/3">
+            <SearchBar className="bg-white/10 text-white placeholder-gray-500 p-4 w-full outline-none border border-white/20 focus:border-yellow-500" />
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {query && (
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-2">
-              Search Results for "{query}"
-            </h1>
-            {(parsedEntities.year ||
-              parsedEntities.make ||
-              parsedEntities.model ||
-              parsedEntities.partType ||
-              parsedEntities.brand) && (
-              <div className="text-sm text-gray-600">
-                {parsedEntities.year && (
-                  <span className="mr-4">Year: {parsedEntities.year}</span>
-                )}
-                {parsedEntities.make && (
-                  <span className="mr-4">Make: {parsedEntities.make}</span>
-                )}
-                {parsedEntities.model && (
-                  <span className="mr-4">Model: {parsedEntities.model}</span>
-                )}
-                {parsedEntities.partType && (
-                  <span className="mr-4">Part: {parsedEntities.partType}</span>
-                )}
-                {parsedEntities.brand && (
-                  <span className="mr-4">Brand: {parsedEntities.brand}</span>
-                )}
-              </div>
-            )}
-            {pagination.totalItems > 0 && (
-              <p className="text-sm text-gray-500 mt-2">
-                {pagination.totalItems} results found
-              </p>
-            )}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
+        {/* DEFENSIVE: Only map entities if parsedEntities exists and has keys */}
+        {parsedEntities && Object.keys(parsedEntities).length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8 pb-8 border-b border-gray-100">
+            {Object.entries(parsedEntities).map(([key, value]) => value && (
+              <span key={key} className="bg-gray-50 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 border border-gray-100 italic">
+                {key}: <span className="text-black font-black italic">{value}</span>
+              </span>
+            ))}
           </div>
         )}
 
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar Filters */}
-          {showFiltersMobile && (
-            <div
-              className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-              onClick={() => setShowFiltersMobile(false)}
-            />
-          )}
+          <aside className={`${showFiltersMobile ? "fixed inset-0 z-[60] bg-white p-6 overflow-y-auto" : "hidden lg:block lg:w-64 lg:shrink-0"}`}>
+            <div className="flex justify-between items-center mb-8 lg:hidden">
+              <h2 className="text-2xl font-black italic uppercase">Filters</h2>
+              <button onClick={() => setShowFiltersMobile(false)} className="p-2 bg-gray-100 rounded-full"><X className="w-6 h-6" /></button>
+            </div>
 
-          <div
-            className={`fixed md:relative md:w-80 md:flex-shrink-0 top-0 left-0 h-screen md:h-auto bg-white p-6 z-50 md:z-auto transition-transform duration-300 w-80 overflow-y-auto ${
-              showFiltersMobile
-                ? "translate-x-0"
-                : "-translate-x-full md:translate-x-0"
-            }`}
-          >
-            <button
-              onClick={() => setShowFiltersMobile(false)}
-              className="md:hidden absolute top-4 right-4 text-gray-600 hover:text-gray-900"
-            >
-              ✕
-            </button>
-
-            <h2 className="text-xl font-bold mb-6 text-gray-800">Filters</h2>
-
-            <FilterSection title="Price Range" filterName="price">
-              <div className="space-y-4 px-4">
-                <div className="flex gap-2">
+            <div className="sticky top-28 space-y-2">
+              <FilterSection title="Price Limit" filterName="price">
+                <div className="grid grid-cols-2 gap-2">
                   <input
                     type="number"
-                    placeholder="Min"
+                    placeholder="MIN"
                     value={filters.priceMin}
-                    onChange={(e) =>
-                      handleFilterChange("priceMin", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    onChange={(e) => handleFilterChange("priceMin", e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
                   />
                   <input
                     type="number"
-                    placeholder="Max"
+                    placeholder="MAX"
                     value={filters.priceMax}
-                    onChange={(e) =>
-                      handleFilterChange("priceMax", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    onChange={(e) => handleFilterChange("priceMax", e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
                   />
                 </div>
-                <button
-                  onClick={clearFilters}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition-colors"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </FilterSection>
+              </FilterSection>
 
-            <FilterSection title="Category" filterName="category">
-              <div className="space-y-2 px-4">
-                <select
-                  value={filters.category}
-                  onChange={(e) =>
-                    handleFilterChange("category", e.target.value)
-                  }
-                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-yellow-500"
-                >
-                  <option value="">All Categories</option>
-                  <option value="Brakes">Brakes</option>
-                  <option value="Engine Parts">Engine Parts</option>
-                  <option value="Electrical">Electrical</option>
-                  <option value="Suspension">Suspension</option>
-                  <option value="Exhaust">Exhaust</option>
-                </select>
-              </div>
-            </FilterSection>
-          </div>
+              <FilterSection title="Categories" filterName="category">
+                <div className="space-y-2">
+                  {["Brakes", "Engine Parts", "Electrical", "Suspension", "Exhaust"].map(cat => (
+                    <button 
+                      key={cat}
+                      onClick={() => handleFilterChange("category", cat)}
+                      className={`block w-full text-left text-[10px] font-black uppercase tracking-widest py-2 px-3 border transition-all ${
+                        filters.category === cat ? "bg-black text-white border-black italic" : "border-transparent text-gray-400 hover:border-gray-100 hover:text-black"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
 
-          {/* Products Grid - 2 Columns */}
-          <div className="flex-1">
-            {/* Mobile Filter Button */}
-            <div className="md:hidden mb-4">
-              <button
-                onClick={() => setShowFiltersMobile(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              <button 
+                onClick={() => setFilters({ category: "", priceMin: "", priceMax: "" })}
+                className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
               >
-                <Filter className="w-4 h-4" />
-                <span>Filters</span>
+                Reset All Filters
               </button>
             </div>
-            {loading && (
-              <div className="grid grid-cols-2 gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <SkeletonLoader key={i} />
+          </aside>
+
+          {/* Results Area */}
+          <main className="flex-1">
+            <div className="flex justify-between items-center mb-10 border-b border-gray-50 pb-4">
+               <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
+                <Filter size={14} /> Filters
+              </button>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                {pagination?.totalItems || 0} Products Identified
+              </p>
+            </div>
+
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                {[...Array(6)].map((_, i) => <SkeletonLoader key={i} />)}
+              </div>
+            ) : error ? (
+              <div className="text-center py-20 border-2 border-dashed border-red-50">
+                <p className="text-red-500 font-black uppercase tracking-widest">{error}</p>
+                <button onClick={performSearch} className="mt-4 bg-black text-white px-8 py-3 text-xs font-black uppercase italic transition-all hover:bg-yellow-500 hover:text-black">Retry Fetch</button>
+              </div>
+            ) : results.length === 0 ? (
+              <div className="text-center py-32 border border-gray-100">
+                <p className="text-gray-400 font-black uppercase tracking-widest">Zero Matches Found</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
+                {results.map((product) => (
+                  <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="group cursor-pointer">
+                    <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all">
+                      <img
+                        src={product.mainImage?.url || "/placeholder.jpg"}
+                        alt={product.itemName}
+                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-yellow-600 transition-colors italic">
+                        {product.itemName}
+                      </h3>
+                      <div className="flex flex-col gap-1 pt-1">
+                        <span className="text-lg font-black italic tracking-tighter text-black">GH₵{(product.price || 0).toFixed(2)}</span>
+                        <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
+                          product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
+                        }`}>
+                          {product.quantity > 0 ? "In Stock" : "Sold Out"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
-
-            {error && (
-              <div className="text-center py-12">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-                  <p className="text-red-600">{error}</p>
-                  <button
-                    onClick={performSearch}
-                    className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {!loading && !error && results.length === 0 && query && (
-              <div className="text-center py-12">
-                <div className="bg-gray-50 rounded-lg p-8 max-w-md mx-auto">
-                  <h3 className="text-lg font-semibold mb-2">
-                    No results found
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Try adjusting your search terms
-                  </p>
-                  <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600"
-                  >
-                    Clear Filters
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {!loading && !error && results.length > 0 && (
-              <>
-                {console.log("🎨 Rendering", results.length, "products")}
-                <div className="grid grid-cols-2 gap-6">
-                  {results.map((product) => {
-                    console.log(
-                      "📋 Rendering product:",
-                      product.id,
-                      product.itemName
-                    );
-                    return (
-                      <div
-                        key={product.id}
-                        onClick={() => handleProductClick(product.id)}
-                        className="bg-white hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
-                      >
-                        <div className="aspect-[4/5] bg-gray-200 flex items-center justify-center p-4">
-                          <img
-                            src={product.mainImage?.url || "/placeholder.jpg"}
-                            alt={product.itemName}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-semibold text-sm text-gray-800 mb-2 line-clamp-2 min-h-10">
-                            {product.itemName}
-                          </h3>
-                          <div className="flex items-center gap-1 text-xs text-green-600 mb-3">
-                            <Check className="w-3 h-3" />
-                            <span>Verified</span>
-                          </div>
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-2xl font-bold text-black">
-                              ${product.price.toFixed(2)}
-                            </span>
-                            <span
-                              className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
-                                product.quantity > 0
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {product.quantity > 0 ? "In Stock" : "Out"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {renderPagination()}
-              </>
-            )}
-          </div>
+            <div className="mt-20">
+              {renderPagination()}
+            </div>
+          </main>
         </div>
       </div>
     </div>
   );
 };
 
-export default SearchResultsPage;
+// --- 3. WRAPPED EXPORT ---
+const SearchResultsWithBoundary = () => (
+  <ErrorBoundary>
+    <SearchResultsPage />
+  </ErrorBoundary>
+);
+
+export default SearchResultsWithBoundary;

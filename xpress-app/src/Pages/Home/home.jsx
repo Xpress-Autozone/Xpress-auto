@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  Car,
-  Wrench,
-  Circle,
-  Zap,
-  Settings,
-  Droplets,
   Check,
-  ArrowRight,
-  Snowflake,
-  Sparkles
+  ArrowRight
 } from "lucide-react";
 import slideImage from "../../assets/slide.jpg";
 import { useNavigate } from "react-router-dom";
@@ -26,37 +18,37 @@ function Home() {
       description: "Brakes, suspension, and body components"
     },
     {
-      icon: <Settings className="h-6 w-6" />,
+      icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="h-6 w-8" />,
       name: "Engine & Performance",
       description: "Engine parts and performance upgrades"
     },
     {
-      icon: <Circle className="h-6 w-6" />,
+      icon: <img src="/assets/icons/wheel.png" alt="Wheels & Tires" className="h-6 w-6" />,
       name: "Wheels & Tires",
       description: "Tires, rims, and wheel accessories"
     },
     {
-      icon: <Zap className="h-6 w-6" />,
+      icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="h-6 w-9" />,
       name: "Lighting & Electronics",
       description: "Lights, audio, and vehicle electronics"
     },
     {
-      icon: <Sparkles className="h-6 w-6" />,
+      icon: <img src="/assets/icons/steer.png" alt="Accessories" className="h-6 w-6" />,
       name: "Accessories",
       description: "Interior and exterior vehicle accessories"
     },
     {
-      icon: <Wrench className="h-6 w-6" />,
+      icon: <img src="/assets/icons/tools.png" alt="Automotive Tools" className="h-6 w-6" />,
       name: "Automotive Tools",
       description: "Professional and DIY auto repair tools"
     },
     {
-      icon: <Droplets className="h-6 w-6" />,
+      icon: <img src="/assets/icons/fluids.png" alt="Fluids & Car Care" className="h-8 w-8" />,
       name: "Fluids & Car Care",
       description: "Oils, cleaners, and maintenance products"
     },
     {
-      icon: <Snowflake className="h-6 w-6" />,
+      icon: <img src="/assets/icons/cooling.png" alt="Cooling & AC" className="h-7 w-7" />,
       name: "Cooling & AC",
       description: "Radiators, compressors, and AC components"
     },
@@ -222,7 +214,7 @@ function Home() {
 
           <button
             onClick={() => navigate("/xplore/featured")}
-            className="mt-12 flex items-center justify-center gap-3 bg-black text-white font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-yellow-500 hover:text-black transition-colors mx-auto"
+            className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
           >
             View All Featured Products <ArrowRight size={16} />
           </button>
@@ -239,7 +231,7 @@ function Home() {
           </p>
           <button
             onClick={() => navigate("/xplore")}
-            className="bg-black text-white font-black uppercase italic tracking-[0.2em] text-sm py-4 px-12 hover:bg-yellow-500 hover:text-black transition-all"
+            className="bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-12 hover:bg-black hover:text-white transition-all"
           >
             Xplore Autozone
           </button>

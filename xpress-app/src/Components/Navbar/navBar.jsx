@@ -133,6 +133,7 @@ const Navbar = () => {
                <SearchBar 
                  className="bg-transparent text-white text-2xl md:text-4xl outline-none w-full" 
                  placeholders={searchPlaceholders} 
+                 onSearch={() => setIsSearchOpen(false)}
                />
             </div>
             

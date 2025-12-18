@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Car,
-  Wrench,
-  Circle,
-  Zap,
-  Settings,
-  Droplets,
-  Snowflake,
-  Sparkles,
-  ArrowRight
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import slideImage from "../../assets/productsStrip.jpg";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../../Components/Search/searchBar";
@@ -25,14 +15,54 @@ export default function CategoriesPage() {
   ];
 
   const categories = [
-    { icon: <Car className="h-6 w-6" />, name: "Body & Parts", id: "body-chassis", description: "Brakes, suspension, and body components" },
-    { icon: <Settings className="h-6 w-6" />, name: "Engine & Performance", id: "engine-performance", description: "Engine parts and performance upgrades" },
-    { icon: <Circle className="h-6 w-6" />, name: "Wheels & Tires", id: "wheels-tires", description: "Tires, rims, and wheel accessories" },
-    { icon: <Zap className="h-6 w-6" />, name: "Lighting & Electronics", id: "lighting-electronics", description: "Lights, audio, and vehicle electronics" },
-    { icon: <Sparkles className="h-6 w-6" />, name: "Accessories", id: "accessories", description: "Interior and exterior vehicle accessories" },
-    { icon: <Wrench className="h-6 w-6" />, name: "Automotive Tools", id: "automotive-tools", description: "Professional and DIY auto repair tools" },
-    { icon: <Droplets className="h-6 w-6" />, name: "Fluids & Car Care", id: "fluids-care", description: "Oils, cleaners, and maintenance products" },
-    { icon: <Snowflake className="h-6 w-6" />, name: "Cooling & AC", id: "cooling-ac", description: "Radiators, compressors, and AC components" },
+    { 
+      icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="h-6 w-6" />, 
+      name: "Body & Parts", 
+      id: "body-chassis", 
+      description: "Brakes, suspension, and body components" 
+    },
+    { 
+      icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="h-6 w-8" />, 
+      name: "Engine & Performance", 
+      id: "engine-performance", 
+      description: "Engine parts and performance upgrades" 
+    },
+    { 
+      icon: <img src="/assets/icons/wheel.png" alt="Wheels & Tires" className="h-6 w-6" />, 
+      name: "Wheels & Tires", 
+      id: "wheels-tires", 
+      description: "Tires, rims, and wheel accessories" 
+    },
+    { 
+      icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="h-6 w-9" />, 
+      name: "Lighting & Electronics", 
+      id: "lighting-electronics", 
+      description: "Lights, audio, and vehicle electronics" 
+    },
+    { 
+      icon: <img src="/assets/icons/steer.png" alt="Accessories" className="h-6 w-6" />, 
+      name: "Accessories", 
+      id: "accessories", 
+      description: "Interior and exterior vehicle accessories" 
+    },
+    { 
+      icon: <img src="/assets/icons/tools.png" alt="Automotive Tools" className="h-6 w-6" />, 
+      name: "Automotive Tools", 
+      id: "automotive-tools", 
+      description: "Professional and DIY auto repair tools" 
+    },
+    { 
+      icon: <img src="/assets/icons/fluids.png" alt="Fluids & Car Care" className="h-8 w-8" />, 
+      name: "Fluids & Car Care", 
+      id: "fluids-care", 
+      description: "Oils, cleaners, and maintenance products" 
+    },
+    { 
+      icon: <img src="/assets/icons/cooling.png" alt="Cooling & AC" className="h-7 w-7" />, 
+      name: "Cooling & AC", 
+      id: "cooling-ac", 
+      description: "Radiators, compressors, and AC components" 
+    },
   ];
 
   const handleCategoryClick = (id) => {

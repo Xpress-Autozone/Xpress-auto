@@ -5,10 +5,10 @@ import CategoryPage from "./CategoryPage";
 export default function BodyChassisPage() {
   return (
     <CategoryPage
-      title="Body & Chassis"
+      title="Body & Parts"
       categoryQuery="body chassis suspension brakes"
       heroImage={slideImage}
-      heroDescription="Premium body and chassis components for safety and performance."
+      heroDescription="Premium body, steering, suspension, brake and chassis components for safety and performance."
       partTypeFilters={[
         "Brake Systems",
         "Suspension Kits",
