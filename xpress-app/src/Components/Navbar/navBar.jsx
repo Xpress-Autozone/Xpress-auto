@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Menu, X, ShoppingCart, Search, Home as HomeIcon, User } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import SearchBar from "../Search/searchBar";
 import XpressLogo from "../../assets/Xpress-Autozone-Logo.png";
@@ -9,153 +9,128 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const searchPlaceholders = [
-    "Search for auto parts…",
-    "Try: 'brake pads for Corolla 2012'",
-    "Type: 'Toyota filters under 80 cedis'",
-    "Ask like a human… it works."
+    "Spark plugs for Toyota Corolla 2025 Sports Edition",
+    "Synthetic oil filter for Honda CR-V 2020-2023",
+    "Brake pads and rotors for Mercedes C300 2022",
+    "Air filter and cabin filter bundle for all models",
+    "LED headlight bulbs for Toyota Hilux 2018-2023",
+    "Performance air intake for Ford Ranger Raptor"
   ];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
   return (
-    <nav className="bg-yellow-500 p-3 shadow-md fixed w-full z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-black hover:text-gray-700 focus:outline-none"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
-        </div>
+    <>
+      <nav className="bg-yellow-500 border-b border-black/10 fixed w-full z-50 px-4 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          {/* LEFT: Logo & Nav Links */}
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex-shrink-0">
+              <img src={XpressLogo} alt="Xpress Autozone Logo" className="h-10 w-auto" />
+            </Link>
 
-        {/* Logo */}
-        <div className="flex items-center md:ml-0 ml-2">
-          <div className="flex-shrink-0">
-            <img
-              src={XpressLogo}
-              alt="Xpress Autozone Logo"
-              className="h-10 w-auto"
-            />
-          </div>
-        </div>
-
-        {/* Desktop Navigation Menu */}
-        <div className="hidden md:flex items-center space-x-8">
-          <a
-            href="/"
-            className="text-black hover:text-gray-700 font-medium transition-colors"
-          >
-            Home
-          </a>
-          <a
-            href="/categories"
-            className="text-black hover:text-gray-700 font-medium transition-colors"
-          >
-            Categories
-          </a>
-          <a
-            href="xplore"
-            className="text-black hover:text-gray-700 font-medium transition-colors"
-          >
-            Xplore
-          </a>
-          <a
-            href="partner"
-            className="text-black hover:text-gray-700 font-medium transition-colors"
-          >
-          Partner With Us
-          </a>
-        </div>
-
-        {/* Search Bar and Auth Buttons - Desktop */}
-        <div className="hidden md:flex items-center space-x-4">
-          {/* Search Bar */}
-          <SearchBar className="w-64" placeholders={searchPlaceholders} />
-          {/* Cart Icon */}
-          <button
-            onClick={() => navigate("/cart")}
-            className="text-black hover:text-gray-700 transition-colors relative"
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {getTotalItems() > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                {getTotalItems()}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Cart Icon for Mobile */}
-        <div className="md:hidden">
-          <button
-            onClick={() => {
-              navigate("/cart");
-              setIsMobileMenuOpen(false);
-            }}
-            className="text-black hover:text-gray-700 transition-colors relative"
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {getTotalItems() > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                {getTotalItems()}
-              </span>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${
-          isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="mt-4 pb-4 border-t border-yellow-500">
-          <div className="flex flex-col space-y-4 pt-4">
-            {/* Mobile Navigation Links */}
-            <a
-              href="/"
-              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
-            >
-              Home
-            </a>
-            <a
-              href="/categories"
-              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
-            >
-              Categories
-            </a>
-            <a
-              href="/xplore"
-              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
-            >
-              Xplore
-            </a>
-            <a
-              href="partner"
-              className="text-black hover:text-gray-700 font-medium transition-colors transform hover:translate-x-1 duration-300"
-            >
-             Partner With Us
-            </a>
-
-            {/* Mobile Search Bar */}
-            <div className="mt-4">
-              <SearchBar className="w-full" placeholders={searchPlaceholders} />
+            <div className="hidden md:flex items-center space-x-6 text-[11px] font-black uppercase tracking-widest italic">
+              <Link to="/" className="hover:text-white transition-colors flex items-center gap-1">
+                <HomeIcon size={16} />
+              </Link>
+              <Link to="/categories" className="hover:text-white transition-colors">Categories</Link>
+              <Link to="/xplore" className="hover:text-white transition-colors">Xplore</Link>
+              <Link to="/partner" className="hover:text-white transition-colors">Partner</Link>
             </div>
           </div>
+
+          {/* RIGHT: Actions */}
+          <div className="flex items-center gap-4 md:gap-6">
+            
+            {/* Search Trigger */}
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 hover:bg-black/5 rounded-none transition-colors"
+            >
+              <Search className="h-5 w-5 text-black" />
+            </button>
+
+            {/* Auth: Login/Signup Desktop */}
+            <div className="hidden md:flex items-center gap-4 text-[11px] font-black uppercase tracking-widest italic">
+              <Link to="/login" className="hover:text-white">Sign In</Link>
+              <Link to="/signup" className="bg-black text-white px-4 py-2 hover:bg-white hover:text-black transition-all">
+                Get Started
+              </Link>
+            </div>
+
+            {/* Cart Icon */}
+            <button
+              onClick={() => navigate("/cart")}
+              className="text-black hover:text-white transition-colors relative p-2"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {getTotalItems() > 0 && (
+                <span className="absolute top-0 right-0 bg-black text-white text-[9px] font-black w-4 h-4 flex items-center justify-center italic">
+                  {getTotalItems()}
+                </span>
+              )}
+            </button>
+
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-black"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+
+        {/* MOBILE MENU */}
+        <div className={`md:hidden absolute top-full left-0 w-full bg-yellow-500 border-t border-black/10 overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-screen pb-8" : "max-h-0"}`}>
+          <div className="flex flex-col p-6 space-y-6 text-sm font-black uppercase italic tracking-widest">
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+            <Link to="/categories" onClick={() => setIsMobileMenuOpen(false)}>Categories</Link>
+            <Link to="/xplore" onClick={() => setIsMobileMenuOpen(false)}>Xplore</Link>
+            <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Partner</Link>
+            <div className="h-px bg-black/10 w-full" />
+            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+            <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-black text-white p-4 text-center">Get Started</Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* SEARCH OVERLAY */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-start pt-32 px-6">
+          <button 
+            onClick={() => setIsSearchOpen(false)}
+            className="absolute top-8 right-8 text-white hover:text-yellow-500 transition-colors"
+          >
+            <X size={40} strokeWidth={1} />
+          </button>
+          
+          <div className="w-full max-w-3xl space-y-8">
+            <div className="text-center space-y-2">
+              <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs">Xpress Search</span>
+              <h2 className="text-white text-3xl md:text-5xl font-black uppercase italic tracking-tighter">What are we looking for?</h2>
+            </div>
+            
+            <div className="relative border-b-2 border-yellow-500 pb-4">
+               <SearchBar 
+                 className="bg-transparent text-white text-2xl md:text-4xl outline-none w-full" 
+                 placeholders={searchPlaceholders} 
+               />
+            </div>
+            
+            <p className="text-yellow-400 text-center text-sm font-medium">
+              With our Xpress Search, ask like a human - we'll find exactly what you need!
+            </p>
+            
+            <p className="text-gray-500 text-center font-medium italic">
+              Press <span className="text-white">ESC</span> to close or click the X above.
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

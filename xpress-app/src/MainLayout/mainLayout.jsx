@@ -7,14 +7,17 @@ import CategoriesPage from "../Pages/Categories/categoriesPage";
 import CartPage from "../Pages/Cart/cartPage";
 import ActiveProductPage from "../Components/ActiveProductPage/activeProductPage";
 import SearchResultsPage from "../Pages/Search/searchResultsPage";
-import EnginePartsPage from "../Pages/Categories/enginePartsPage";
-import SuspensionSteeringPage from "../Pages/Categories/suspensionSteeringPage";
-import TiresWheelsPage from "../Pages/Categories/tiresWheelsPage";
-import ElectricalComponentsPage from "../Pages/Categories/electricalComponentsPage";
-import BrakesPage from "../Pages/Categories/brakesPage";
-import ExhaustSystemsPage from "../Pages/Categories/exhaustSystemsPage";
-import InteriorAccessoriesPage from "../Pages/Categories/interiorAccessoriesPage";
-import ExteriorAccessoriesPage from "../Pages/Categories/exteriorAccessoriesPage";
+
+// Import new category pages
+import BodyChassisPage from "../Pages/Categories/BodyChassisPage";
+import EnginePerformancePage from "../Pages/Categories/EnginePerformancePage";
+import WheelsTiresPage from "../Pages/Categories/WheelsTiresPage";
+import AccessoriesPage from "../Pages/Categories/AccessoriesPage";
+import LightingElectronicsPage from "../Pages/Categories/LightingElectronicsPage";
+import FluidsCarePage from "../Pages/Categories/FluidsCarePage";
+import AutomotiveToolsPage from "../Pages/Categories/AutomotiveToolsPage";
+import CoolingACPage from "../Pages/Categories/CoolingACPage";
+
 import PrivacyPolicy from "../Pages/PrivacyPolicy/privacyPolicy";
 import TermsOfService from "../Pages/TermsOfService/termsOfService";
 import XplorePage from "../Pages/Xplore/xplore";
@@ -36,26 +39,15 @@ function LayoutContent() {
         <Route path="/product/:id" element={<ActiveProductPage />} />
         <Route path="/search" element={<SearchResultsPage />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/engine-parts" element={<EnginePartsPage />} />
-        <Route
-          path="/suspension-steering"
-          element={<SuspensionSteeringPage />}
-        />
-        <Route path="/tires-wheels" element={<TiresWheelsPage />} />
-        <Route
-          path="/electrical-components"
-          element={<ElectricalComponentsPage />}
-        />
-        <Route path="/brakes" element={<BrakesPage />} />
-        <Route path="/exhaust-systems" element={<ExhaustSystemsPage />} />
-        <Route
-          path="/interior-accessories"
-          element={<InteriorAccessoriesPage />}
-        />
-        <Route
-          path="/exterior-accessories"
-          element={<ExteriorAccessoriesPage />}
-        />
+        {/* Updated Category Routes */}
+        <Route path="/body-chassis" element={<BodyChassisPage />} />
+        <Route path="/engine-performance" element={<EnginePerformancePage />} />
+        <Route path="/wheels-tires" element={<WheelsTiresPage />} />
+        <Route path="/accessories" element={<AccessoriesPage />} />
+        <Route path="/lighting-electronics" element={<LightingElectronicsPage />} />
+        <Route path="/fluids-care" element={<FluidsCarePage />} />
+        <Route path="/automotive-tools" element={<AutomotiveToolsPage />} />
+        <Route path="/cooling-ac" element={<CoolingACPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/xplore" element={<XplorePage />} />
