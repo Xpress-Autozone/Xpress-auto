@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { Menu, X, ShoppingCart, Search, Home as HomeIcon, User } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import { useSelector } from 'react-redux';
 import SearchBar from "../Search/searchBar";
-import XpressLogo from "../../assets/Xpress-Autozone-Logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
+  const { isAuthenticated } = useSelector((state) => state.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -28,7 +29,7 @@ const Navbar = () => {
           {/* LEFT: Logo & Nav Links */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex-shrink-0">
-              <img src={XpressLogo} alt="Xpress Autozone Logo" className="h-10 w-auto" />
+              <img src="/assets/favicon.png" alt="Xpress Autozone Logo" className="h-10 w-auto p-2" />
             </Link>
 
             <div className="hidden md:flex items-center space-x-6 text-[11px] font-black uppercase tracking-widest italic">
@@ -54,10 +55,19 @@ const Navbar = () => {
 
             {/* Auth: Login/Signup Desktop */}
             <div className="hidden md:flex items-center gap-4 text-[11px] font-black uppercase tracking-widest italic">
-              <Link to="/login" className="hover:text-white">Sign In</Link>
-              <Link to="/signup" className="bg-black text-white px-4 py-2 hover:bg-white hover:text-black transition-all">
-                Get Started
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/account" className="hover:text-white flex items-center gap-2">
+                  <User size={16} />
+                  My Account
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className="hover:text-white">Sign In</Link>
+                  <Link to="/signup" className="bg-black text-white px-4 py-2 hover:bg-white hover:text-black transition-all">
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Cart Icon */}
@@ -91,8 +101,14 @@ const Navbar = () => {
             <Link to="/xplore" onClick={() => setIsMobileMenuOpen(false)}>Xplore</Link>
             <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Partner</Link>
             <div className="h-px bg-black/10 w-full" />
-            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
-            <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-black text-white p-4 text-center">Get Started</Link>
+            {isAuthenticated ? (
+              <Link to="/account" onClick={() => setIsMobileMenuOpen(false)}>My Account</Link>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-black text-white p-4 text-center">Get Started</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

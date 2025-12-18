@@ -1,165 +1,104 @@
 import React from "react";
-import { Mail, Phone, MapPin, Facebook, Instagram } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Mail, Phone, MapPin, Facebook, Instagram, ArrowUpRight } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 
 const Footer = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-700 text-gray-100 mt-13 w-full">
-      {/* Main Footer Content */}
-      <div className="w-full px-4 py-12 md:py-16">
-        {/* Company Info - Full Width */}
-        <div className="mb-12">
-          <h3 className="text-xl font-bold text-white mb-4">Xpress AutoZone</h3>
-          <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-md">
-            Your trusted source for premium verified auto parts. Quality,
-            authenticity, and customer satisfaction guaranteed.
-          </p>
-        </div>
+    <footer className="bg-black text-white w-full border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+        
+        {/* TOP SECTION: LOGO & LINKS */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+          
+          {/* Brand Block */}
+          <div className="md:col-span-2 space-y-6">
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter">
+              Xpress <span className="text-yellow-500">AutoZone</span>
+            </h3>
+            <p className="text-gray-400 text-sm font-medium leading-relaxed max-w-sm uppercase tracking-tight">
+              Ghana's premier verified aftermarket platform. We bridge the gap 
+              between high-performance engineering and the local consumer 
+              through uncompromised quality control.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="p-3 border border-gray-800 hover:border-yellow-500 transition-colors">
+                <Facebook size={18} />
+              </a>
+              <a 
+                href="https://www.instagram.com/xpressautozone" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="p-3 border border-gray-800 hover:border-yellow-500 transition-colors"
+              >
+                <Instagram size={18} />
+              </a>
+            </div>
+          </div>
 
-        {/* Quick Links and Contact Info - Side by Side */}
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mb-12">
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Quick Links
+            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-8">
+              Navigation
             </h4>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="/"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                >
-                  Categories
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                >
-                  Shop Products
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                >
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                >
-                  Contact
-                </a>
-              </li>
+            <ul className="space-y-4 text-xs font-black uppercase tracking-widest italic">
+              <li><Link to="/" className="hover:text-yellow-500 transition-colors">Home</Link></li>
+              <li><Link to="/categories" className="hover:text-yellow-500 transition-colors">Categories</Link></li>
+              <li><Link to="/xplore" className="hover:text-yellow-500 transition-colors">Xplore Inventory</Link></li>
+              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Partner Tracks</Link></li>
             </ul>
           </div>
 
-          {/* Contact Info */}
-          <div className="pr-4 md:pr-3">
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Contact Us
+          {/* Contact Block */}
+          <div>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-8">
+              Inquiries
             </h4>
-            <ul className="space-y-4">
-              <li className="flex gap-1">
-                <MapPin className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.2" />
-                <span className="text-gray-400 text-sm">Accra, Ghana</span>
+            <ul className="space-y-6 text-[11px] font-bold uppercase tracking-tight text-gray-400">
+              <li className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-white shrink-0" />
+                <span>Accra, Ghana</span>
               </li>
-              <li className="flex gap-1">
-                <Phone className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                <a
-                  href="tel:+233209021991"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                >
-                  +233 20 902 1991
-                </a>
+              <li className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-white shrink-0" />
+                <a href="tel:+233209021991" className="hover:text-white transition-colors">+233 20 902 1991</a>
               </li>
-              <li className="flex gap-1">
-                <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                <a
-                  href="mailto:xpressautozone@gmail.com"
-                  className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                >
-                  XpressAutozone
-                </a>
+              <li className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-white shrink-0" />
+                <a href="mailto:xpressautozone@gmail.com" className="hover:text-white transition-colors">xpressautozone@gmail.com</a>
               </li>
             </ul>
-            {/* Social Media Icons */}
-            <div className="flex gap-4 mt-6">
-              <a
-                href="#"
-                className="text-yellow-400 hover:text-yellow-300 transition-colors"
-                title="Facebook"
-              >
-                <Facebook className="w-6 h-6" />
-              </a>
-              <a
-                href="https://www.instagram.com/xpressautozone?igsh=MWZwY3BodzdzcG5maQ=="
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:text-yellow-300 transition-colors"
-                title="Instagram"
-              >
-                <Instagram className="w-6 h-6" />
-              </a>
-            </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-600 pt-8">
-          {/* Footer Bottom */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm text-center md:text-left">
-              &copy; {currentYear} Xpress AutoZone. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm text-gray-400">
-              <button
-                onClick={() => navigate("/privacy-policy")}
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Privacy
-              </button>
-              <button
-                onClick={() => navigate("/terms-of-service")}
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Terms
-              </button>
-              <a href="#" className="hover:text-yellow-400 transition-colors">
-                Cookies
-              </a>
+        {/* BOTTOM SECTION: LEGAL & POWERED BY */}
+        <div className="border-t border-gray-900 pt-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="space-y-2 text-center md:text-left">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                &copy; {currentYear} Xpress AutoZone. Developed for performance.
+              </p>
+              <div className="flex gap-6 text-[9px] font-black uppercase tracking-widest">
+                <button onClick={() => navigate("/privacy-policy")} className="hover:text-white transition-colors">Privacy</button>
+                <button onClick={() => navigate("/terms-of-service")} className="hover:text-white transition-colors">Terms</button>
+                <button className="hover:text-white transition-colors">Cookies</button>
+              </div>
             </div>
-          </div>
 
-          {/* Powered By */}
-          <div className="text-center mt-5 pt-5 border-t border-gray-600">
-            <p className="text-gray-400 text-sm">
-              Powered by{" "}
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600">Digital Infrastructure by</span>
               <a
                 href="https://bookflywheel.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
+                className="flex items-center gap-2 text-xs font-black uppercase italic hover:text-yellow-500 transition-colors group"
               >
                 Flywheel Technologies
+                <ArrowUpRight size={14} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
               </a>
-            </p>
+            </div>
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ function Home() {
 
   const categories = [
     {
-      icon: <Car className="h-6 w-6" />,
+      icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="h-6 w-6" />,
       name: "Body & Parts",
       description: "Brakes, suspension, and body components"
     },
