@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Filter, Check, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
+import { getProductsByCategory } from "../../lib/productService";
+import ProductCard from "../../Components/ProductCard/ProductCard";
 
 export default function CategoryPage({
   title = "Category",
@@ -31,13 +33,11 @@ export default function CategoryPage({
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:3001/api/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: categoryQuery, pageSize: 100 }),
-        });
-        const data = await response.json();
-        if (data.success) {
+        console.log(`[CategoryPage] 🚀 Fetching products for category: ${title}`);
+        const data = await getProductsByCategory(categoryQuery, { limit: 100, page: 1 });
+        
+        if (data.success && data.data) {
+          console.log(`[CategoryPage] ✅ Received ${data.data.length} products`);
           setProducts(
             data.data.map((p) => ({
               id: p.id,
@@ -50,15 +50,19 @@ export default function CategoryPage({
               brand: p.brand || "",
             }))
           );
+        } else {
+          console.warn(`[CategoryPage] ⚠️ No products found for category: ${title}`);
+          setProducts([]);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error(`[CategoryPage] ❌ Error fetching products:`, error);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchProducts();
-  }, [categoryQuery]);
+  }, [categoryQuery, title]);
 
   const filteredProducts = products.filter((p) => {
     const matchesPrice = p.price <= priceRange;
@@ -172,6 +176,10 @@ export default function CategoryPage({
 
             {isLoading ? (
               <SkeletonLoader />
+            ) : products.length === 0 ? (
+              <div className="py-20">
+                <EmptyState message="No products listed for this category." />
+              </div>
             ) : filteredProducts.length === 0 ? (
               <div className="py-20">
                 <EmptyState message="Zero results for current filters." />
@@ -179,32 +187,7 @@ export default function CategoryPage({
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12 md:gap-x-8">
                 {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-                    className="group cursor-pointer"
-                  >
-                    <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-xs md:text-sm font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-red-600 transition-colors">
-                        {product.name}
-                      </h3>
-                      <div className="flex flex-col gap-1 pt-1">
-                        <span className="text-lg font-black italic tracking-tighter text-black">GH₵{product.price.toFixed(2)}</span>
-                        <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
-                          product.status === "In Stock" ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
-                        }`}>
-                          {product.status}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ProductCard key={product.id} product={product} variant="default" />
                 ))}
               </div>
             )}
