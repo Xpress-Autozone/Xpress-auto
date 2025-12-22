@@ -1,13 +1,26 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, ShoppingCart } from "lucide-react";
+import { useCart } from "../../Context/CartContext";
 
 export default function ProductCard({ product, variant = "default" }) {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleClick = () => {
     console.log(`[ProductCard] 🔗 Navigating to product: ${product.id} - ${product.name}`);
     navigate(`/product/${product.id}`, { state: { product } });
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      status: product.status
+    });
   };
 
   if (variant === "featured") {
@@ -37,7 +50,7 @@ export default function ProductCard({ product, variant = "default" }) {
               <span>Verified</span>
             </div>
           )}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 mb-3">
             <span className="text-xl font-black italic">GH₵{product.price.toFixed(2)}</span>
             <span
               className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
@@ -49,12 +62,18 @@ export default function ProductCard({ product, variant = "default" }) {
               {product.status}
             </span>
           </div>
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 text-xs uppercase transition-colors flex items-center justify-center gap-2"
+          >
+            <ShoppingCart className="w-3 h-3" />
+            Add to Cart
+          </button>
         </div>
       </div>
     );
   }
 
-  // Default variant for category pages
   return (
     <div onClick={handleClick} className="group cursor-pointer">
       <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50">
@@ -88,6 +107,13 @@ export default function ProductCard({ product, variant = "default" }) {
             {product.status}
           </div>
         </div>
+        <button
+          onClick={handleAddToCart}
+          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-1.5 text-xs uppercase transition-colors flex items-center justify-center gap-2 mt-2"
+        >
+          <ShoppingCart className="w-3 h-3" />
+          Add
+        </button>
       </div>
     </div>
   );

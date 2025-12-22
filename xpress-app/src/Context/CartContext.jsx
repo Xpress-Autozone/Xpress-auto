@@ -1,31 +1,24 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Monroe OESpectrum Front Strut Assembly",
-      price: 189.99,
-      quantity: 1,
-      image: "/api/placeholder/100/100",
-    },
-    {
-      id: 2,
-      name: "KYB Excel-G Gas Strut - Rear Left",
-      price: 125.5,
-      quantity: 2,
-      image: "/api/placeholder/100/100",
-    },
-    {
-      id: 3,
-      name: "Moog K80673 Front Lower Control Arm",
-      price: 245.0,
-      quantity: 1,
-      image: "/api/placeholder/100/100",
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (error) {
+        console.error("Failed to load cart from localStorage:", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (product) => {
     const existingItem = cartItems.find((item) => item.id === product.id);
