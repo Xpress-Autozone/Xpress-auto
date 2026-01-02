@@ -60,8 +60,16 @@ export default function CartPage() {
                     } hover:bg-gray-50 transition-colors`}
                   >
                     {/* Product Image */}
-                    <div className="w-20 h-20 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <span className="text-gray-500 text-xs">Image</span>
+                    <div className="w-20 h-20 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-gray-500 text-xs">Image</span>
+                      )}
                     </div>
 
                     {/* Product Details */}

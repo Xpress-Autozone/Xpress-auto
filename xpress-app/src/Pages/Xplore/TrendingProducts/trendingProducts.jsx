@@ -2,32 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, ShoppingCart, ChevronLeft, Flame } from "lucide-react";
 import SkeletonLoader from "../../../Components/SkeletonLoader/skeletonLoader";
-
-// Mock Data
-const allProducts = [
-    { id: 1, name: "Premium Brake Pads", price: 99.99, image: "/api/placeholder/300/300", rating: 4.8, reviews: 250, category: "brakes", tag: "featured" },
-    { id: 2, name: "LED Headlights", price: 149.99, image: "/api/placeholder/300/300", rating: 4.9, reviews: 320, category: "lighting", tag: "featured" },
-    { id: 7, name: "Brake Pads", price: 49.99, image: "/api/placeholder/200/200", rating: 4.7, reviews: 300, category: "brakes", tag: "popular" },
-    { id: 8, name: "Car Battery", price: 129.99, image: "/api/placeholder/200/200", rating: 4.8, reviews: 250, category: "electrical", tag: "popular" },
-];
+import EmptyState from "../../../Components/EmptyState/EmptyState";
+import { getAllProducts } from "../../../lib/productService";
 
 const ProductCard = ({ product, navigate }) => (
     <div 
         onClick={() => navigate(`/product/${product.id}`)}
         className="group bg-white border border-gray-200 hover:border-black transition-all duration-300 overflow-hidden cursor-pointer flex flex-col h-full"
     >
-        {/* Image Container */}
         <div className="relative h-64 overflow-hidden bg-gray-50 border-b border-gray-100">
             <img 
                 src={product.image} 
                 alt={product.name} 
                 className="w-full h-full object-contain p-6 transform group-hover:scale-105 transition-transform duration-700" 
             />
-            {/* Flat Hot Badge */}
             <div className="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-2">
                 Hot Seller
             </div>
-            {/* Quick Action */}
             <div className="absolute bottom-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <button className="bg-black p-4 text-white hover:bg-yellow-500 hover:text-black transition-colors">
                     <ShoppingCart size={20} />
@@ -35,7 +26,6 @@ const ProductCard = ({ product, navigate }) => (
             </div>
         </div>
 
-        {/* Content Section */}
         <div className="p-5 flex flex-col flex-1">
             <h3 className="font-black text-gray-900 uppercase tracking-tight line-clamp-2 text-sm mb-2 leading-tight group-hover:text-red-600 transition-colors">
                 {product.name}
@@ -44,10 +34,10 @@ const ProductCard = ({ product, navigate }) => (
             <div className="flex items-center gap-1 mb-4">
                 <div className="flex text-yellow-500">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={12} fill={i < Math.floor(product.rating) ? "currentColor" : "none"} strokeWidth={3} />
+                        <Star key={i} size={12} fill={i < Math.floor(product.rating || 0) ? "currentColor" : "none"} strokeWidth={3} />
                     ))}
                 </div>
-                <span className="text-[10px] font-black text-gray-400">({product.reviews})</span>
+                <span className="text-[10px] font-black text-gray-400">({product.reviews || 0})</span>
             </div>
 
             <div className="mt-auto flex items-end justify-between border-t border-gray-50 pt-4">
@@ -65,20 +55,45 @@ const ProductCard = ({ product, navigate }) => (
 
 export default function TrendingProducts() {
     const [isLoading, setIsLoading] = useState(true);
+    const [products, setProducts] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 800);
-        return () => clearTimeout(timer);
+        const fetchProducts = async () => {
+            setIsLoading(true);
+            try {
+                console.log("[TrendingProducts] 🚀 Fetching products");
+                const data = await getAllProducts({ limit: 100, page: 1 });
+                
+                if (data.success && data.data) {
+                    console.log(`[TrendingProducts] ✅ Received ${data.data.length} products`);
+                    setProducts(
+                        data.data.map((p) => ({
+                            id: p.id,
+                            name: p.itemName,
+                            price: parseFloat(p.price) || 0,
+                            image: p.mainImage?.url || "/api/placeholder/200/200",
+                            rating: 4.5,
+                            reviews: 0,
+                        }))
+                    );
+                } else {
+                    setProducts([]);
+                }
+            } catch (error) {
+                console.error("[TrendingProducts] ❌ Error:", error);
+                setProducts([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProducts();
     }, []);
-
-    const trendingProducts = allProducts.filter(p => p.tag === 'popular' || p.reviews > 150);
 
     if (isLoading) return <SkeletonLoader />;
 
     return (
         <div className="min-h-screen bg-white pb-20">
-            {/* Header / Brand Area */}
             <div className="bg-gray-50 border-b border-gray-100 pt-32 pb-16 mb-12">
                 <div className="max-w-7xl mx-auto px-6">
                     <button
@@ -103,15 +118,14 @@ export default function TrendingProducts() {
                 </div>
             </div>
 
-            {/* Products Grid */}
             <div className="max-w-7xl mx-auto px-6">
-                {trendingProducts.length === 0 ? (
-                    <div className="text-center py-32 border-2 border-dashed border-gray-100">
-                        <p className="font-black uppercase tracking-widest text-gray-400">Zero Trending Items At This Moment</p>
+                {products.length === 0 ? (
+                    <div className="py-20">
+                        <EmptyState message="No trending products available." />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {trendingProducts.map(product => (
+                        {products.map(product => (
                             <ProductCard key={product.id} product={product} navigate={navigate} />
                         ))}
                     </div>

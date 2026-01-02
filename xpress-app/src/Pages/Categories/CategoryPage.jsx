@@ -87,10 +87,10 @@ export default function CategoryPage({
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-black">
+      <section className="relative z-20 overflow-visible h-[300px] md:h-[400px] w-full flex items-center bg-black">
         <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${heroImage})` }} />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
-          <div className="flex items-center gap-3">
+        <div className="relative z-30 max-w-7xl mx-auto px-6 w-full text-white">
+          <div className="relative flex items-center gap-3">
             <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">{title}</h1>
             <CategoryDropdown currentCategory={title} />
           </div>
@@ -98,7 +98,7 @@ export default function CategoryPage({
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Mobile Toggle Button */}
         <div className="lg:hidden mb-6">
           <button 

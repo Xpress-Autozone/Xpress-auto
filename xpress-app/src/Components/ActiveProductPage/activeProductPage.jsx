@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { ChevronDown, ShoppingCart, ArrowLeft, Check } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useCart } from "../../Context/CartContext";
 
 const ActiveProductPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { addToCart } = useCart();
   const product = location.state?.product || {};
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [expandedSection, setExpandedSection] = useState("details");
+  const [addedToCart, setAddedToCart] = useState(false);
 
   const images = product.images || [product.image, "/api/placeholder/400/400"];
 
@@ -27,6 +30,18 @@ const ActiveProductPage = () => {
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      status: product.status
+    });
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   return (
@@ -100,9 +115,16 @@ const ActiveProductPage = () => {
             </div>
 
             {/* CTA */}
-            <button className="w-full bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-10">
+            <button 
+              onClick={handleAddToCart}
+              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-10 ${
+                addedToCart 
+                  ? "bg-green-500 text-white" 
+                  : "bg-yellow-500 hover:bg-black hover:text-white text-black"
+              }`}
+            >
               <ShoppingCart size={20} />
-              Add to Catalog
+              {addedToCart ? "Added to Cart!" : "Add to Cart"}
             </button>
 
             {/* INFO ACCORDION */}
@@ -179,7 +201,6 @@ const ActiveProductPage = () => {
   );
 };
 
-// Internal Section Helper
 const Section = ({ title, id, active, toggle, children }) => (
   <div className="border-b border-gray-100 last:border-0">
     <button

@@ -6,6 +6,8 @@ import {
 import slideImage from "../../assets/slide.jpg";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
+import { getAllProducts } from "../../lib/productService";
+import ProductCard from "../../Components/ProductCard/ProductCard";
 
 function Home() {
   const navigate = useNavigate();
@@ -54,14 +56,43 @@ function Home() {
     },
   ];
 
-  const products = [
-    { id: 1, name: "Monroe OESpectrum Front Strut Assembly", price: 189.99, status: "In Stock", verified: true },
-    { id: 2, name: "KYB Excel-G Gas Strut - Rear Left - Toyota", price: 125.5, status: "In Stock", verified: true },
-    { id: 3, name: "Moog K80673 Front Lower Control Arm", price: 245.0, status: "In Stock", verified: true },
-    { id: 4, name: "ACDelco Gold 45G0400 Professional Front", price: 38.99, status: "Low Stock", verified: true },
-    { id: 5, name: "Gabriel ReadyMount Loaded Strut Assembly", price: 175.75, status: "In Stock", verified: true },
-    { id: 6, name: "Bilstein B4 OE Replacement Shock", price: 98.5, status: "In Stock", verified: true },
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      setProductsLoading(true);
+      try {
+        console.log("[Home] 🚀 Fetching featured products");
+        const data = await getAllProducts({ limit: 6, page: 1, sortBy: "createdAt", sortOrder: "desc" });
+        
+        if (data.success && data.data && data.data.length > 0) {
+          console.log(`[Home] ✅ Received ${data.data.length} featured products`);
+          setFeaturedProducts(
+            data.data.map((p) => ({
+              id: p.id,
+              name: p.itemName,
+              price: parseFloat(p.price) || 0,
+              status: p.quantity > 0 ? "In Stock" : "Low Stock",
+              verified: true,
+              image: p.mainImage?.url || "/api/placeholder/200/200"
+            }))
+          );
+        } else {
+          console.warn("[Home] ⚠️ No featured products found, using fallback");
+          setFeaturedProducts([]);
+        }
+      } catch (error) {
+        console.error("[Home] ❌ Error fetching featured products:", error);
+        setFeaturedProducts([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchFeaturedProducts();
+  }, []);
+
+  const products = featuredProducts;
 
   const handleNavigate = () => { navigate("/xplore"); };
 
@@ -179,45 +210,31 @@ function Home() {
             <div className="h-1 w-32 bg-yellow-500 mx-auto"></div>
           </div>
 
+        {productsLoading ? (
+          <div className="py-20 text-center">
+            <p className="text-gray-500 font-medium">Loading featured products...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="py-20 text-center">
+            <p className="text-gray-500 font-medium text-lg">No products found</p>
+            <p className="text-gray-400 text-sm mt-2">Check back soon for featured items</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
             {products.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-                className="bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left"
-              >
-                <div className="aspect-[4/5] bg-gray-50 flex items-center justify-center p-6 border-b border-gray-50">
-                   <div className="text-gray-300 font-black uppercase tracking-widest text-xs">Image</div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-xs md:text-sm text-gray-900 uppercase tracking-tight mb-2 line-clamp-2 h-10">
-                    {product.name}
-                  </h3>
-                  {product.verified && (
-                    <div className="flex items-center gap-1 text-[10px] font-black text-green-600 uppercase mb-3">
-                      <Check className="w-3 h-3" />
-                      <span>Verified</span>
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xl font-black italic">GH₵{product.price.toFixed(2)}</span>
-                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
-                      product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
-                    }`}>
-                      {product.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <ProductCard key={product.id} product={product} variant="featured" />
             ))}
           </div>
+        )}
 
+        {products.length > 0 && (
           <button
             onClick={() => navigate("/xplore/featured")}
             className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
           >
             View All Featured Products <ArrowRight size={16} />
           </button>
+        )}
         </div>
 
         {/* CTA Section */}
