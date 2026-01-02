@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const categories = [
@@ -24,39 +24,51 @@ export default function CategoryDropdown({ currentCategory }) {
         setIsOpen(false);
       }
     };
-
+    const handleTouchOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleTouchOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleTouchOutside);
+    };
   }, []);
 
-  const handleCategoryClick = (route) => {
-    navigate(route);
-    setIsOpen(false);
-  };
-
   return (
-    <div ref={dropdownRef} className="relative inline-block">
+    <div ref={dropdownRef} className="inline-block overflow-visible">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-white hover:text-yellow-500 transition-colors"
+        className="group flex items-center gap-2 text-white hover:text-yellow-500 transition-all duration-300 font-black uppercase italic tracking-widest text-[10px]"
       >
-        <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="hidden sm:inline-block sm:max-w-0 sm:overflow-hidden sm:whitespace-nowrap sm:opacity-0 sm:group-hover:max-w-[140px] sm:group-hover:opacity-100 sm:transition-all sm:duration-300">
+          Change Category
+        </span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-          <div className="py-2">
+        <div className="
+          absolute top-full left-0 mt-2 
+          w-60 bg-grey/95 backdrop-blur-md 
+          border border-white/10 z-[100] 
+          max-h-[60vh] overflow-y-auto overflow-x-hidden
+        ">
+          <div className="flex flex-col">
             {categories.map((category) => (
               <button
                 key={category.route}
-                onClick={() => handleCategoryClick(category.route)}
-                className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
-                  currentCategory === category.name
-                    ? 'bg-black text-white'
-                    : 'text-gray-900 hover:bg-gray-100 hover:text-black'
+                onClick={() => { navigate(category.route); setIsOpen(false); }}
+                className={`w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-200 border-b border-white/5 last:border-0 group ${
+                  currentCategory === category.name ? 'bg-yellow-500 text-black' : 'text-yellow-500 hover:bg-yellow-500 hover:text-black'
                 }`}
               >
-                {category.name}
+                <span className="text-[12px] font-black uppercase tracking-[0.1em]">
+                  {category.name}
+                </span>
+                <ChevronRight size={12} className={currentCategory === category.name ? 'text-black' : 'text-yellow-500'} />
               </button>
             ))}
           </div>

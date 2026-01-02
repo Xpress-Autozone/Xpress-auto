@@ -20,22 +20,22 @@ const categories = [
     { 
         name: "Body & Parts", 
         id: "body-chassis", 
-        icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="w-8 h-8 mx-auto" /> 
+        icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="w-5 h-5 mx-auto" /> 
     },
     { 
         name: "Engine & Performance", 
         id: "engine-performance", 
-        icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="w-10 h-8 mx-auto" /> 
+        icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="w-6 h-5 mx-auto" /> 
     },
     { 
         name: "Lighting & Electronics", 
         id: "lighting-electronics", 
-        icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="w-10 h-8 mx-auto" /> 
+        icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="w-5 h-4 mx-auto" /> 
     },
     { 
         name: "Accessories", 
         id: "accessories", 
-        icon: <img src="/assets/icons/steer.png" alt="Accessories" className="w-8 h-8 mx-auto" /> 
+        icon: <img src="/assets/icons/steer.png" alt="Accessories" className="w-5 h-5 mx-auto" /> 
     }
 ];
 
@@ -143,40 +143,40 @@ export default function XplorePage() {
                 
                 <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
                     <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">Quality Guaranteed</span>
-                    <h1 className="text-5xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
                         UPGRADE <br/>YOUR RIDE
                     </h1>
-                    <p className="text-base md:text-lg text-gray-300 mb-8 max-w-lg font-medium border-l-2 border-yellow-500 pl-4">
-                        Professional-grade components for the modern driver. Trusted performance, inspected for excellence.
+                    <p className="text-md md:text-lg text-gray-100 mb-8 max-w-lg font-medium border-l-2 border-yellow-500 pl-4">
+                        Xplore our curated selection of products. Professional-grade components for the modern driver.
                     </p>
                 </div>
             </section>
 
             {/* CATEGORIES GRID */}
-            <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-10">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-200 bg-white">
                     {categories.map((cat) => (
                         <div 
                             key={cat.id} 
                             onClick={() => navigate(`/${cat.id}`)}
-                            className="p-8 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
+                            className="p-4 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
                         >
-                            <div className="w-10 h-10 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <div className="w-6 h-6 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 {cat.icon}
                             </div>
-                            <h3 className="font-black text-xs uppercase tracking-widest text-gray-900">{cat.name}</h3>
+                            <h3 className="font-black text-[10px] uppercase tracking-widest text-gray-900">{cat.name}</h3>
                         </div>
                     ))}
                 </div>
                 <button
                     onClick={() => navigate("/categories")}
-                    className="w-full flex items-center justify-center gap-3 bg-black text-white font-black uppercase italic tracking-[0.2em] text-xs py-5 hover:bg-yellow-500 hover:text-black transition-colors"
+                    className="w-full flex items-center justify-center gap-2 bg-black text-white font-black uppercase italic tracking-[0.2em] text-[10px] py-3 hover:bg-yellow-500 hover:text-black transition-colors"
                 >
-                    View All Categories <ArrowRight size={16} />
+                    View All Categories <ArrowRight size={14} />
                 </button>
                 
                 <div className="text-center mt-16 mb-24">
-                    <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-gray-900">
+                    <h2 className="text-3xl md:text-6xl font-black uppercase italic tracking-tighter text-gray-900">
                         XPLORE <span className="text-yellow-500">AUTOPARTS</span>
                     </h2>
                 </div>

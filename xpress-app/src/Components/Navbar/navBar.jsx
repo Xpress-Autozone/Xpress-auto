@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, X, ShoppingCart, Search, Home as HomeIcon, User } from "lucide-react";
+import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { useSelector } from 'react-redux';
@@ -34,7 +34,7 @@ const Navbar = () => {
 
             <div className="hidden md:flex items-center space-x-6 text-[11px] font-black uppercase tracking-widest italic">
               <Link to="/" className="hover:text-white transition-colors flex items-center gap-1">
-                <HomeIcon size={16} />
+                HOME
               </Link>
               <Link to="/categories" className="hover:text-white transition-colors">Categories</Link>
               <Link to="/xplore" className="hover:text-white transition-colors">Xplore</Link>

@@ -136,8 +136,7 @@ function Home() {
                 <span className="text-gray-300">QUALITY PARTS</span>
             </h1>
             <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
-                Every part goes through a rigorous inspection. Shop with total confidence on 
-                Ghana's premier aftermarket platform for authentic vehicle components.
+               Xpress AutoZone is Ghana's premier aftermarket platform for authentic vehicle components.Your one-stop pit stop for genuine parts, expert support, and xpress delivery.
             </p>
             <button
               onClick={handleNavigate}

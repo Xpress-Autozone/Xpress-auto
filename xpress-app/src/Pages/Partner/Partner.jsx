@@ -51,7 +51,7 @@ export default function PartnerPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Professional Standards</h2>
+              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Setting Professional Standards</h2>
               <p className="text-gray-800 leading-relaxed text-md">
                 The aftermarket parts industry in Ghana faces challenges with transparency 
                 and quality consistency. Xpress AutoZone solves this through a rigorous 
@@ -61,11 +61,11 @@ export default function PartnerPage() {
               <div className="grid grid-cols-2 gap-8 pt-6">
                 <div className="space-y-1">
                   <h4 className="text-4xl font-black italic uppercase text-black">Vetted</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Supply Chain Control</p>
+                  <p className="text-[13px] font-black uppercase tracking-widest text-yellow-600">Supply Chain Control</p>
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-4xl font-black italic uppercase text-black">Scalable</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Digital Infrastructure</p>
+                  <p className="text-[13px] font-black uppercase tracking-widest text-yellow-600">Digital Infrastructure</p>
                 </div>
               </div>
             </div>

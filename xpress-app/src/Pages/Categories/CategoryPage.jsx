@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Filter, Check, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
@@ -15,6 +15,7 @@ export default function CategoryPage({
 }) {
   const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState(10000);
+  const [priceRangeUI, setPriceRangeUI] = useState(10000);
   const [selectedPartTypes, setSelectedPartTypes] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -61,13 +62,23 @@ export default function CategoryPage({
     fetchProducts();
   }, [categoryQuery]);
 
-  const filteredProducts = products.filter((p) => {
-    const matchesPrice = p.price <= priceRange;
-    const matchesStock = inStockOnly ? p.status === "In Stock" : true;
-    const matchesPart = selectedPartTypes.length > 0 ? selectedPartTypes.includes(p.partType) : true;
-    const matchesBrand = selectedBrands.length > 0 ? selectedBrands.includes(p.brand) : true;
-    return matchesPrice && matchesStock && matchesPart && matchesBrand;
-  });
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setPriceRange(priceRangeUI);
+    }, 120);
+
+    return () => clearTimeout(t);
+  }, [priceRangeUI]);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchesPrice = p.price <= priceRange;
+      const matchesStock = inStockOnly ? p.status === "In Stock" : true;
+      const matchesPart = selectedPartTypes.length > 0 ? selectedPartTypes.includes(p.partType) : true;
+      const matchesBrand = selectedBrands.length > 0 ? selectedBrands.includes(p.brand) : true;
+      return matchesPrice && matchesStock && matchesPart && matchesBrand;
+    });
+  }, [products, priceRange, inStockOnly, selectedPartTypes, selectedBrands]);
 
   const FilterSection = ({ title, filterName, children }) => (
     <div className="border-b border-gray-100 last:border-none">
@@ -127,13 +138,13 @@ export default function CategoryPage({
               <FilterSection title="Price Limit" filterName="price">
                 <input
                   type="range" min="0" max="10000" step="100"
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(parseInt(e.target.value))}
+                  value={priceRangeUI}
+                  onChange={(e) => setPriceRangeUI(parseInt(e.target.value))}
                   className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-black"
                 />
                 <div className="flex justify-between items-center mt-3">
                   <span className="text-[10px] font-bold text-gray-400 uppercase">Max Price</span>
-                  <span className="text-xs font-black bg-black text-white px-2 py-1">GH₵{priceRange.toLocaleString()}</span>
+                  <span className="text-xs font-black bg-black text-white px-2 py-1">GH₵{priceRangeUI.toLocaleString()}</span>
                 </div>
               </FilterSection>
 
