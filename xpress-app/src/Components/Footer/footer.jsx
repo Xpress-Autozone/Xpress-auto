@@ -18,7 +18,7 @@ const Footer = () => {
             <h3 className="text-2xl font-black uppercase italic tracking-tighter">
               Xpress <span className="text-yellow-500">AutoZone</span>
             </h3>
-            <p className="text-gray-400 text-sm font-medium leading-relaxed max-w-sm uppercase tracking-tight">
+            <p className="text-gray-200 text-md font-medium leading-relaxed max-w-sm  tracking-tight">
               Ghana's premier verified aftermarket platform. We bridge the gap 
               between high-performance engineering and the local consumer 
               through uncompromised quality control.

@@ -52,7 +52,7 @@ const SearchBar = ({ className = "", placeholder = "Search auto parts...", place
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={currentPlaceholder}
-          className="w-full pl-10 pr-24 md:pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-200 focus:border-white outline-none bg-white text-black"
+          className="w-full pl-10 pr-24 md:pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-200 focus:border-white outline-none bg-white text-black text-sm placeholder:text-sm"
         />
         <div className="absolute right-1.5 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           {query && (

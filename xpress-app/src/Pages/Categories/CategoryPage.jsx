@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Filter, Check, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
+import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
 
 export default function CategoryPage({
   title = "Category",
@@ -89,8 +90,11 @@ export default function CategoryPage({
       <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-black">
         <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${heroImage})` }} />
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
-          <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">{title}</h1>
-          <p className="text-sm md:text-lg text-gray-200 max-w-xl font-medium">{heroDescription}</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">{title}</h1>
+            <CategoryDropdown currentCategory={title} />
+          </div>
+          <p className="text-md md:text-lg text-gray-200 max-w-xl font-medium">{heroDescription}</p>
         </div>
       </section>
 

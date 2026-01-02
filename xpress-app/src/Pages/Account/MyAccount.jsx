@@ -51,7 +51,7 @@ const MyAccount = () => {
             </h1>
           </div>
           <Link 
-            to="/wishlist" 
+            to="/cart" 
             className="flex items-center gap-2 bg-black text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all"
           >
             <Heart size={16} /> View Wishlist

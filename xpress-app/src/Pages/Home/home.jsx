@@ -98,7 +98,7 @@ function Home() {
         
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
             <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
-              Verified by Xpress AutoZone
+              {/*Verified by Xpress AutoZone*/}
             </span>
             <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
                 DISCOVER <br/>
