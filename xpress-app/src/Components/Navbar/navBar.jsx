@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import { useSearch } from "../../Context/SearchContext";
 import { useSelector } from 'react-redux';
 import SearchBar from "../Search/searchBar";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
+  const { isSearchOpen, setIsSearchOpen } = useSearch();
   const { isAuthenticated } = useSelector((state) => state.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const searchPlaceholders = [
     "Spark plugs for Toyota Corolla 2025 Sports Edition",

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { searchProducts } from "../../lib/api";
-import SearchBar from "../../Components/Search/searchBar";
+import { useSearch } from "../../Context/SearchContext";
+import CATEGORIES from "../../data/categories";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
-import { ChevronDown, Filter, Check, X, AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { ChevronDown, Filter, AlertTriangle, RefreshCw, Home } from "lucide-react";
 
 // --- 1. INTEGRATED ERROR BOUNDARY ---
 class ErrorBoundary extends React.Component {
@@ -47,24 +48,34 @@ class ErrorBoundary extends React.Component {
 const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { openSearch } = useSearch();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({});
   const [parsedEntities, setParsedEntities] = useState({});
   const [filters, setFilters] = useState({
-    category: "",
-    priceMin: "",
-    priceMax: "",
+    category: [], // allow multi-select
+    priceMax: 10000,
   });
+  const [priceRangeUI, setPriceRangeUI] = useState(10000);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [sortMode, setSortMode] = useState("featured"); // "featured" | "relevance"
   const [expandedFilters, setExpandedFilters] = useState({
     price: true,
     category: true,
   });
-  const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
   const query = searchParams.get("q") || "";
   const page = parseInt(searchParams.get("page")) || 1;
+
+  // Debounce price slider updates
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setFilters(prev => ({ ...prev, priceMax: priceRangeUI }));
+    }, 120);
+    return () => clearTimeout(t);
+  }, [priceRangeUI]);
 
   useEffect(() => {
     if (query) performSearch();
@@ -74,22 +85,38 @@ const SearchResultsPage = () => {
     setLoading(true);
     setError(null);
     try {
+      // Backend supports single category equality only. If user selected multiple categories,
+      // omit category from backend filters and apply client-side filtering instead.
       const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([_, value]) => value !== "")
+        Object.entries(filters).filter(([key, value]) => {
+          if (Array.isArray(value) && value.length === 0) return false;
+          if (value === "" || value == null) return false;
+          if (key === "priceMax" && value === 10000) return false; // Don't send max price if default
+          return true;
+        })
       );
+      let fetchPageSize = 20;
+      if (Array.isArray(filters.category) && filters.category.length > 1) {
+        // request more items so client-side filtering has higher chance of results
+        fetchPageSize = 60;
+        delete cleanFilters.category;
+      } else if (Array.isArray(filters.category) && filters.category.length === 1) {
+        cleanFilters.category = filters.category[0];
+      }
 
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Search request timed out")), 10000)
       );
 
       const response = await Promise.race([
-        searchProducts(query, cleanFilters, page, 20),
+        searchProducts(query, cleanFilters, page, fetchPageSize),
         timeoutPromise,
       ]);
 
       // DEFENSIVE FIX: Check for response existence and success before setting data
       if (response && response.success !== false) {
-        setResults(Array.isArray(response.data) ? response.data : []);
+        const raw = Array.isArray(response.data) ? response.data : [];
+        setResults(raw);
         setPagination(response.pagination || {});
         setParsedEntities(response.parsedEntities || {});
       } else {
@@ -105,8 +132,41 @@ const SearchResultsPage = () => {
     }
   };
 
+  const promoteFeatured = (items) => {
+    if (!Array.isArray(items) || items.length === 0) return items;
+    // Featured items have displayPriority > 0. Keep stable ordering otherwise.
+    const featured = items.filter((p) => Number(p.displayPriority) > 0);
+    const rest = items.filter((p) => Number(p.displayPriority) <= 0 || p.displayPriority == null);
+    // sort featured by displayPriority desc (higher priority first)
+    featured.sort((a, b) => (Number(b.displayPriority) || 0) - (Number(a.displayPriority) || 0));
+    return [...featured, ...rest];
+  };
+
+  const displayedResults = React.useMemo(() => {
+    // Apply category multi-select filter client-side (backend supports single category equality only)
+    let items = results;
+    if (Array.isArray(filters.category) && filters.category.length > 0) {
+      const cats = filters.category;
+      items = items.filter((p) => {
+        const pc = (p.category && String(p.category)) || "";
+        return cats.includes(pc) || cats.includes(p.category?.slug) || cats.includes(p.category?.name);
+      });
+    }
+
+    return sortMode === "featured" ? promoteFeatured(items) : items;
+  }, [results, sortMode, filters]);
+
   const handleFilterChange = (filterName, value) => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
+
+  const handleCategoryToggle = (categoryName) => {
+    setFilters((prev) => {
+      const prevCats = Array.isArray(prev.category) ? prev.category : (prev.category ? [prev.category] : []);
+      const exists = prevCats.includes(categoryName);
+      const nextCats = exists ? prevCats.filter((c) => c !== categoryName) : [...prevCats, categoryName];
+      return { ...prev, category: nextCats };
+    });
   };
 
   const toggleFilter = (filterName) => {
@@ -166,17 +226,20 @@ const SearchResultsPage = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
       {/* Top Search Header */}
-      <div className="bg-black py-12 px-6 border-b border-white/10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="bg-black pt-20 pb-6 md:pt-20 md:pb-8 px-3 border-b border-white/10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-white space-y-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Results for</span>
-            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none italic">
+            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Showing search results for</span>
+            <h1 className="text-2xl md:text-2xl font-black   leading-none">
               "{query}"
             </h1>
           </div>
-          <div className="w-full md:w-1/3">
-            <SearchBar className="bg-white/10 text-white placeholder-gray-500 p-4 w-full outline-none border border-white/20 focus:border-yellow-500" />
-          </div>
+          <button 
+            onClick={openSearch}
+            className="bg-black text-white px-2 py-1 md:px-3 md:py-2 font-black uppercase italic tracking-widest text-[10px] md:text-xs hover:bg-yellow-500 transition-all whitespace-nowrap"
+          >
+            Try another Search
+          </button>
         </div>
       </div>
 
@@ -193,64 +256,108 @@ const SearchResultsPage = () => {
         )}
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar Filters */}
-          <aside className={`${showFiltersMobile ? "fixed inset-0 z-[60] bg-white p-6 overflow-y-auto" : "hidden lg:block lg:w-64 lg:shrink-0"}`}>
-            <div className="flex justify-between items-center mb-8 lg:hidden">
-              <h2 className="text-2xl font-black italic uppercase">Filters</h2>
-              <button onClick={() => setShowFiltersMobile(false)} className="p-2 bg-gray-100 rounded-full"><X className="w-6 h-6" /></button>
-            </div>
-
+          {/* Sidebar Filters (desktop) */}
+          <aside className={"hidden lg:block lg:w-64 lg:shrink-0"}>
             <div className="sticky top-28 space-y-2">
               <FilterSection title="Price Limit" filterName="price">
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="MIN"
-                    value={filters.priceMin}
-                    onChange={(e) => handleFilterChange("priceMin", e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
-                  />
-                  <input
-                    type="number"
-                    placeholder="MAX"
-                    value={filters.priceMax}
-                    onChange={(e) => handleFilterChange("priceMax", e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
-                  />
+                <input
+                  type="range" min="0" max="10000" step="100"
+                  value={priceRangeUI}
+                  onChange={(e) => setPriceRangeUI(parseInt(e.target.value))}
+                  className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-black"
+                />
+                <div className="flex justify-between items-center mt-3">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">Max Price</span>
+                  <span className="text-xs font-black bg-black text-white px-2 py-1">GH₵{priceRangeUI.toLocaleString()}</span>
                 </div>
               </FilterSection>
 
               <FilterSection title="Categories" filterName="category">
-                <div className="space-y-2">
-                  {["Brakes", "Engine Parts", "Electrical", "Suspension", "Exhaust"].map(cat => (
-                    <button 
-                      key={cat}
-                      onClick={() => handleFilterChange("category", cat)}
-                      className={`block w-full text-left text-[10px] font-black uppercase tracking-widest py-2 px-3 border transition-all ${
-                        filters.category === cat ? "bg-black text-white border-black italic" : "border-transparent text-gray-400 hover:border-gray-100 hover:text-black"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-2 lg:space-y-2 lg:grid-cols-1 gap-2 lg:gap-0">
+                  {CATEGORIES.map((cat) => {
+                    const checked = Array.isArray(filters.category) && filters.category.includes(cat);
+                    return (
+                      <label key={cat} className="flex items-start gap-2 py-2 px-2 border border-transparent hover:border-gray-100">
+                        <input type="checkbox" checked={checked} onChange={() => handleCategoryToggle(cat)} className="mt-0.5" />
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900">{cat}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </FilterSection>
 
               <button 
-                onClick={() => setFilters({ category: "", priceMin: "", priceMax: "" })}
-                className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
+                onClick={() => { setFilters({ category: [], priceMax: 10000 }); setPriceRangeUI(10000); }}
+                className="w-full mt-3 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-gray-50"
               >
                 Reset All Filters
               </button>
             </div>
           </aside>
 
+          {/* Mobile Filters Toggle Button */}
+          <div className="lg:hidden mb-">
+            <button 
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="w-full flex items-center justify-between bg-black text-white px- py-3 font-black uppercase italic tracking-widest text-sm"
+            >
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                <span>{showMobileFilters ? "Hide Filters" : "Show Filters"}</span>
+              </div>
+              <span>{displayedResults.length} Items</span>
+            </button>
+          </div>
+
+          {/* Mobile Filters Accordion (inline accordion, not overlay) */}
+          {showMobileFilters && (
+            <div className="lg:hidden mb-1 border-b border-gray-100 pb-6">
+              <div className="space-y-2">
+                <FilterSection title="Price Limit" filterName="price">
+                  <input
+                    type="range" min="0" max="10000" step="100"
+                    value={priceRangeUI}
+                    onChange={(e) => setPriceRangeUI(parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-black"
+                  />
+                  <div className="flex justify-between items-center mt-3">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Max Price</span>
+                    <span className="text-xs font-black bg-black text-white px-2 py-1">GH₵{priceRangeUI.toLocaleString()}</span>
+                  </div>
+                </FilterSection>
+
+              <FilterSection title="Categories" filterName="category">
+                <div className="grid grid-cols-2 lg:space-y-2 lg:grid-cols-1 gap-2 lg:gap-0">
+                  {CATEGORIES.map((cat) => {
+                    const checked = Array.isArray(filters.category) && filters.category.includes(cat);
+                    return (
+                      <label key={cat} className="flex items-start gap-2 py-2 px-2 border border-transparent hover:border-gray-100">
+                        <input type="checkbox" checked={checked} onChange={() => handleCategoryToggle(cat)} className="mt-0.5" />
+                        <span className="text-[9px] font-black uppercase tracking-tight text-gray-900">{cat}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </FilterSection>                <button 
+                  onClick={() => { setFilters({ category: [], priceMax: 10000 }); setPriceRangeUI(10000); }}
+                  className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Results Area */}
           <main className="flex-1">
             <div className="flex justify-between items-center mb-10 border-b border-gray-50 pb-4">
-               <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
-                <Filter size={14} /> Filters
-              </button>
+              <div className="hidden lg:flex items-center gap-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Sort by</label>
+                <select value={sortMode} onChange={(e) => setSortMode(e.target.value)} className="text-[10px] font-black uppercase tracking-widest bg-white border border-gray-100 p-2">
+                  <option value="featured">Featured First</option>
+                  <option value="relevance">Relevance</option>
+                </select>
+              </div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
                 {pagination?.totalItems || 0} Products Identified
               </p>
@@ -271,9 +378,12 @@ const SearchResultsPage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
-                {results.map((product) => (
+                {displayedResults.map((product) => (
                   <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="group cursor-pointer">
                     <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all">
+                      {Number(product.displayPriority) > 0 && (
+                        <span className="absolute top-3 left-3 bg-yellow-500 text-black text-[10px] font-black uppercase px-2 py-1 z-10">FEATURED</span>
+                      )}
                       <img
                         src={product.mainImage?.url || "/placeholder.jpg"}
                         alt={product.itemName}
