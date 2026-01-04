@@ -18,6 +18,7 @@ export default function WheelsTiresPage() {
         "Tire & Wheel Packages"
       ]}
       brandFilters={["Michelin", "Bridgestone", "Goodyear", "American Racing", "Enkei"]}
+      metadataKey="wheelsTiresCategory"
     />
   );
 }

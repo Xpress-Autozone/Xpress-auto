@@ -18,6 +18,7 @@ export default function EnginePerformancePage() {
         "ECU Tuning"
       ]}
       brandFilters={["Bosch", "NGK", "K&N", "Garrett", "HKS"]}
+      metadataKey="enginePerformanceCategory"
     />
   );
 }

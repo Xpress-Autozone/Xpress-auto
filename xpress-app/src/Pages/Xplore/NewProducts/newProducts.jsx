@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, ShoppingCart, ChevronLeft, TrendingUp } from "lucide-react";
+import { Star, ShoppingCart, ChevronLeft, Zap } from "lucide-react";
 import SkeletonLoader from "../../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../../Components/EmptyState/EmptyState";
 import { getAllProducts } from "../../../lib/productService";
+import SEO from "../../../lib/SEOHelper";
+import { getPageMetadata } from "../../../data/pageMetadata";
 
 const ProductCard = ({ product, navigate }) => (
     <div 
@@ -92,8 +94,25 @@ export default function NewProducts() {
 
     if (isLoading) return <SkeletonLoader />;
 
+    const metadata = getPageMetadata('new');
+    const breadcrumbs = [
+        { name: 'Home', url: '/' },
+        { name: 'Xplore', url: '/xplore' },
+        { name: 'New Arrivals', url: '/xplore/new' }
+    ];
+
     return (
         <div className="min-h-screen bg-white pb-20">
+            <SEO
+                title={metadata.title}
+                description={metadata.description}
+                keywords={metadata.keywords}
+                ogUrl={metadata.url}
+                ogImage={metadata.ogImage}
+                ogType={metadata.ogType}
+                canonicalUrl={metadata.url}
+                breadcrumbs={breadcrumbs}
+            />
             <div className="bg-gray-50 border-b border-gray-100 pt-32 pb-16 mb-12">
                 <div className="max-w-7xl mx-auto px-6">
                     <button

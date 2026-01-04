@@ -1,4 +1,5 @@
 import { BrowserRouter, Router, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import Home from "../Pages/Home/home";
 import Navbar from "../Components/Navbar/navBar";
 import Footer from "../Components/Footer/footer";
@@ -7,28 +8,31 @@ import CategoriesPage from "../Pages/Categories/categoriesPage";
 import CartPage from "../Pages/Cart/cartPage";
 import ActiveProductPage from "../Components/ActiveProductPage/activeProductPage";
 import SearchResultsPage from "../Pages/Search/searchResultsPage";
+import SkeletonLoader from "../Components/SkeletonLoader/skeletonLoader";
 
-// Import new category pages
-import BodyChassisPage from "../Pages/Categories/BodyChassisPage";
-import EnginePerformancePage from "../Pages/Categories/EnginePerformancePage";
-import WheelsTiresPage from "../Pages/Categories/WheelsTiresPage";
-import AccessoriesPage from "../Pages/Categories/AccessoriesPage";
-import LightingElectronicsPage from "../Pages/Categories/LightingElectronicsPage";
-import FluidsCarePage from "../Pages/Categories/FluidsCarePage";
-import AutomotiveToolsPage from "../Pages/Categories/AutomotiveToolsPage";
-import CoolingACPage from "../Pages/Categories/CoolingACPage";
+// Lazy load category pages
+const BodyChassisPage = lazy(() => import("../Pages/Categories/BodyChassisPage"));
+const EnginePerformancePage = lazy(() => import("../Pages/Categories/EnginePerformancePage"));
+const WheelsTiresPage = lazy(() => import("../Pages/Categories/WheelsTiresPage"));
+const AccessoriesPage = lazy(() => import("../Pages/Categories/AccessoriesPage"));
+const LightingElectronicsPage = lazy(() => import("../Pages/Categories/LightingElectronicsPage"));
+const FluidsCarePage = lazy(() => import("../Pages/Categories/FluidsCarePage"));
+const AutomotiveToolsPage = lazy(() => import("../Pages/Categories/AutomotiveToolsPage"));
+const CoolingACPage = lazy(() => import("../Pages/Categories/CoolingACPage"));
 
-import PrivacyPolicy from "../Pages/PrivacyPolicy/privacyPolicy";
-import TermsOfService from "../Pages/TermsOfService/termsOfService";
-import XplorePage from "../Pages/Xplore/xplore";
-import FeaturedProducts from "../Pages/Xplore/FeaturedProducts/featuredProducts";
-import TrendingProducts from "../Pages/Xplore/TrendingProducts/trendingProducts";
-import NewProducts from "../Pages/Xplore/NewProducts/newProducts";
+// Lazy load other pages
+const PrivacyPolicy = lazy(() => import("../Pages/PrivacyPolicy/privacyPolicy"));
+const TermsOfService = lazy(() => import("../Pages/TermsOfService/termsOfService"));
+const XplorePage = lazy(() => import("../Pages/Xplore/xplore"));
+const FeaturedProducts = lazy(() => import("../Pages/Xplore/FeaturedProducts/featuredProducts"));
+const TrendingProducts = lazy(() => import("../Pages/Xplore/TrendingProducts/trendingProducts"));
+const NewProducts = lazy(() => import("../Pages/Xplore/NewProducts/newProducts"));
+const SignIn = lazy(() => import("../Pages/Auth/SignIn"));
+const SignUp = lazy(() => import("../Pages/Auth/SignUp"));
+const MyAccount = lazy(() => import("../Pages/Account/MyAccount"));
+const Partner = lazy(() => import("../Pages/Partner/Partner"));
+
 import { useScrollToTop } from "../hooks/useScrollToTop";
-import SignIn from "../Pages/Auth/SignIn";
-import SignUp from "../Pages/Auth/SignUp";
-import MyAccount from "../Pages/Account/MyAccount";
-import Partner from "../Pages/Partner/Partner";
 
 function LayoutContent() {
   useScrollToTop();
@@ -36,33 +40,38 @@ function LayoutContent() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/product" element={<ProductsPage />} />
-        <Route path="/product/:id" element={<ActiveProductPage />} />
-        <Route path="/search" element={<SearchResultsPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        {/* Updated Category Routes */}
-        <Route path="/body-chassis" element={<BodyChassisPage />} />
-        <Route path="/engine-performance" element={<EnginePerformancePage />} />
-        <Route path="/wheels-tires" element={<WheelsTiresPage />} />
-        <Route path="/accessories" element={<AccessoriesPage />} />
-        <Route path="/lighting-electronics" element={<LightingElectronicsPage />} />
-        <Route path="/fluids-care" element={<FluidsCarePage />} />
-        <Route path="/automotive-tools" element={<AutomotiveToolsPage />} />
-        <Route path="/cooling-ac" element={<CoolingACPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-of-service" element={<TermsOfService />} />
-        <Route path="/xplore" element={<XplorePage />} />
-        <Route path="/xplore/featured" element={<FeaturedProducts />} />
-        <Route path="/xplore/trending" element={<TrendingProducts />} />
-        <Route path="/xplore/new" element={<NewProducts />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/account" element={<MyAccount />} />
-        <Route path="/partner" element={<Partner />} />
-      </Routes>
+      <Suspense fallback={<SkeletonLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/product" element={<ProductsPage />} />
+          <Route path="/product/:id" element={<ActiveProductPage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          {/* Lazy-loaded Category Routes */}
+          <Route path="/body-chassis" element={<BodyChassisPage />} />
+          <Route path="/engine-performance" element={<EnginePerformancePage />} />
+          <Route path="/wheels-tires" element={<WheelsTiresPage />} />
+          <Route path="/accessories" element={<AccessoriesPage />} />
+          <Route path="/lighting-electronics" element={<LightingElectronicsPage />} />
+          <Route path="/fluids-care" element={<FluidsCarePage />} />
+          <Route path="/automotive-tools" element={<AutomotiveToolsPage />} />
+          <Route path="/cooling-ac" element={<CoolingACPage />} />
+          {/* Lazy-loaded Legal Pages */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          {/* Lazy-loaded Xplore Routes */}
+          <Route path="/xplore" element={<XplorePage />} />
+          <Route path="/xplore/featured" element={<FeaturedProducts />} />
+          <Route path="/xplore/trending" element={<TrendingProducts />} />
+          <Route path="/xplore/new" element={<NewProducts />} />
+          {/* Lazy-loaded Auth Routes */}
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/account" element={<MyAccount />} />
+          <Route path="/partner" element={<Partner />} />
+        </Routes>
+      </Suspense>
       <Footer />
     </>
   );

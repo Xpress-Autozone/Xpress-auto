@@ -18,6 +18,7 @@ export default function BodyChassisPage() {
         "Bumpers"
       ]}
       brandFilters={["Brembo", "Monroe", "KYB", "Moog", "ACDelco"]}
+      metadataKey="bodyChassisCategory"
     />
   );
 }

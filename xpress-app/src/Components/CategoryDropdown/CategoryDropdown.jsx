@@ -46,7 +46,7 @@ export default function CategoryDropdown({ currentCategory }) {
         <span className="hidden sm:inline-block sm:max-w-0 sm:overflow-hidden sm:whitespace-nowrap sm:opacity-0 sm:group-hover:max-w-[140px] sm:group-hover:opacity-100 sm:transition-all sm:duration-300">
           Change Category
         </span>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-7 h-7 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       {isOpen && (

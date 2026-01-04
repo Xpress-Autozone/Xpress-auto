@@ -18,6 +18,7 @@ export default function AccessoriesPage() {
         "Window Visors"
       ]}
       brandFilters={["WeatherTech", "Husky", "Covercraft", "Thule", "Yakima"]}
+      metadataKey="accessoriesCategory"
     />
   );
 }

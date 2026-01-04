@@ -6,15 +6,18 @@ import { CartProvider } from "./Context/CartContext";
 import { SearchProvider } from "./Context/SearchContext";
 import { Provider } from 'react-redux';
 import { store } from './Redux/store';
+import { HelmetProvider } from 'react-helmet-async';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <SearchProvider>
-        <CartProvider>
-          <MainLayout />
-        </CartProvider>
-      </SearchProvider>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <SearchProvider>
+          <CartProvider>
+            <MainLayout />
+          </CartProvider>
+        </SearchProvider>
+      </Provider>
+    </HelmetProvider>
   </StrictMode>
 );

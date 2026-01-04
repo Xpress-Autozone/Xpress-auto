@@ -5,6 +5,8 @@ import { useSearch } from "../../Context/SearchContext";
 import CATEGORIES from "../../data/categories";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { ChevronDown, Filter, AlertTriangle, RefreshCw, Home } from "lucide-react";
+import SEO from "../../lib/SEOHelper";
+import { getSearchMetadata } from "../../data/pageMetadata";
 
 // --- 1. INTEGRATED ERROR BOUNDARY ---
 class ErrorBoundary extends React.Component {
@@ -225,6 +227,17 @@ const SearchResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      {/* Search Results SEO */}
+      <SEO
+        title={`Search Results for "${query}" | Xpress Autozone`}
+        description={`Search results for ${query} at Xpress Autozone. Find quality auto parts and accessories.`}
+        keywords={`${query}, auto parts search, car parts`}
+        ogUrl={`https://xpressautozone.com/search?q=${encodeURIComponent(query)}`}
+        ogImage="/assets/og-image.jpg"
+        ogType="website"
+        canonicalUrl={`https://xpressautozone.com/search?q=${encodeURIComponent(query)}`}
+      />
+
       {/* Top Search Header */}
       <div className="bg-black pt-20 pb-6 md:pt-20 md:pb-8 px-3 border-b border-white/10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">

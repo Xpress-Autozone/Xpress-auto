@@ -143,7 +143,7 @@ const Navbar = () => {
             </p>
             
             <p className="text-gray-500 text-center font-small italic">
-              Click <span className="text-white">X</span> to close.
+              Click X to close.
             </p>
           </div>
         </div>

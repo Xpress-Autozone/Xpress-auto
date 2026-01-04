@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
+import SEO from "../../lib/SEOHelper";
+import { pageMetadata, getPageMetadata } from "../../data/pageMetadata";
+import { generateOrganizationSchema, generateSearchActionSchema } from "../../lib/SEOHelper";
 
 function Home() {
   const navigate = useNavigate();
@@ -116,8 +119,23 @@ function Home() {
 
   if (isLoading) { return <SkeletonLoader />; }
 
+  const homeMetadata = getPageMetadata('home');
+  const breadcrumbs = [
+    { name: 'Home', url: '/' }
+  ];
+
   return (
     <div className="bg-white min-h-screen w-full">
+      <SEO
+        title={homeMetadata.title}
+        description={homeMetadata.description}
+        keywords={homeMetadata.keywords}
+        ogUrl={homeMetadata.url}
+        ogImage={homeMetadata.ogImage}
+        ogType={homeMetadata.ogType}
+        canonicalUrl={homeMetadata.url}
+        structuredData={generateOrganizationSchema()}
+      />
       
       {/* NEW XPLORE-STYLE HERO SECTION */}
       <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">

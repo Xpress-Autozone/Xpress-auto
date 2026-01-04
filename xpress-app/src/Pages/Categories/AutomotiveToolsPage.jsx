@@ -13,6 +13,7 @@ export default function AutomotiveToolsPage() {
         ["Tool Sets", "Diagnostic Tools", "Lifting Equipment", "Air Tools", "Hand Tools", "Cleaning Equipment"]
       }
       brandFilters={["Snap-on", "Craftsman", "DEWALT", "Milwaukee", "Harbor Freight"]}
+      metadataKey="automotiveToolsCategory"
     />
   );
 }

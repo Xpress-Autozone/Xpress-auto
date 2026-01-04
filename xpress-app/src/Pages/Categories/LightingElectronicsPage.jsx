@@ -13,6 +13,7 @@ export default function LightingElectronicsPage() {
         ["LED Lights", "Batteries", "Audio Systems", "Alarms", "Backup Cameras", "GPS Navigation"]
       }
       brandFilters={["Philips", "Optima", "Pioneer", "Kenwood", "Viper"]}
+      metadataKey="lightingElectronicsCategory"
     />
   );
 }

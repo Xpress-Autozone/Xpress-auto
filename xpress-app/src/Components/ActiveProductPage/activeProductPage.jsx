@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { ChevronDown, ShoppingCart, ArrowLeft, Check } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import SEO from "../../lib/SEOHelper";
+import { getProductMetadata } from "../../data/pageMetadata";
+import { generateProductSchema, generateBreadcrumbSchema } from "../../lib/SEOHelper";
 
 const ActiveProductPage = () => {
   const navigate = useNavigate();
@@ -46,6 +49,25 @@ const ActiveProductPage = () => {
 
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
+      {/* Product SEO */}
+      {product && product.id && (
+        <SEO
+          title={`${product.name} | Buy at Xpress Autozone`}
+          description={product.description || `Quality ${product.name} at Xpress Autozone. Check price, availability, and fast delivery options.`}
+          keywords={`${product.name}, buy ${product.name}, ${product.category}, auto parts`}
+          ogUrl={`https://xpressautozone.com/product/${product.id}`}
+          ogImage={product.image}
+          ogType="product"
+          canonicalUrl={`https://xpressautozone.com/product/${product.id}`}
+          structuredData={generateProductSchema(product)}
+          breadcrumbs={[
+            { name: 'Home', url: '/' },
+            { name: product.category || 'Products', url: '/product' },
+            { name: product.name, url: `/product/${product.id}` }
+          ]}
+        />
+      )}
+      
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         
         {/* BREADCRUMB & BACK */}

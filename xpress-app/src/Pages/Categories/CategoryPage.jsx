@@ -4,6 +4,9 @@ import { ChevronDown, Filter, Check, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
 import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
+import SEO from "../../lib/SEOHelper";
+import { getPageMetadata, pageMetadata } from "../../data/pageMetadata";
+import { generateBreadcrumbSchema } from "../../lib/SEOHelper";
 
 export default function CategoryPage({
   title = "Category",
@@ -12,6 +15,7 @@ export default function CategoryPage({
   heroDescription = "",
   partTypeFilters = [],
   brandFilters = [],
+  metadataKey = null,
 }) {
   const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState(10000);
@@ -95,8 +99,27 @@ export default function CategoryPage({
     </div>
   );
 
+  // Get SEO metadata for this category
+  const categoryMetadata = metadataKey ? getPageMetadata(metadataKey) : null;
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: title, url: window.location.pathname }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
+      {categoryMetadata && (
+        <SEO
+          title={categoryMetadata.title}
+          description={categoryMetadata.description}
+          keywords={categoryMetadata.keywords}
+          ogUrl={categoryMetadata.url}
+          ogImage={categoryMetadata.ogImage}
+          ogType={categoryMetadata.ogType}
+          canonicalUrl={categoryMetadata.url}
+          breadcrumbs={breadcrumbs}
+        />
+      )}
       {/* Hero Section */}
       <section className="relative z-20 overflow-visible h-[300px] md:h-[400px] w-full flex items-center bg-black">
         <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${heroImage})` }} />

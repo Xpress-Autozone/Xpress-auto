@@ -9,17 +9,21 @@ export const generateOrganizationSchema = () => ({
   "name": "Xpress Autozone",
   "url": "https://xpressautozone.com",
   "logo": "https://xpressautozone.com/assets/favicon.png",
-  "description": "Your one-stop shop for quality auto parts and accessories with Xpress Search intelligent vehicle search.",
+  "description": "Ghana's premier verified aftermarket platform for authentic vehicle components. Your one-stop pit stop for genuine parts, expert support, and Xpress delivery.",
   "sameAs": [
     "https://www.facebook.com/xpressautozone",
-    "https://www.instagram.com/xpressautozone",
-    "https://www.twitter.com/xpressautozone"
+    "https://www.instagram.com/xpressautozone"
   ],
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "Customer Support",
-    "telephone": "+1-XXX-XXX-XXXX",
-    "email": "support@xpressautozone.com"
+    "telephone": "+233209021991",
+    "email": "xpressautozone@gmail.com"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Accra",
+    "addressCountry": "Ghana"
   }
 });
 
@@ -82,6 +86,91 @@ export const generateBreadcrumbSchema = (breadcrumbs) => ({
     "item": `https://xpressautozone.com${item.url}`
   }))
 });
+
+/**
+ * generateLocalBusinessSchema - Creates schema for local business information
+ */
+export const generateLocalBusinessSchema = () => ({
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Xpress Autozone",
+  "url": "https://xpressautozone.com",
+  "logo": "https://xpressautozone.com/assets/favicon.png",
+  "description": "Ghana's premier verified aftermarket platform for authentic vehicle components. Your one-stop pit stop for genuine parts, expert support, and Xpress delivery.",
+  "telephone": "+233209021991",
+  "email": "xpressautozone@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Accra",
+    "addressLocality": "Accra",
+    "addressRegion": "Accra",
+    "addressCountry": "Ghana"
+  },
+  "priceRange": "$$",
+  "areaServed": "Worldwide",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Support",
+    "telephone": "+233209021991",
+    "email": "xpressautozone@gmail.com"
+  },
+  "sameAs": [
+    "https://www.facebook.com/xpressautozone",
+    "https://www.instagram.com/xpressautozone"
+  ]
+});
+
+/**
+ * generateCollectionSchema - Creates schema for product collections
+ */
+export const generateCollectionSchema = (collectionName, products = []) => ({
+  "@context": "https://schema.org",
+  "@type": "Collection",
+  "name": collectionName,
+  "description": `Explore our collection of ${collectionName} automotive products`,
+  "url": `https://xpressautozone.com/xplore/${collectionName.toLowerCase()}`,
+  "numberOfItems": products.length,
+  "itemListElement": products.slice(0, 10).map((product, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "url": `https://xpressautozone.com/product/${product.id}`,
+    "name": product.name,
+    "image": product.image
+  }))
+});
+
+/**
+ * generateFAQSchema - Creates FAQ structured data
+ */
+export const generateFAQSchema = (faqs) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+});
+
+/**
+ * generateAggregateRatingSchema - Enhanced aggregate rating schema
+ */
+export const generateAggregateRatingSchema = (product) => {
+  if (!product.rating) return null;
+  
+  return {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    "ratingValue": product.rating.value,
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": product.rating.count,
+    "reviewCount": product.rating.reviewCount || product.rating.count
+  };
+};
 
 /**
  * SEO Component - Reusable Helmet wrapper for managing meta tags

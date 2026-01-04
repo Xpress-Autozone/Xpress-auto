@@ -18,6 +18,7 @@ export default function CoolingACPage() {
         "AC Kits"
       ]}
       brandFilters={["Denso", "Valeo", "Mishimoto", "Spectra", "Four Seasons"]}
+      metadataKey="coolingACCategory"
     />
   );
 }
