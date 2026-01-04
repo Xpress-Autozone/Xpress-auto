@@ -116,7 +116,7 @@ const Navbar = () => {
 
       {/* SEARCH OVERLAY */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-start pt-32 px-6">
+        <div className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-md flex flex-col items-center justify-start pt-32 px-6">
           <button 
             onClick={() => setIsSearchOpen(false)}
             className="absolute top-8 right-8 text-white hover:text-yellow-500 transition-colors"
@@ -138,12 +138,12 @@ const Navbar = () => {
                />
             </div>
             
-            <p className="text-yellow-400 text-center text-sm font-medium">
-              With our Xpress Search, ask like a human - we'll find exactly what you need!
+            <p className="text-yellow-400 text-center text-sm font-small">
+              With Xpress Search, you can add details like Vehicle Model and Year. We'll find what you need!
             </p>
             
-            <p className="text-gray-500 text-center font-medium italic">
-              Press <span className="text-white">ESC</span> to close or click the X above.
+            <p className="text-gray-500 text-center font-small italic">
+              Click <span className="text-white">X</span> to close.
             </p>
           </div>
         </div>
