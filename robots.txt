@@ -1,0 +1,51 @@
+# Xpress Autozone SEO Robots Configuration
+# This file controls how search engines crawl and index the website
+
+# Default rules for all user agents
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /*.json$
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /build/
+Disallow: /dist/
+Disallow: /.env
+Disallow: /config/
+
+# Allow crawling of specific assets
+Allow: /assets/
+Allow: /public/
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+Request-rate: 10/1s
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+Request-rate: 30/1m
+
+# Block bad bots
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+Disallow: /
+
+# Sitemap location (submit to Google Search Console as well)
+Sitemap: https://xpressautozone.com/sitemap.xml
+
+# Specific crawl directives
+User-agent: *
+Crawl-delay: 1
+Request-rate: 30/1m
+
+# Email crawlers - disallow
+User-agent: EmailCollector
+User-agent: Teleport
+User-agent: TeleportPro
+Disallow: /
