@@ -134,7 +134,6 @@ function Home() {
         ogImage={homeMetadata.ogImage}
         ogType={homeMetadata.ogType}
         canonicalUrl={homeMetadata.url}
-        canonicalUrl={homeMetadata.url}
         structuredData={generateCombinedHomeSchema()}
       />
 
