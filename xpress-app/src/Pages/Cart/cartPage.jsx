@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import SEO from "../../lib/SEOHelper";
+import { getPageMetadata } from "../../data/pageMetadata";
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const metadata = getPageMetadata('cart');
   const { cartItems, updateQuantity, removeItem, getTotalItems, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();
@@ -13,6 +16,15 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
+      <SEO
+        title={metadata.title}
+        description={metadata.description}
+        keywords={metadata.keywords}
+        ogUrl={metadata.url}
+        ogImage={metadata.ogImage}
+        ogType={metadata.ogType}
+        canonicalUrl={metadata.url}
+      />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="mb-6">
@@ -53,11 +65,10 @@ export default function CartPage() {
                 {cartItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className={`p-4 flex gap-3 ${
-                      index !== cartItems.length - 1
-                        ? "border-b border-gray-200"
-                        : ""
-                    } hover:bg-gray-50 transition-colors`}
+                    className={`p-4 flex gap-3 ${index !== cartItems.length - 1
+                      ? "border-b border-gray-200"
+                      : ""
+                      } hover:bg-gray-50 transition-colors`}
                   >
                     {/* Product Image */}
                     <div className="w-20 h-20 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">

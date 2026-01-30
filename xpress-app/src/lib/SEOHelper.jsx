@@ -28,22 +28,62 @@ export const generateOrganizationSchema = () => ({
 });
 
 /**
- * generateSearchActionSchema - Creates schema for Google Search Action with Xpress Search
+ * generateCombinedHomeSchema - Combines all home page schemas into a graph
  */
-export const generateSearchActionSchema = () => ({
+export const generateCombinedHomeSchema = () => ({
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": "https://xpressautozone.com",
-  "name": "Xpress Autozone",
-  "description": "Premium auto parts and accessories with intelligent vehicle search",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://xpressautozone.com/search?q={search_term_string}"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://xpressautozone.com/#organization",
+      "name": "Xpress Autozone",
+      "url": "https://xpressautozone.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://xpressautozone.com/assets/favicon.png"
+      },
+      "sameAs": [
+        "https://www.facebook.com/xpressautozone",
+        "https://www.instagram.com/xpressautozone"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "telephone": "+233209021991",
+        "email": "xpressautozone@gmail.com"
+      }
     },
-    "query-input": "required name=search_term_string"
-  }
+    {
+      "@type": "WebSite",
+      "@id": "https://xpressautozone.com/#website",
+      "url": "https://xpressautozone.com",
+      "name": "Xpress Autozone",
+      "description": "Premium auto parts and accessories with intelligent vehicle search",
+      "publisher": { "@id": "https://xpressautozone.com/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://xpressautozone.com/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://xpressautozone.com/#localbusiness",
+      "parentOrganization": { "@id": "https://xpressautozone.com/#organization" },
+      "name": "Xpress Autozone",
+      "image": "https://xpressautozone.com/assets/og-image.jpg",
+      "telephone": "+233209021991",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Accra",
+        "addressCountry": "Ghana"
+      },
+      "priceRange": "$$"
+    }
+  ]
 });
 
 /**
@@ -160,7 +200,7 @@ export const generateFAQSchema = (faqs) => ({
  */
 export const generateAggregateRatingSchema = (product) => {
   if (!product.rating) return null;
-  
+
   return {
     "@context": "https://schema.org",
     "@type": "AggregateRating",

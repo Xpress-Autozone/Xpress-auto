@@ -10,7 +10,7 @@ import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import SEO from "../../lib/SEOHelper";
 import { pageMetadata, getPageMetadata } from "../../data/pageMetadata";
-import { generateOrganizationSchema, generateSearchActionSchema } from "../../lib/SEOHelper";
+import { generateCombinedHomeSchema } from "../../lib/SEOHelper";
 
 function Home() {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ function Home() {
       try {
         console.log("[Home] 🚀 Fetching featured products");
         const data = await getAllProducts({ limit: 6, page: 1, sortBy: "createdAt", sortOrder: "desc" });
-        
+
         if (data.success && data.data && data.data.length > 0) {
           console.log(`[Home] ✅ Received ${data.data.length} featured products`);
           setFeaturedProducts(
@@ -134,34 +134,35 @@ function Home() {
         ogImage={homeMetadata.ogImage}
         ogType={homeMetadata.ogType}
         canonicalUrl={homeMetadata.url}
-        structuredData={generateOrganizationSchema()}
+        canonicalUrl={homeMetadata.url}
+        structuredData={generateCombinedHomeSchema()}
       />
-      
+
       {/* NEW XPLORE-STYLE HERO SECTION */}
       <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">
-        <div 
-            className="absolute inset-0 bg-cover bg-center opacity-50"
-            style={{ backgroundImage: `url(${slideImage})` }}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-50"
+          style={{ backgroundImage: `url(${slideImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-        
+
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
-              {/*Verified by Xpress AutoZone*/}
-            </span>
-            <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
-                DISCOVER <br/>
-                <span className="text-gray-300">QUALITY PARTS</span>
-            </h1>
-            <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
-               Xpress AutoZone is Ghana's premier aftermarket platform for authentic vehicle components.Your one-stop pit stop for genuine parts, expert support, and xpress delivery.
-            </p>
-            <button
-              onClick={handleNavigate}
-              className="w-fit bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-10 transition-all duration-300"
-            >
-              Shop Verified Parts
-            </button>
+          <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
+            {/*Verified by Xpress AutoZone*/}
+          </span>
+          <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
+            DISCOVER <br />
+            <span className="text-gray-300">QUALITY PARTS</span>
+          </h1>
+          <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
+            Xpress AutoZone is Ghana's premier aftermarket platform for authentic vehicle components.Your one-stop pit stop for genuine parts, expert support, and xpress delivery.
+          </p>
+          <button
+            onClick={handleNavigate}
+            className="w-fit bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-10 transition-all duration-300"
+          >
+            Shop Verified Parts
+          </button>
         </div>
       </section>
 
@@ -227,31 +228,31 @@ function Home() {
             <div className="h-1 w-32 bg-yellow-500 mx-auto"></div>
           </div>
 
-        {productsLoading ? (
-          <div className="py-20 text-center">
-            <p className="text-gray-500 font-medium">Loading featured products...</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-gray-500 font-medium text-lg">No products found</p>
-            <p className="text-gray-400 text-sm mt-2">Check back soon for featured items</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} variant="featured" />
-            ))}
-          </div>
-        )}
+          {productsLoading ? (
+            <div className="py-20 text-center">
+              <p className="text-gray-500 font-medium">Loading featured products...</p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-gray-500 font-medium text-lg">No products found</p>
+              <p className="text-gray-400 text-sm mt-2">Check back soon for featured items</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} variant="featured" />
+              ))}
+            </div>
+          )}
 
-        {products.length > 0 && (
-          <button
-            onClick={() => navigate("/xplore/featured")}
-            className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
-          >
-            View All Featured Products <ArrowRight size={16} />
-          </button>
-        )}
+          {products.length > 0 && (
+            <button
+              onClick={() => navigate("/xplore/featured")}
+              className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
+            >
+              View All Featured Products <ArrowRight size={16} />
+            </button>
+          )}
         </div>
 
         {/* CTA Section */}
@@ -260,7 +261,7 @@ function Home() {
             Discover More with Xplore
           </h2>
           <p className="text-gray-500 font-medium text-base md:text-lg mb-10 max-w-2xl mx-auto">
-            Explore curated collections of trending items and new arrivals. 
+            Explore curated collections of trending items and new arrivals.
             Find exactly what your vehicle needs to perform at its peak.
           </p>
           <button
@@ -276,7 +277,7 @@ function Home() {
           <h2 className="text-3xl md:text-4xl font-black text-black uppercase italic tracking-tighter text-center mb-16">
             Why choose Xpress AutoZone?
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-gray-100">
             <div className="p-10 border-b md:border-b-0 md:border-r border-gray-100 hover:bg-gray-50 transition-colors">
               <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">Admin Reviewed</h3>

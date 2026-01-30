@@ -1,12 +1,24 @@
 import React from "react";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../../lib/SEOHelper";
+import { getPageMetadata } from "../../data/pageMetadata";
 
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
+  const metadata = getPageMetadata('privacyPolicy');
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12">
+      <SEO
+        title={metadata.title}
+        description={metadata.description}
+        keywords={metadata.keywords}
+        ogUrl={metadata.url}
+        ogImage={metadata.ogImage}
+        ogType={metadata.ogType}
+        canonicalUrl={metadata.url}
+      />
       <div className="max-w-4xl mx-auto px-4 md:px-6">
         {/* Back Button */}
         <button

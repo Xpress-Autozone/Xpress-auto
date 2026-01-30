@@ -9,9 +9,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import slideImage from "../../assets/ProductsBanner.jpg";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
+import SEO from "../../lib/SEOHelper";
+import { getPageMetadata } from "../../data/pageMetadata";
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+  const metadata = getPageMetadata('products');
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Products', url: '/product' }
+  ];
   const [priceRange, setPriceRange] = useState(1500);
   const [selectedPartTypes, setSelectedPartTypes] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -64,11 +71,21 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      <SEO
+        title={metadata.title}
+        description={metadata.description}
+        keywords={metadata.keywords}
+        ogUrl={metadata.url}
+        ogImage={metadata.ogImage}
+        ogType={metadata.ogType}
+        canonicalUrl={metadata.url}
+        breadcrumbs={breadcrumbs}
+      />
       {/* 1. HERO SECTION - High Contrast */}
       <section className="relative h-[300px] md:h-[400px] w-full bg-black flex items-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-40" 
-          style={{ backgroundImage: `url(${slideImage})` }} 
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{ backgroundImage: `url(${slideImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
@@ -81,7 +98,7 @@ export default function ProductsPage() {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          
+
           {/* 2. FILTER SIDEBAR */}
           <aside className={`
             ${showFiltersMobile ? "block" : "hidden"} 
@@ -89,7 +106,7 @@ export default function ProductsPage() {
           `}>
             <div className="sticky top-28 space-y-2">
               <h2 className="text-xl font-black uppercase italic mb-8 tracking-tighter">Inventory Filter</h2>
-              
+
               <FilterSection title="Price Limit" filterName="price">
                 <input
                   type="range" min="0" max="5000" step="50"
@@ -131,8 +148,8 @@ export default function ProductsPage() {
                 </label>
               </FilterSection>
 
-              <button 
-                onClick={() => {setSelectedBrands([]); setPriceRange(5000)}}
+              <button
+                onClick={() => { setSelectedBrands([]); setPriceRange(5000) }}
                 className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
               >
                 Reset All Filters
@@ -143,14 +160,14 @@ export default function ProductsPage() {
           {/* 3. MAIN CONTENT Area */}
           <main className="flex-1">
             <div className="flex justify-between items-end mb-10 border-b border-gray-100 pb-4">
-              <button 
+              <button
                 onClick={() => setShowFiltersMobile(!showFiltersMobile)}
                 className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic"
               >
                 <Filter size={14} /> {showFiltersMobile ? "Hide" : "Show"} Filters
               </button>
               <div className="hidden lg:block">
-                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Inventory Index</h2>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Inventory Index</h2>
               </div>
               <select className="bg-transparent border-b border-gray-200 text-[10px] font-black uppercase tracking-widest outline-none py-2 cursor-pointer focus:border-black transition-colors">
                 <option>Sort: Price Low-High</option>
@@ -168,10 +185,10 @@ export default function ProductsPage() {
                   className="group cursor-pointer"
                 >
                   <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-colors">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" 
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
                     />
                   </div>
                   <div className="space-y-2">
@@ -180,9 +197,8 @@ export default function ProductsPage() {
                     </h3>
                     <div className="flex flex-col gap-1 pt-1">
                       <span className="text-lg font-black italic tracking-tighter text-black">GH₵{product.price.toFixed(2)}</span>
-                      <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
-                        product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
-                      }`}>
+                      <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
+                        }`}>
                         {product.status}
                       </div>
                     </div>

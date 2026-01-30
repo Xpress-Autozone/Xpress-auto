@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { signOut } from '../../Redux/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Package, 
-  User, 
-  Heart, 
-  LogOut, 
-  Trash2, 
-  ChevronRight, 
-  ShieldCheck 
+import SEO from "../../lib/SEOHelper";
+import { getPageMetadata } from "../../data/pageMetadata";
+import {
+  Package,
+  User,
+  Heart,
+  LogOut,
+  Trash2,
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 
 const MyAccount = () => {
@@ -17,6 +19,7 @@ const MyAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
+  const metadata = getPageMetadata('account');
 
   const handleSignOut = () => {
     dispatch(signOut());
@@ -38,8 +41,17 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-20">
+      <SEO
+        title={metadata.title}
+        description={metadata.description}
+        keywords={metadata.keywords}
+        ogUrl={metadata.url}
+        ogImage={metadata.ogImage}
+        ogType={metadata.ogType}
+        canonicalUrl={metadata.url}
+      />
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* HEADER SECTION */}
         <div className="mb-12 border-b-2 border-black pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -50,8 +62,8 @@ const MyAccount = () => {
               My <span className="text-gray-300">Account</span>
             </h1>
           </div>
-          <Link 
-            to="/cart" 
+          <Link
+            to="/cart"
             className="flex items-center gap-2 bg-black text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all"
           >
             <Heart size={16} /> View Wishlist
@@ -59,13 +71,13 @@ const MyAccount = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          
+
           {/* LEFT: NAV TABS */}
           <aside className="lg:col-span-1 space-y-1">
             <TabBtn active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="Order History" icon={<Package size={18} />} />
             <TabBtn active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} label="Profile Details" icon={<User size={18} />} />
             <div className="pt-8 mt-8 border-t border-gray-100">
-              <button 
+              <button
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-3 p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
               >
@@ -76,7 +88,7 @@ const MyAccount = () => {
 
           {/* RIGHT: CONTENT AREA */}
           <main className="lg:col-span-3 border border-gray-100 p-8 md:p-12">
-            
+
             {activeTab === 'history' && (
               <div className="space-y-8">
                 <h3 className="text-2xl font-black uppercase italic tracking-tighter">Purchase History</h3>
@@ -131,7 +143,7 @@ const MyAccount = () => {
                         Permanently remove your data and order history from Xpress AutoZone.
                       </p>
                     </div>
-                    <button 
+                    <button
                       onClick={handleDeleteAccount}
                       className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
                     >
@@ -150,11 +162,10 @@ const MyAccount = () => {
 
 // Helper Components
 const TabBtn = ({ active, onClick, label, icon }) => (
-  <button 
+  <button
     onClick={onClick}
-    className={`w-full flex items-center justify-between p-4 text-[10px] font-black uppercase tracking-widest italic transition-all border ${
-      active ? 'bg-black text-white border-black' : 'text-gray-400 border-transparent hover:border-gray-100 hover:text-black'
-    }`}
+    className={`w-full flex items-center justify-between p-4 text-[10px] font-black uppercase tracking-widest italic transition-all border ${active ? 'bg-black text-white border-black' : 'text-gray-400 border-transparent hover:border-gray-100 hover:text-black'
+      }`}
   >
     <span className="flex items-center gap-3">{icon} {label}</span>
     {active && <ChevronRight size={14} />}

@@ -16,7 +16,7 @@ export const pageMetadata = {
     ogType: 'website',
     ogImage: DEFAULT_OG_IMAGE,
   },
-  
+
   categories: {
     title: 'Shop By Category | Xpress Autozone',
     description: 'Browse our comprehensive collection of auto parts organized by category: Body & Chassis, Engine Performance, Wheels & Tires, Accessories, Lighting, Fluids, Tools, and Cooling Systems.',
@@ -71,7 +71,7 @@ export const pageMetadata = {
     ogImage: DEFAULT_OG_IMAGE,
   },
 
-  fluidsCarecategory: {
+  fluidsCareCategory: {
     title: 'Fluids & Maintenance | Xpress Autozone',
     description: 'Essential fluids and maintenance products for vehicle care: motor oil, coolant, brake fluid, filters, and more. Keep your vehicle running smoothly.',
     keywords: 'motor oil, coolant, brake fluid, transmission fluid, vehicle maintenance, car fluids, filters',
