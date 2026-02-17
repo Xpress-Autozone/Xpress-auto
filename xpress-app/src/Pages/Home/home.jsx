@@ -66,6 +66,8 @@ function Home() {
         console.log("[Home] 🚀 Fetching featured products");
         const data = await getAllProducts({ limit: 6, page: 1, sortBy: "createdAt", sortOrder: "desc" });
         
+
+        console.log("[Home] 📦 API response:", data);
         if (data.success && data.data && data.data.length > 0) {
           console.log(`[Home] ✅ Received ${data.data.length} featured products`);
           setFeaturedProducts(
