@@ -1,4 +1,4 @@
-import { BrowserRouter, Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "../Pages/Home/home";
 import Navbar from "../Components/Navbar/navBar";
 import Footer from "../Components/Footer/footer";
@@ -87,8 +87,6 @@ function LayoutContent() {
 
 export default function MainLayout() {
   return (
-    <BrowserRouter basename="/">
-      <LayoutContent />
-    </BrowserRouter>
+    <LayoutContent />
   );
 }

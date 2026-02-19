@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const CartContext = createContext();
 
@@ -33,6 +35,22 @@ export const CartProvider = ({ children }) => {
     } else {
       setCartItems([...cartItems, { ...product, quantity: 1 }]);
     }
+
+    toast((t) => (
+      <div className="flex items-center justify-between gap-4 min-w-[300px]">
+        <span>Item has been added to cart</span>
+        <Link
+          to="/cart"
+          onClick={() => toast.dismiss(t.id)}
+          className="bg-yellow-500 text-black px-4 py-2 text-xs font-bold hover:bg-white transition-colors"
+        >
+          View Cart
+        </Link>
+      </div>
+    ), {
+      duration: 4000,
+      id: 'cart-toast', // Prevent duplicate toasts for multiple clicks
+    });
   };
 
   const updateQuantity = (id, newQuantity) => {
