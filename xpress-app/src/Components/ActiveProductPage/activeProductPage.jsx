@@ -1,17 +1,95 @@
 import React, { useState } from "react";
 import { ChevronDown, ShoppingCart, ArrowLeft, Check } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import { getProductById, getProductsByCategory } from "../../lib/productService";
+import SkeletonLoader from "../SkeletonLoader/skeletonLoader";
 
 const ActiveProductPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
   const { addToCart } = useCart();
-  const product = location.state?.product || {};
 
+  const [product, setProduct] = useState(location.state?.product || null);
+  const [isLoading, setIsLoading] = useState(!product);
   const [selectedImage, setSelectedImage] = useState(0);
   const [expandedSection, setExpandedSection] = useState("details");
   const [addedToCart, setAddedToCart] = useState(false);
+  const [error, setError] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  React.useEffect(() => {
+    const fetchProduct = async () => {
+      // Clear product if ID changed and we don't have it in state
+      if (id && (!product || product.id !== id)) {
+        if (location.state?.product?.id === id) {
+          setProduct(location.state.product);
+          setIsLoading(false);
+        } else {
+          setIsLoading(true);
+          try {
+            const data = await getProductById(id);
+            if (data) {
+              setProduct({
+                id: data.id,
+                name: data.itemName,
+                price: parseFloat(data.price) || 0,
+                image: data.mainImage?.url || "/api/placeholder/200/200",
+                images: data.images?.map(img => img.url) || [data.mainImage?.url],
+                description: data.description,
+                category: data.category,
+                brand: data.brand,
+                status: data.quantity > 0 ? "In Stock" : "Out of Stock",
+                specifications: data.specifications,
+                compatibility: data.compatibility,
+              });
+            } else {
+              setError("Product not found");
+            }
+          } catch (err) {
+            console.error("Error fetching product:", err);
+            setError("Failed to load product details");
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  React.useEffect(() => {
+    const fetchRelated = async () => {
+      if (product?.category) {
+        try {
+          const data = await getProductsByCategory(product.category, { limit: 5 });
+          if (data.success && data.data) {
+            // Filter out current product and map to UI format
+            const filtered = data.data
+              .filter(p => p.id !== product.id)
+              .slice(0, 4)
+              .map(p => ({
+                id: p.id,
+                name: p.itemName,
+                price: `GH₵${parseFloat(p.price).toFixed(2)}`,
+                image: p.mainImage?.url || "/api/placeholder/150/150",
+                badge: p.brand || "Verified",
+                fullProduct: p // Store full product to pass in state
+              }));
+            setRelatedProducts(filtered);
+          }
+        } catch (err) {
+          console.error("Error fetching related products:", err);
+        }
+      }
+    };
+    fetchRelated();
+  }, [product?.id, product?.category]);
+
+  if (isLoading) return <SkeletonLoader />;
+  if (error) return <div className="pt-24 text-center font-black uppercase italic">{error}</div>;
+  if (!product) return <div className="pt-24 text-center font-black uppercase italic">Product not found</div>;
 
   const images = product.images || [product.image, "/api/placeholder/400/400"];
 
@@ -22,11 +100,6 @@ const ActiveProductPage = () => {
   ];
 
   const compatibility = product.compatibility || ["Universal Fit"];
-
-  const relatedProducts = product.relatedProducts || [
-    { name: "Performance Brake Fluid", price: "GH₵45.00", badge: "Essentials", image: "/api/placeholder/150/150" },
-    { name: "Heavy Duty Wheel Bolts", price: "GH₵120.00", badge: "Trending", image: "/api/placeholder/150/150" },
-  ];
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -47,7 +120,7 @@ const ActiveProductPage = () => {
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        
+
         {/* BREADCRUMB & BACK */}
         <div className="mb-10 flex items-center justify-between">
           <button
@@ -63,7 +136,7 @@ const ActiveProductPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          
+
           {/* LEFT: IMAGE SUITE */}
           <div className="space-y-6">
             <div className="bg-gray-50 border border-gray-100 p-10 flex items-center justify-center relative overflow-hidden">
@@ -82,9 +155,8 @@ const ActiveProductPage = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`aspect-square border-2 transition-all p-2 bg-white ${
-                    selectedImage === idx ? "border-black" : "border-gray-100 hover:border-gray-300"
-                  }`}
+                  className={`aspect-square border-2 transition-all p-2 bg-white ${selectedImage === idx ? "border-black" : "border-gray-100 hover:border-gray-300"
+                    }`}
                 >
                   <img src={img} alt="Thumb" className="w-full h-full object-contain" />
                 </button>
@@ -99,29 +171,27 @@ const ActiveProductPage = () => {
                 <Check size={16} strokeWidth={3} />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">Verified Inventory</span>
               </div>
-              
+
               <h1 className="text-3xl md:text-5xl font-black text-black uppercase italic tracking-tighter leading-none mb-4">
                 {product.name || "Automotive Component"}
               </h1>
-              
+
               <div className="flex items-baseline gap-4 mt-6">
                 <span className="text-4xl font-black italic">GH₵{(product.price || 0).toFixed(2)}</span>
-                <span className={`text-[10px] font-black uppercase px-2 py-0.5 border ${
-                  product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
-                }`}>
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 border ${product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
+                  }`}>
                   {product.status || "Check Availability"}
                 </span>
               </div>
             </div>
 
             {/* CTA */}
-            <button 
+            <button
               onClick={handleAddToCart}
-              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-10 ${
-                addedToCart 
-                  ? "bg-green-500 text-white" 
-                  : "bg-yellow-500 hover:bg-black hover:text-white text-black"
-              }`}
+              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-10 ${addedToCart
+                ? "bg-green-500 text-white"
+                : "bg-yellow-500 hover:bg-black hover:text-white text-black"
+                }`}
             >
               <ShoppingCart size={20} />
               {addedToCart ? "Added to Cart!" : "Add to Cart"}
@@ -129,10 +199,10 @@ const ActiveProductPage = () => {
 
             {/* INFO ACCORDION */}
             <div className="border-t border-gray-100">
-              <Section 
-                title="Description" 
-                id="details" 
-                active={expandedSection} 
+              <Section
+                title="Description"
+                id="details"
+                active={expandedSection}
                 toggle={toggleSection}
               >
                 <p className="text-sm font-medium text-gray-500 leading-relaxed uppercase tracking-tight">
@@ -140,10 +210,10 @@ const ActiveProductPage = () => {
                 </p>
               </Section>
 
-              <Section 
-                title="Technical Specs" 
-                id="specs" 
-                active={expandedSection} 
+              <Section
+                title="Technical Specs"
+                id="specs"
+                active={expandedSection}
                 toggle={toggleSection}
               >
                 <div className="grid grid-cols-1 gap-4">
@@ -156,10 +226,10 @@ const ActiveProductPage = () => {
                 </div>
               </Section>
 
-              <Section 
-                title="Vehicle Compatibility" 
-                id="compatibility" 
-                active={expandedSection} 
+              <Section
+                title="Vehicle Compatibility"
+                id="compatibility"
+                active={expandedSection}
                 toggle={toggleSection}
               >
                 <ul className="space-y-3">
@@ -183,7 +253,11 @@ const ActiveProductPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((p, idx) => (
-              <div key={idx} className="group border border-gray-100 hover:border-black transition-all cursor-pointer">
+              <div
+                key={p.id || idx}
+                onClick={() => navigate(`/product/${p.id}`, { state: { product: p.fullProduct } })}
+                className="group border border-gray-100 hover:border-black transition-all cursor-pointer"
+              >
                 <div className="aspect-square bg-gray-50 p-6">
                   <img src={p.image} alt={p.name} className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
