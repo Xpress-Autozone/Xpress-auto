@@ -29,6 +29,8 @@ import SignIn from "../Pages/Auth/SignIn";
 import SignUp from "../Pages/Auth/SignUp";
 import MyAccount from "../Pages/Account/MyAccount";
 import Partner from "../Pages/Partner/Partner";
+import Onboarding from "../Pages/Auth/Onboarding";
+import ProtectedRoute from "../Components/Auth/ProtectedRoute";
 
 function LayoutContent() {
   useScrollToTop();
@@ -60,7 +62,22 @@ function LayoutContent() {
         <Route path="/xplore/new" element={<NewProducts />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/account" element={<MyAccount />} />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <MyAccount />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/partner" element={<Partner />} />
       </Routes>
       <Footer />

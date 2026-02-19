@@ -1,15 +1,28 @@
-import React, { useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
+import { useSelector } from "react-redux";
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
   const { cartItems, updateQuantity, removeItem, getTotalItems, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
+
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location } });
+    } else if (isAuthenticated && !isOnboarded) {
+      navigate('/onboarding');
+    } else {
+      // Proceed to actual checkout logic
+      alert("Proceeding to checkout...");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
@@ -53,11 +66,10 @@ export default function CartPage() {
                 {cartItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className={`p-4 flex gap-3 ${
-                      index !== cartItems.length - 1
-                        ? "border-b border-gray-200"
-                        : ""
-                    } hover:bg-gray-50 transition-colors`}
+                    className={`p-4 flex gap-3 ${index !== cartItems.length - 1
+                      ? "border-b border-gray-200"
+                      : ""
+                      } hover:bg-gray-50 transition-colors`}
                   >
                     {/* Product Image */}
                     <div className="w-20 h-20 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
@@ -161,7 +173,10 @@ export default function CartPage() {
                 </div>
 
                 {/* Checkout Button */}
-                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mb-2 text-sm">
+                <button
+                  onClick={handleCheckout}
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mb-2 text-sm"
+                >
                   Proceed to Checkout
                 </button>
 

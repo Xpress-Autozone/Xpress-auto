@@ -142,7 +142,7 @@ export default function XplorePage() {
 
                 <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
                     <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">Quality Guaranteed</span>
-                    <h1 className="text-5xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
+                    <h1 className="text-4xl md:text-7xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
                         UPGRADE <br />YOUR RIDE
                     </h1>
                     <p className="text-base md:text-lg text-gray-300 mb-8 max-w-lg font-medium border-l-2 border-yellow-500 pl-4">
@@ -152,13 +152,13 @@ export default function XplorePage() {
             </section>
 
             {/* CATEGORIES GRID */}
-            <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-200 bg-white">
+            <div className="max-w-5xl mx-auto px-6 -mt-10 relative z-10">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-200 bg-white shadow-xl">
                     {categories.map((cat) => (
                         <div
                             key={cat.id}
                             onClick={() => navigate(`/${cat.id}`)}
-                            className="p-8 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
+                            className="p-5 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
                         >
                             <div className="w-10 h-10 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 {cat.icon}
@@ -174,15 +174,15 @@ export default function XplorePage() {
                     View All Categories <ArrowRight size={16} />
                 </button>
 
-                <div className="text-center mt-16 mb-24">
-                    <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-gray-900">
+                <div className="text-center mt-8 md:mt-16 mb-12 md:mb-24">
+                    <h2 className="text-3xl md:text-6xl font-black uppercase italic tracking-tighter text-gray-900">
                         XPLORE <span className="text-yellow-500">AUTOPARTS</span>
                     </h2>
                 </div>
             </div>
 
             {/* PRODUCT SECTIONS */}
-            <div className="max-w-7xl mx-auto px-6 mt-24 space-y-24">
+            <div className="max-w-7xl mx-auto px-6 mt-12 md:mt-24 space-y-24">
 
                 {/* Featured */}
                 <section>
