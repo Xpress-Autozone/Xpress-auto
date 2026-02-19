@@ -5,6 +5,7 @@ import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
 import { getProductsByCategory } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
+import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
 
 export default function CategoryPage({
   title = "Category",
@@ -13,6 +14,7 @@ export default function CategoryPage({
   heroDescription = "",
   partTypeFilters = [],
   brandFilters = [],
+  categoryId = null,
 }) {
   const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState(10000);
@@ -35,7 +37,7 @@ export default function CategoryPage({
       try {
         console.log(`[CategoryPage] 🚀 Fetching products for category: ${title}`);
         const data = await getProductsByCategory(categoryQuery, { limit: 100, page: 1 });
-        
+
         if (data.success && data.data) {
           console.log(`[CategoryPage] ✅ Received ${data.data.length} products`);
           setProducts(
@@ -93,7 +95,10 @@ export default function CategoryPage({
       <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-black">
         <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${heroImage})` }} />
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
-          <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">{title}</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">{title}</h1>
+            <CategoryDropdown currentCategory={categoryId || title} />
+          </div>
           <p className="text-sm md:text-lg text-gray-200 max-w-xl font-medium">{heroDescription}</p>
         </div>
       </section>
@@ -101,7 +106,7 @@ export default function CategoryPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Mobile Toggle Button */}
         <div className="lg:hidden mb-6">
-          <button 
+          <button
             onClick={() => setShowFilters(!showFilters)}
             className="w-full flex items-center justify-between bg-gray-900 text-white px-6 py-4 rounded-none font-black uppercase italic tracking-widest text-sm"
           >
@@ -114,7 +119,7 @@ export default function CategoryPage({
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10">
-          
+
           {/* Filters Sidebar - Inline for both Mobile and PC */}
           <aside className={`
             ${showFilters ? "block" : "hidden"} 
@@ -123,7 +128,7 @@ export default function CategoryPage({
           `}>
             <div className="sticky top-24 space-y-2">
               <h2 className="hidden lg:block text-xl font-black uppercase italic mb-6 tracking-tighter">Refine Search</h2>
-              
+
               <FilterSection title="Price Limit" filterName="price">
                 <input
                   type="range" min="0" max="10000" step="100"
