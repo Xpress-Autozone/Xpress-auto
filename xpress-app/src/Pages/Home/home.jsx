@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Check,
-  ArrowRight
-} from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import slideImage from "../../assets/slide.jpg";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
@@ -15,44 +12,92 @@ function Home() {
 
   const categories = [
     {
-      icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="h-6 w-6" />,
+      icon: (
+        <img
+          src="/assets/icons/parts.png"
+          alt="Body & Parts"
+          className="h-6 w-6"
+        />
+      ),
       name: "Body & Parts",
-      description: "Brakes, suspension, and body components"
+      description: "Brakes, suspension, and body components",
     },
     {
-      icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="h-6 w-8" />,
+      icon: (
+        <img
+          src="/assets/icons/engine.png"
+          alt="Engine & Performance"
+          className="h-6 w-8"
+        />
+      ),
       name: "Engine & Performance",
-      description: "Engine parts and performance upgrades"
+      description: "Engine parts and performance upgrades",
     },
     {
-      icon: <img src="/assets/icons/wheel.png" alt="Wheels & Tires" className="h-6 w-6" />,
+      icon: (
+        <img
+          src="/assets/icons/wheel.png"
+          alt="Wheels & Tires"
+          className="h-6 w-6"
+        />
+      ),
       name: "Wheels & Tires",
-      description: "Tires, rims, and wheel accessories"
+      description: "Tires, rims, and wheel accessories",
     },
     {
-      icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="h-6 w-9" />,
+      icon: (
+        <img
+          src="/assets/icons/battery.png"
+          alt="Lighting & Electronics"
+          className="h-6 w-9"
+        />
+      ),
       name: "Lighting & Electronics",
-      description: "Lights, audio, and vehicle electronics"
+      description: "Lights, audio, and vehicle electronics",
     },
     {
-      icon: <img src="/assets/icons/steer.png" alt="Accessories" className="h-6 w-6" />,
+      icon: (
+        <img
+          src="/assets/icons/steer.png"
+          alt="Accessories"
+          className="h-6 w-6"
+        />
+      ),
       name: "Accessories",
-      description: "Interior and exterior vehicle accessories"
+      description: "Interior and exterior vehicle accessories",
     },
     {
-      icon: <img src="/assets/icons/tools.png" alt="Automotive Tools" className="h-6 w-6" />,
+      icon: (
+        <img
+          src="/assets/icons/tools.png"
+          alt="Automotive Tools"
+          className="h-6 w-6"
+        />
+      ),
       name: "Automotive Tools",
-      description: "Professional and DIY auto repair tools"
+      description: "Professional and DIY auto repair tools",
     },
     {
-      icon: <img src="/assets/icons/fluids.png" alt="Fluids & Car Care" className="h-8 w-8" />,
+      icon: (
+        <img
+          src="/assets/icons/fluids.png"
+          alt="Fluids & Car Care"
+          className="h-8 w-8"
+        />
+      ),
       name: "Fluids & Car Care",
-      description: "Oils, cleaners, and maintenance products"
+      description: "Oils, cleaners, and maintenance products",
     },
     {
-      icon: <img src="/assets/icons/cooling.png" alt="Cooling & AC" className="h-7 w-7" />,
+      icon: (
+        <img
+          src="/assets/icons/cooling.png"
+          alt="Cooling & AC"
+          className="h-7 w-7"
+        />
+      ),
       name: "Cooling & AC",
-      description: "Radiators, compressors, and AC components"
+      description: "Radiators, compressors, and AC components",
     },
   ];
 
@@ -64,12 +109,18 @@ function Home() {
       setProductsLoading(true);
       try {
         console.log("[Home] 🚀 Fetching featured products");
-        const data = await getAllProducts({ limit: 6, page: 1, sortBy: "createdAt", sortOrder: "desc" });
-        
+        const data = await getAllProducts({
+          limit: 6,
+          page: 1,
+          sortBy: "createdAt",
+          sortOrder: "desc",
+        });
 
         console.log("[Home] 📦 API response:", data);
         if (data.success && data.data && data.data.length > 0) {
-          console.log(`[Home] ✅ Received ${data.data.length} featured products`);
+          console.log(
+            `[Home] ✅ Received ${data.data.length} featured products`,
+          );
           setFeaturedProducts(
             data.data.map((p) => ({
               id: p.id,
@@ -77,8 +128,9 @@ function Home() {
               price: parseFloat(p.price) || 0,
               status: p.quantity > 0 ? "In Stock" : "Low Stock",
               verified: true,
-              image: p.mainImage.url || "/api/placeholder/200/200"
-            }))
+              image:
+                p.mainImage?.url || p.imageUrl || "/api/placeholder/200/200",
+            })),
           );
         } else {
           console.warn("[Home] ⚠️ No featured products found, using fallback");
@@ -96,7 +148,9 @@ function Home() {
 
   const products = featuredProducts;
 
-  const handleNavigate = () => { navigate("/xplore"); };
+  const handleNavigate = () => {
+    navigate("/xplore");
+  };
 
   const handleCategoryClick = (categoryName) => {
     const categoryRoutes = {
@@ -104,10 +158,10 @@ function Home() {
       "Engine & Performance": "/engine-performance",
       "Wheels & Tires": "/wheels-tires",
       "Lighting & Electronics": "/lighting-electronics",
-      "Accessories": "/accessories",
+      Accessories: "/accessories",
       "Fluids & Car Care": "/fluids-care",
       "Automotive Tools": "/automotive-tools",
-      "Cooling & AC": "/cooling-ac"
+      "Cooling & AC": "/cooling-ac",
     };
     navigate(categoryRoutes[categoryName]);
   };
@@ -116,37 +170,39 @@ function Home() {
     setTimeout(() => setIsLoading(false), 1500);
   }, []);
 
-  if (isLoading) { return <SkeletonLoader />; }
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <div className="bg-white min-h-screen w-full">
-      
       {/* NEW XPLORE-STYLE HERO SECTION */}
       <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">
-        <div 
-            className="absolute inset-0 bg-cover bg-center opacity-50"
-            style={{ backgroundImage: `url(${slideImage})` }}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-50"
+          style={{ backgroundImage: `url(${slideImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-        
+
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
-              Verified by Xpress AutoZone
-            </span>
-            <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
-                DISCOVER <br/>
-                <span className="text-gray-300">QUALITY PARTS</span>
-            </h1>
-            <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
-                Every part goes through a rigorous inspection. Shop with total confidence on 
-                Ghana's premier aftermarket platform for authentic vehicle components.
-            </p>
-            <button
-              onClick={handleNavigate}
-              className="w-fit bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-10 transition-all duration-300"
-            >
-              Shop Verified Parts
-            </button>
+          <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
+            Verified by Xpress AutoZone
+          </span>
+          <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
+            DISCOVER <br />
+            <span className="text-gray-300">QUALITY PARTS</span>
+          </h1>
+          <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
+            Every part goes through a rigorous inspection. Shop with total
+            confidence on Ghana's premier aftermarket platform for authentic
+            vehicle components.
+          </p>
+          <button
+            onClick={handleNavigate}
+            className="w-fit bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-10 transition-all duration-300"
+          >
+            Shop Verified Parts
+          </button>
         </div>
       </section>
 
@@ -212,31 +268,41 @@ function Home() {
             <div className="h-1 w-32 bg-yellow-500 mx-auto"></div>
           </div>
 
-        {productsLoading ? (
-          <div className="py-20 text-center">
-            <p className="text-gray-500 font-medium">Loading featured products...</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-gray-500 font-medium text-lg">No products found</p>
-            <p className="text-gray-400 text-sm mt-2">Check back soon for featured items</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} variant="featured" />
-            ))}
-          </div>
-        )}
+          {productsLoading ? (
+            <div className="py-20 text-center">
+              <p className="text-gray-500 font-medium">
+                Loading featured products...
+              </p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-gray-500 font-medium text-lg">
+                No products found
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                Check back soon for featured items
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  variant="featured"
+                />
+              ))}
+            </div>
+          )}
 
-        {products.length > 0 && (
-          <button
-            onClick={() => navigate("/xplore/featured")}
-            className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
-          >
-            View All Featured Products <ArrowRight size={16} />
-          </button>
-        )}
+          {products.length > 0 && (
+            <button
+              onClick={() => navigate("/xplore/featured")}
+              className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
+            >
+              View All Featured Products <ArrowRight size={16} />
+            </button>
+          )}
         </div>
 
         {/* CTA Section */}
@@ -245,8 +311,8 @@ function Home() {
             Discover More with Xplore
           </h2>
           <p className="text-gray-500 font-medium text-base md:text-lg mb-10 max-w-2xl mx-auto">
-            Explore curated collections of trending items and new arrivals. 
-            Find exactly what your vehicle needs to perform at its peak.
+            Explore curated collections of trending items and new arrivals. Find
+            exactly what your vehicle needs to perform at its peak.
           </p>
           <button
             onClick={() => navigate("/xplore")}
@@ -261,29 +327,37 @@ function Home() {
           <h2 className="text-3xl md:text-4xl font-black text-black uppercase italic tracking-tighter text-center mb-16">
             Why choose Xpress AutoZone?
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-gray-100">
             <div className="p-10 border-b md:border-b-0 md:border-r border-gray-100 hover:bg-gray-50 transition-colors">
-              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">Admin Reviewed</h3>
+              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">
+                Admin Reviewed
+              </h3>
               <p className="text-gray-500 text-sm font-medium leading-relaxed">
-                Meticulously inspected and verified by our expert team for authenticity and condition.
+                Meticulously inspected and verified by our expert team for
+                authenticity and condition.
               </p>
             </div>
             <div className="p-10 border-b md:border-b-0 md:border-r border-gray-100 hover:bg-gray-50 transition-colors">
-              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">Uncompromised Quality</h3>
+              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">
+                Uncompromised Quality
+              </h3>
               <p className="text-gray-500 text-sm font-medium leading-relaxed">
-                Stringent quality standards, providing you with reliable and durable automotive solutions.
+                Stringent quality standards, providing you with reliable and
+                durable automotive solutions.
               </p>
             </div>
             <div className="p-10 hover:bg-gray-50 transition-colors">
-              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">Buyer Protection</h3>
+              <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">
+                Buyer Protection
+              </h3>
               <p className="text-gray-500 text-sm font-medium leading-relaxed">
-                Your satisfaction is our priority. Secure and worry-free purchasing experience guaranteed.
+                Your satisfaction is our priority. Secure and worry-free
+                purchasing experience guaranteed.
               </p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
