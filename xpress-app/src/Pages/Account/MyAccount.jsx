@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { signOut } from '../../Redux/userSlice';
+import { signOut, updateUser } from '../../Redux/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Package,
@@ -9,18 +9,83 @@ import {
   LogOut,
   Trash2,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Edit2,
+  Save,
+  X
 } from 'lucide-react';
+
+const fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other', 'N/A'];
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i);
 
 const MyAccount = () => {
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    phone: '',
+    vehicle: {
+      make: '',
+      model: '',
+      year: '',
+      fuelType: ''
+    }
+  });
+
+  useEffect(() => {
+    if (user) {
+      setEditFormData({
+        phone: user.phone || '',
+        vehicle: {
+          make: user.vehicle?.make || '',
+          model: user.vehicle?.model || '',
+          year: user.vehicle?.year || '',
+          fuelType: user.vehicle?.fuelType || ''
+        }
+      });
+    }
+  }, [user]);
 
   const handleSignOut = () => {
     dispatch(signOut());
     navigate('/');
+  };
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Reset form if canceling
+      setEditFormData({
+        phone: user.phone || '',
+        vehicle: {
+          make: user.vehicle?.make || '',
+          model: user.vehicle?.model || '',
+          year: user.vehicle?.year || '',
+          fuelType: user.vehicle?.fuelType || ''
+        }
+      });
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith('vehicle.')) {
+      const field = name.split('.')[1];
+      setEditFormData(prev => ({
+        ...prev,
+        vehicle: { ...prev.vehicle, [field]: value }
+      }));
+    } else {
+      setEditFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSave = () => {
+    dispatch(updateUser(editFormData));
+    setIsEditing(false);
   };
 
   // Mock Purchase History
@@ -46,15 +111,15 @@ const MyAccount = () => {
             <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-2 block">
               Member Dashboard
             </span>
-            <h1 className="text-4xl md:text-7xl font-black text-black uppercase italic tracking-tighter leading-none">
-              My <span className="text-gray-300">Account</span>
+            <h1 className="text-3xl md:text-6xl font-black text-black uppercase italic tracking-tighter leading-none">
+              My Account
             </h1>
           </div>
           <Link
-            to="/wishlist"
+            to="/cart"
             className="flex items-center gap-2 bg-black text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all"
           >
-            <Heart size={16} /> View Wishlist
+            <Heart size={16} /> View Cart
           </Link>
         </div>
 
@@ -63,7 +128,7 @@ const MyAccount = () => {
           {/* LEFT: NAV TABS */}
           <aside className="lg:col-span-1 space-y-1">
             <TabBtn active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="Order History" icon={<Package size={18} />} />
-            <TabBtn active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} label="Profile Details" icon={<User size={18} />} />
+            <TabBtn active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile Details" icon={<User size={18} />} />
             <div className="pt-8 mt-8 border-t border-gray-100">
               <button
                 onClick={handleSignOut}
@@ -79,7 +144,7 @@ const MyAccount = () => {
 
             {activeTab === 'history' && (
               <div className="space-y-8">
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter">Purchase History</h3>
+                <h3 className="text-2xl font-black uppercase italic tracking-tighter">History</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -112,22 +177,76 @@ const MyAccount = () => {
             {activeTab === 'profile' && (
               <div className="space-y-12">
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-black uppercase italic tracking-tighter">Account Information</h3>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter">Account Information</h3>
+                    <button
+                      onClick={isEditing ? handleSave : handleEditToggle}
+                      className={`flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'}`}
+                    >
+                      {isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
+                    </button>
+                    {isEditing && (
+                      <button
+                        onClick={handleEditToggle}
+                        className="flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black ml-2"
+                      >
+                        <X size={14} /> Cancel
+                      </button>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InfoGroup label="Full Name" value={user?.name || "Member Name"} />
-                    <InfoGroup label="Email Address" value={user?.email || "member@example.com"} />
-                    <InfoGroup label="Phone" value={user?.phone || "+233 -- --- ----"} />
-                    <InfoGroup label="Member Since" value="January 2025" />
+                    <InfoGroup label="Full Name" value={user?.name || "Member Name"} isReadOnly={true} />
+                    <InfoGroup label="Email Address" value={user?.email || "member@example.com"} isReadOnly={true} />
+                    <InfoGroup
+                      label="Phone Number"
+                      value={editFormData.phone}
+                      isEditing={isEditing}
+                      name="phone"
+                      onChange={handleInputChange}
+                    />
+                    <InfoGroup label="Member Status" value="Verified Member" isReadOnly={true} />
                   </div>
                 </div>
 
                 {/* VEHICLE DETAILS */}
                 <div className="pt-12 border-t border-gray-100 space-y-6">
                   <h3 className="text-2xl font-black uppercase italic tracking-tighter">Vehicle Details</h3>
-                  <div className="bg-gray-50 p-8 border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <InfoGroup label="Make" value={user?.vehicle?.make || "Not Set"} />
-                    <InfoGroup label="Model" value={user?.vehicle?.model || "Not Set"} />
-                    <InfoGroup label="Year" value={user?.vehicle?.year || "Not Set"} />
+                  <div className="bg-gray-50 p-8 border border-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <InfoGroup
+                      label="Make"
+                      value={editFormData.vehicle.make}
+                      isEditing={isEditing}
+                      name="vehicle.make"
+                      onChange={handleInputChange}
+                      placeholder="e.g. Toyota"
+                    />
+                    <InfoGroup
+                      label="Model"
+                      value={editFormData.vehicle.model}
+                      isEditing={isEditing}
+                      name="vehicle.model"
+                      onChange={handleInputChange}
+                      placeholder="e.g. Camry"
+                    />
+                    <InfoGroup
+                      label="Year"
+                      value={editFormData.vehicle.year}
+                      isEditing={isEditing}
+                      name="vehicle.year"
+                      onChange={handleInputChange}
+                      type="select"
+                      options={years}
+                    />
+                    <InfoGroup
+                      label="Fuel Type"
+                      value={editFormData.vehicle.fuelType}
+                      isEditing={isEditing}
+                      name="vehicle.fuelType"
+                      onChange={handleInputChange}
+                      type="select"
+                      options={fuelTypes}
+                    />
                   </div>
                 </div>
 
@@ -170,10 +289,34 @@ const TabBtn = ({ active, onClick, label, icon }) => (
   </button>
 );
 
-const InfoGroup = ({ label, value }) => (
-  <div className="space-y-1 border-b border-gray-50 pb-4">
-    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">{label}</label>
-    <p className="text-sm font-bold text-black uppercase tracking-tight">{value}</p>
+const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [] }) => (
+  <div className="space-y-2 border-b border-gray-50 pb-4">
+    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 block">{label}</label>
+    {isEditing && !isReadOnly ? (
+      type === "select" ? (
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
+        >
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
+        />
+      )
+    ) : (
+      <p className={`text-sm font-bold uppercase tracking-tight ${isReadOnly && isEditing ? 'text-gray-400' : 'text-black'}`}>
+        {value || "Not Set"}
+      </p>
+    )}
   </div>
 );
 
