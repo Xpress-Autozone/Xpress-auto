@@ -182,7 +182,7 @@ export default function CartPage() {
 
                 {/* Continue Shopping */}
                 <button
-                  onClick={() => navigate("/product")}
+                  onClick={() => navigate("/xplore")}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-black font-semibold py-2 rounded-lg transition-colors text-sm"
                 >
                   Continue Shopping

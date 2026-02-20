@@ -46,6 +46,19 @@ class ErrorBoundary extends React.Component {
 }
 
 // --- 2. MAIN PAGE COMPONENT ---
+const FilterSection = ({ title, children }) => (
+  <div className="border-b border-gray-100 last:border-0 pb-6">
+    <div className="py-4">
+      <span className="text-xs font-black uppercase tracking-widest text-gray-900">
+        {title}
+      </span>
+    </div>
+    <div>
+      {children}
+    </div>
+  </div>
+);
+
 const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -60,6 +73,16 @@ const SearchResultsPage = () => {
     priceMax: "",
   });
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+
+  // Local state for price inputs to prevent focus loss/flicker during typing
+  const [tempMin, setTempMin] = useState(filters.priceMin);
+  const [tempMax, setTempMax] = useState(filters.priceMax);
+
+  // Sync temp inputs when filters change (e.g. from presets or Clear All)
+  useEffect(() => {
+    setTempMin(filters.priceMin);
+    setTempMax(filters.priceMax);
+  }, [filters.priceMin, filters.priceMax]);
 
   const query = searchParams.get("q") || "";
   const page = parseInt(searchParams.get("page")) || 1;
@@ -137,40 +160,33 @@ const SearchResultsPage = () => {
     );
   };
 
-  const FilterSection = ({ title, children }) => (
-    <div className="border-b border-gray-100 last:border-0 pb-6">
-      <div className="py-4">
-        <span className="text-xs font-black uppercase tracking-widest text-gray-900">
-          {title}
-        </span>
-      </div>
-      <div>
-        {children}
-      </div>
-    </div>
-  );
+
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* Top Search Header */}
-      <div className="relative bg-black py-20 px-6 border-b border-white/10 overflow-hidden min-h-[300px] flex items-center">
-        {/* Background Image - Mobile Focused */}
+      {/* Top Search Header - Refined Height and Visibility */}
+      <div className="relative bg-black py-8 px-6 border-b border-white/10 overflow-hidden min-h-[160px] flex items-center">
+        {/* Background Image - Descriptive & Visible */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-60"
-          style={{ backgroundImage: `url(${SearchResultHero})` }}
+          className="absolute inset-0 transition-opacity duration-700"
+          style={{
+            backgroundImage: `url(${SearchResultHero})`,
+            backgroundSize: '100% auto',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: '1'
+          }}
         />
-        {/* Darkened bottom gradient - borrowing from category pages format */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
+        
+        {/* Subtle overlay only if needed for text readability, but remarkably lighter */}
+        <div className="absolute inset-0 bg-black/20" />
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="text-white space-y-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Results for</span>
-            <h1 className="text-3xl md:text-3xl font-black  tracking leading-none ">
+        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-start justify-center">
+          <div className="text-white space-y-1">
+            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] drop-shadow-md">Results for</span>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter leading-none drop-shadow-lg">
               "{query}"
             </h1>
-          </div>
-          <div className="w-full md:w-1/3">
-            <SearchBar className="bg-white/10 text-white placeholder-gray-500 p-4 w-full outline-none border border-white/20 focus:border-yellow-500 backdrop-blur-sm" />
           </div>
         </div>
       </div>
@@ -219,7 +235,7 @@ const SearchResultsPage = () => {
                           const val = Math.min(parseInt(e.target.value), parseInt(filters.priceMax || 10000) - 100);
                           handleFilterChange("priceMin", val.toString());
                         }}
-                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
+                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
                       />
                       <input
                         type="range"
@@ -231,7 +247,7 @@ const SearchResultsPage = () => {
                           const val = Math.max(parseInt(e.target.value), parseInt(filters.priceMin || 0) + 100);
                           handleFilterChange("priceMax", val.toString());
                         }}
-                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
+                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
                       />
                     </div>
                   </div>
@@ -241,23 +257,25 @@ const SearchResultsPage = () => {
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MIN</span>
                       <input
                         type="number"
-                        value={filters.priceMin}
-                        onChange={(e) => handleFilterChange("priceMin", e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-[11px] font-black uppercase outline-none focus:border-black text-right"
+                        value={tempMin}
+                        onChange={(e) => setTempMin(e.target.value)}
+                        onBlur={() => handleFilterChange("priceMin", tempMin)}
+                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="0"
                       />
-                      <span className="absolute left-3 bottom-1.5 text-[8px] font-black italic text-black">₵</span>
+                      <span className="absolute left-3 bottom-2 text-xs md:text-[8px] font-black italic text-black">₵</span>
                     </div>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MAX</span>
                       <input
                         type="number"
-                        value={filters.priceMax}
-                        onChange={(e) => handleFilterChange("priceMax", e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-[11px] font-black uppercase outline-none focus:border-black text-right"
+                        value={tempMax}
+                        onChange={(e) => setTempMax(e.target.value)}
+                        onBlur={() => handleFilterChange("priceMax", tempMax)}
+                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="10K+"
                       />
-                      <span className="absolute left-3 bottom-1.5 text-[8px] font-black italic text-black">₵</span>
+                      <span className="absolute left-3 bottom-2 text-xs md:text-[8px] font-black italic text-black">₵</span>
                     </div>
                   </div>
 
@@ -274,8 +292,8 @@ const SearchResultsPage = () => {
                           handleFilterChange("priceMax", preset.max);
                         }}
                         className={`text-[8px] font-black uppercase tracking-tighter px-3 py-1.5 border transition-all italic ${filters.priceMin === preset.min && filters.priceMax === preset.max
-                            ? "bg-black text-white border-black"
-                            : "bg-white text-gray-400 border-gray-100 hover:border-black hover:text-black"
+                          ? "bg-black text-white border-black"
+                          : "bg-white text-gray-400 border-gray-100 hover:border-black hover:text-black"
                           }`}
                       >
                         {preset.label}
