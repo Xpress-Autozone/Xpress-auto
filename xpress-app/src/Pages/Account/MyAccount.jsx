@@ -117,7 +117,7 @@ const MyAccount = () => {
           </div>
           <Link
             to="/cart"
-            className="flex items-center gap-2 bg-black text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all"
+            className="flex items-center gap-2  text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all"
           >
             <Heart size={16} /> View Cart
           </Link>
@@ -181,16 +181,16 @@ const MyAccount = () => {
                     <h3 className="text-2xl font-black uppercase italic tracking-tighter">Account Information</h3>
                     <button
                       onClick={isEditing ? handleSave : handleEditToggle}
-                      className={`flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'}`}
+                      className={`flex items-center gap-2 px-2 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'}`}
                     >
                       {isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
                     </button>
                     {isEditing && (
                       <button
                         onClick={handleEditToggle}
-                        className="flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black ml-2"
+                        className="flex items-center gap-2 px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black ml-2"
                       >
-                        <X size={14} /> Cancel
+                        <X size={14} />
                       </button>
                     )}
                   </div>
