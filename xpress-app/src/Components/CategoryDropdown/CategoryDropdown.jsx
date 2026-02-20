@@ -8,8 +8,8 @@ const categories = [
   { name: "Wheels & Tires", route: "/wheels-tires" },
   { name: "Lighting & Electronics", route: "/lighting-electronics" },
   { name: "Accessories", route: "/accessories" },
-  { name: "Fluids & Car Care", route: "/fluids-care" },
   { name: "Automotive Tools", route: "/automotive-tools" },
+  { name: "Fluids & Car Care", route: "/fluids-care" },
   { name: "Cooling & AC", route: "/cooling-ac" }
 ];
 
@@ -48,7 +48,7 @@ export default function CategoryDropdown({ currentCategory }) {
         </span>
         <ChevronDown className={`w-7 h-7 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      
+
       {isOpen && (
         <div className="
           absolute top-full left-0 mt-2 
@@ -61,9 +61,8 @@ export default function CategoryDropdown({ currentCategory }) {
               <button
                 key={category.route}
                 onClick={() => { navigate(category.route); setIsOpen(false); }}
-                className={`w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-200 border-b border-white/5 last:border-0 group ${
-                  currentCategory === category.name ? 'bg-yellow-500 text-black' : 'text-yellow-500 hover:bg-yellow-500 hover:text-black'
-                }`}
+                className={`w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-200 border-b border-white/5 last:border-0 group ${currentCategory === category.name ? 'bg-yellow-500 text-black' : 'text-yellow-500 hover:bg-yellow-500 hover:text-black'
+                  }`}
               >
                 <span className="text-[12px] font-black uppercase tracking-[0.1em]">
                   {category.name}

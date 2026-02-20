@@ -318,7 +318,7 @@ const SearchResultsPage = () => {
                     {[
                       { label: "Economy", min: "0", max: "1000" },
                       { label: "Performance", min: "1000", max: "5000" },
-                      { label: "Premium", min: "5000", max: "10000" }
+                      { label: "Premium", min: "5000", max: "99000" }
                     ].map((preset) => (
                       <button
                         key={preset.label}
@@ -341,10 +341,10 @@ const SearchResultsPage = () => {
               <FilterSection title="Categories">
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    "Brakes", "Engine",
-                    "Electrical", "Suspension",
-                    "Exhaust", "Body Parts",
-                    "Lighting", "Accessories"
+                    "Body & Parts", "Engine & Performance",
+                    "Wheels & Tires", "Lighting & Electronics",
+                    "Accessories", "Automotive Tools",
+                    "Fluids & Car Care", "Cooling & AC"
                   ].map(cat => (
                     <button
                       key={cat}
