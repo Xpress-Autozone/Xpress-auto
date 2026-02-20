@@ -193,20 +193,24 @@ export default function XplorePage() {
                                 <Sparkles size={24} className="text-black" /> Featured Inventory
                             </h2>
                         </div>
-                        <button onClick={() => navigate("/xplore/featured")} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-yellow-600">
-                            See All <ArrowRight size={14} />
-                        </button>
                     </div>
                     {featuredProducts.length === 0 ? (
                         <div className="py-20">
                             <EmptyState message="No featured products available." />
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {featuredProducts.map(product => (
-                                <ProductCard key={product.id} product={product} navigate={navigate} badge="Featured" />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {featuredProducts.map(product => (
+                                    <ProductCard key={product.id} product={product} navigate={navigate} badge="Featured" />
+                                ))}
+                            </div>
+                            <div className="mt-8 flex justify-end">
+                                <button onClick={() => navigate("/xplore/featured")} className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2 hover:text-yellow-600 border-b-2 border-transparent hover:border-yellow-600 pb-1 transition-all">
+                                    See All <ArrowRight size={16} />
+                                </button>
+                            </div>
+                        </>
                     )}
                 </section>
 
@@ -219,20 +223,24 @@ export default function XplorePage() {
                                 <Flame size={24} className="text-black" /> Hot Right Now
                             </h2>
                         </div>
-                        <button onClick={() => navigate("/xplore/trending")} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-yellow-600">
-                            See All <ArrowRight size={14} />
-                        </button>
                     </div>
                     {hotProducts.length === 0 ? (
                         <div className="py-20">
                             <EmptyState message="No trending products available." />
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {hotProducts.map(product => (
-                                <ProductCard key={product.id} product={product} navigate={navigate} badge="Hot" />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                {hotProducts.map(product => (
+                                    <ProductCard key={product.id} product={product} navigate={navigate} badge="Hot" />
+                                ))}
+                            </div>
+                            <div className="mt-8 flex justify-end">
+                                <button onClick={() => navigate("/xplore/trending")} className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2 hover:text-yellow-600 border-b-2 border-transparent hover:border-yellow-600 pb-1 transition-all">
+                                    See All <ArrowRight size={16} />
+                                </button>
+                            </div>
+                        </>
                     )}
                 </section>
 
@@ -245,20 +253,24 @@ export default function XplorePage() {
                                 <TrendingUp size={24} className="text-black" /> New Arrivals
                             </h2>
                         </div>
-                        <button onClick={() => navigate("/xplore/new")} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-yellow-600">
-                            See All <ArrowRight size={14} />
-                        </button>
                     </div>
                     {newProducts.length === 0 ? (
                         <div className="py-20">
                             <EmptyState message="No new products available." />
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {newProducts.map(product => (
-                                <ProductCard key={product.id} product={product} navigate={navigate} badge="New" />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                {newProducts.map(product => (
+                                    <ProductCard key={product.id} product={product} navigate={navigate} badge="New" />
+                                ))}
+                            </div>
+                            <div className="mt-8 flex justify-end">
+                                <button onClick={() => navigate("/xplore/new")} className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2 hover:text-yellow-600 border-b-2 border-transparent hover:border-yellow-600 pb-1 transition-all">
+                                    See All <ArrowRight size={16} />
+                                </button>
+                            </div>
+                        </>
                     )}
                 </section>
 
