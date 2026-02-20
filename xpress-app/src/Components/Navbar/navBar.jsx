@@ -25,7 +25,7 @@ const Navbar = () => {
     <>
       <nav className="bg-yellow-500 border-b border-black/10 fixed w-full z-50 px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          
+
           {/* LEFT: Logo & Nav Links */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex-shrink-0">
@@ -44,9 +44,9 @@ const Navbar = () => {
 
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-4 md:gap-6">
-            
+
             {/* Search Trigger */}
-            <button 
+            <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2 hover:bg-black/5 rounded-none transition-colors"
             >
@@ -116,34 +116,36 @@ const Navbar = () => {
       {/* SEARCH OVERLAY */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-start pt-32 px-6">
-          <button 
+          <button
             onClick={() => setIsSearchOpen(false)}
             className="absolute top-8 right-8 text-white hover:text-yellow-500 transition-colors"
           >
-            <X size={40} strokeWidth={1} />
+            <X size={32} strokeWidth={1} />
           </button>
-          
-          <div className="w-full max-w-3xl space-y-8">
-            <div className="text-center space-y-2">
-              <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs">Xpress Search</span>
-              <h2 className="text-white text-3xl md:text-5xl font-black uppercase italic tracking-tighter">What are we looking for?</h2>
+
+          <div className="w-full max-w-xl space-y-4">
+            <div className="text-center space-y-1">
+              <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Xpress Search</span>
+              <h2 className="text-white text-xl md:text-2xl font-black uppercase italic tracking-tighter">What are we looking for?</h2>
             </div>
-            
-            <div className="relative border-b-2 border-yellow-500 pb-4">
-               <SearchBar 
-                 className="bg-transparent text-white text-2xl md:text-4xl outline-none w-full" 
-                 placeholders={searchPlaceholders} 
-                 onSearch={() => setIsSearchOpen(false)}
-               />
+
+            <div className="relative w-full">
+              <SearchBar
+                className="bg-white text-black text-base md:text-lg outline-none w-full shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+                placeholders={searchPlaceholders}
+                onSearch={() => setIsSearchOpen(false)}
+              />
             </div>
-            
-            <p className="text-yellow-400 text-center text-sm font-medium">
-              With our Xpress Search, ask like a human - we'll find exactly what you need!
+
+            <p className="text-yellow-400 text-center text-[10px] font-bold uppercase tracking-widest opacity-80">
+              Ask like a human - we'll find exactly what you need!
             </p>
-            
-            <p className="text-gray-500 text-center font-medium italic">
-              Press <span className="text-white">ESC</span> to close or click the X above.
-            </p>
+
+            <div className="pt-4 flex justify-center">
+              <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em] italic bg-white/5 px-3 py-1">
+                Press <span className="text-white">ESC</span> to close
+              </p>
+            </div>
           </div>
         </div>
       )}

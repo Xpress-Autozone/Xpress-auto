@@ -5,6 +5,8 @@ import SearchBar from "../../Components/Search/searchBar";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { ChevronDown, Filter, Check, X, AlertTriangle, RefreshCw, Home } from "lucide-react";
 
+import SearchResultHero from "../../assets/SearchResultMobile.jpg";
+
 // --- 1. INTEGRATED ERROR BOUNDARY ---
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -57,10 +59,6 @@ const SearchResultsPage = () => {
     priceMin: "",
     priceMax: "",
   });
-  const [expandedFilters, setExpandedFilters] = useState({
-    price: true,
-    category: true,
-  });
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
   const query = searchParams.get("q") || "";
@@ -96,8 +94,8 @@ const SearchResultsPage = () => {
         setResults([]);
       }
     } catch (err) {
-      setError(err.message === "Search request timed out" 
-        ? "Search took too long. Please try again." 
+      setError(err.message === "Search request timed out"
+        ? "Search took too long. Please try again."
         : "Failed to fetch results. Please try again.");
       setResults([]);
     } finally {
@@ -109,9 +107,7 @@ const SearchResultsPage = () => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
 
-  const toggleFilter = (filterName) => {
-    setExpandedFilters((prev) => ({ ...prev, [filterName]: !prev[filterName] }));
-  };
+
 
   const renderPagination = () => {
     if (!pagination?.totalPages || pagination.totalPages <= 1) return null;
@@ -131,9 +127,8 @@ const SearchResultsPage = () => {
               params.set("page", p.toString());
               navigate(`/search?${params.toString()}`);
             }}
-            className={`text-xs font-black uppercase italic tracking-widest transition-all ${
-              p === currentPage ? "text-yellow-500 border-b-2 border-yellow-500" : "text-gray-400 hover:text-black"
-            }`}
+            className={`text-xs font-black uppercase italic tracking-widest transition-all ${p === currentPage ? "text-yellow-500 border-b-2 border-yellow-500" : "text-gray-400 hover:text-black"
+              }`}
           >
             {p.toString().padStart(2, '0')}
           </button>
@@ -142,22 +137,14 @@ const SearchResultsPage = () => {
     );
   };
 
-  const FilterSection = ({ title, filterName, children }) => (
-    <div className="border-b border-gray-100 last:border-0">
-      <button
-        onClick={() => toggleFilter(filterName)}
-        className="flex items-center justify-between w-full py-4 text-left group"
-      >
-        <span className="text-xs font-black uppercase tracking-widest text-gray-900 group-hover:text-yellow-600 transition-colors">
+  const FilterSection = ({ title, children }) => (
+    <div className="border-b border-gray-100 last:border-0 pb-6">
+      <div className="py-4">
+        <span className="text-xs font-black uppercase tracking-widest text-gray-900">
           {title}
         </span>
-        <ChevronDown
-          className={`w-4 h-4 transition-transform duration-300 ${
-            expandedFilters[filterName] ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      <div className={`overflow-hidden transition-all duration-300 ${expandedFilters[filterName] ? "max-h-96 pb-4" : "max-h-0"}`}>
+      </div>
+      <div>
         {children}
       </div>
     </div>
@@ -166,16 +153,24 @@ const SearchResultsPage = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
       {/* Top Search Header */}
-      <div className="bg-black py-12 px-6 border-b border-white/10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="relative bg-black py-20 px-6 border-b border-white/10 overflow-hidden min-h-[300px] flex items-center">
+        {/* Background Image - Mobile Focused */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-60"
+          style={{ backgroundImage: `url(${SearchResultHero})` }}
+        />
+        {/* Darkened bottom gradient - borrowing from category pages format */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
+
+        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-white space-y-2">
             <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Results for</span>
-            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none italic">
+            <h1 className="text-3xl md:text-3xl font-black  tracking leading-none ">
               "{query}"
             </h1>
           </div>
           <div className="w-full md:w-1/3">
-            <SearchBar className="bg-white/10 text-white placeholder-gray-500 p-4 w-full outline-none border border-white/20 focus:border-yellow-500" />
+            <SearchBar className="bg-white/10 text-white placeholder-gray-500 p-4 w-full outline-none border border-white/20 focus:border-yellow-500 backdrop-blur-sm" />
           </div>
         </div>
       </div>
@@ -201,34 +196,108 @@ const SearchResultsPage = () => {
             </div>
 
             <div className="sticky top-28 space-y-2">
-              <FilterSection title="Price Limit" filterName="price">
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="MIN"
-                    value={filters.priceMin}
-                    onChange={(e) => handleFilterChange("priceMin", e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
-                  />
-                  <input
-                    type="number"
-                    placeholder="MAX"
-                    value={filters.priceMax}
-                    onChange={(e) => handleFilterChange("priceMax", e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 p-3 text-[10px] font-black uppercase outline-none focus:border-black"
-                  />
+              <FilterSection title="Price Range">
+                <div className="space-y-6">
+                  {/* Dual Range Slider Component */}
+                  <div className="px-2 pt-2">
+                    <div className="relative h-1.5 w-full bg-gray-100 rounded-full">
+                      {/* Highlighted track between handles */}
+                      <div
+                        className="absolute h-full bg-yellow-500 rounded-full"
+                        style={{
+                          left: `${Math.min((parseInt(filters.priceMin || 0) / 10000) * 100, 100)}%`,
+                          right: `${100 - Math.min((parseInt(filters.priceMax || 10000) / 10000) * 100, 100)}%`
+                        }}
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10000"
+                        step="100"
+                        value={filters.priceMin || 0}
+                        onChange={(e) => {
+                          const val = Math.min(parseInt(e.target.value), parseInt(filters.priceMax || 10000) - 100);
+                          handleFilterChange("priceMin", val.toString());
+                        }}
+                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10000"
+                        step="100"
+                        value={filters.priceMax || 10000}
+                        onChange={(e) => {
+                          const val = Math.max(parseInt(e.target.value), parseInt(filters.priceMin || 0) + 100);
+                          handleFilterChange("priceMax", val.toString());
+                        }}
+                        className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MIN</span>
+                      <input
+                        type="number"
+                        value={filters.priceMin}
+                        onChange={(e) => handleFilterChange("priceMin", e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-[11px] font-black uppercase outline-none focus:border-black text-right"
+                        placeholder="0"
+                      />
+                      <span className="absolute left-3 bottom-1.5 text-[8px] font-black italic text-black">₵</span>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MAX</span>
+                      <input
+                        type="number"
+                        value={filters.priceMax}
+                        onChange={(e) => handleFilterChange("priceMax", e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-[11px] font-black uppercase outline-none focus:border-black text-right"
+                        placeholder="10K+"
+                      />
+                      <span className="absolute left-3 bottom-1.5 text-[8px] font-black italic text-black">₵</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { label: "Economy", min: "0", max: "1000" },
+                      { label: "Performance", min: "1000", max: "5000" },
+                      { label: "Premium", min: "5000", max: "10000" }
+                    ].map((preset) => (
+                      <button
+                        key={preset.label}
+                        onClick={() => {
+                          handleFilterChange("priceMin", preset.min);
+                          handleFilterChange("priceMax", preset.max);
+                        }}
+                        className={`text-[8px] font-black uppercase tracking-tighter px-3 py-1.5 border transition-all italic ${filters.priceMin === preset.min && filters.priceMax === preset.max
+                            ? "bg-black text-white border-black"
+                            : "bg-white text-gray-400 border-gray-100 hover:border-black hover:text-black"
+                          }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </FilterSection>
 
-              <FilterSection title="Categories" filterName="category">
-                <div className="space-y-2">
-                  {["Brakes", "Engine Parts", "Electrical", "Suspension", "Exhaust"].map(cat => (
-                    <button 
+              <FilterSection title="Categories">
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    "Brakes", "Engine",
+                    "Electrical", "Suspension",
+                    "Exhaust", "Body Parts",
+                    "Lighting", "Accessories"
+                  ].map(cat => (
+                    <button
                       key={cat}
                       onClick={() => handleFilterChange("category", cat)}
-                      className={`block w-full text-left text-[10px] font-black uppercase tracking-widest py-2 px-3 border transition-all ${
-                        filters.category === cat ? "bg-black text-white border-black italic" : "border-transparent text-gray-400 hover:border-gray-100 hover:text-black"
-                      }`}
+                      className={`block w-full text-center text-[9px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.category === cat ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
+                        }`}
                     >
                       {cat}
                     </button>
@@ -236,8 +305,23 @@ const SearchResultsPage = () => {
                 </div>
               </FilterSection>
 
-              <button 
-                onClick={() => setFilters({ category: "", priceMin: "", priceMax: "" })}
+              <FilterSection title="Item Condition">
+                <div className="grid grid-cols-3 gap-1">
+                  {["New", "Used", "Refurbished"].map(cond => (
+                    <button
+                      key={cond}
+                      onClick={() => handleFilterChange("condition", cond)}
+                      className={`block w-full text-center text-[8px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.condition === cond ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
+                        }`}
+                    >
+                      {cond}
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
+
+              <button
+                onClick={() => setFilters({ category: "", priceMin: "", priceMax: "", condition: "" })}
                 className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
               >
                 Reset All Filters
@@ -247,13 +331,30 @@ const SearchResultsPage = () => {
 
           {/* Results Area */}
           <main className="flex-1">
-            <div className="flex justify-between items-center mb-10 border-b border-gray-50 pb-4">
-               <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
-                <Filter size={14} /> Filters
-              </button>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                {pagination?.totalItems || 0} Products Identified
-              </p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 border-b border-gray-50 pb-6 gap-4">
+              <div className="flex flex-wrap items-center gap-4">
+                <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
+                  <Filter size={14} /> Filters
+                </button>
+                <div className="flex items-center gap-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    {pagination?.totalItems || 0} Products Identified
+                  </p>
+                  {Object.values(filters).filter(v => v !== "").length > 0 && (
+                    <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
+                      <span className="bg-yellow-500 text-black text-[8px] font-black uppercase px-2 py-1 italic">
+                        {Object.values(filters).filter(v => v !== "").length} Filters Applied
+                      </span>
+                      <button
+                        onClick={() => setFilters({ category: "", priceMin: "", priceMax: "", condition: "" })}
+                        className="text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 font-black flex items-center gap-1 transition-colors italic"
+                      >
+                        <X size={10} /> Clear All Filters
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {loading ? (
@@ -286,9 +387,8 @@ const SearchResultsPage = () => {
                       </h3>
                       <div className="flex flex-col gap-1 pt-1">
                         <span className="text-lg font-black italic tracking-tighter text-black">GH₵{(product.price || 0).toFixed(2)}</span>
-                        <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
-                          product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
-                        }`}>
+                        <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
+                          }`}>
                           {product.quantity > 0 ? "In Stock" : "Sold Out"}
                         </div>
                       </div>
