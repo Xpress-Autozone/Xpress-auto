@@ -68,9 +68,10 @@ const SearchResultsPage = () => {
   const [pagination, setPagination] = useState({});
   const [parsedEntities, setParsedEntities] = useState({});
   const [filters, setFilters] = useState({
-    category: "",
+    category: [],
     priceMin: "",
     priceMax: "",
+    condition: "",
   });
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
@@ -96,7 +97,15 @@ const SearchResultsPage = () => {
     setError(null);
     try {
       const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([_, value]) => value !== "")
+        Object.entries(filters).filter(([key, value]) => {
+          if (Array.isArray(value)) return value.length > 0;
+          return value !== "";
+        }).map(([key, value]) => {
+          if (key === 'category' && Array.isArray(value)) {
+            return [key, value.join(',')]; // Send as comma-separated string for compatibility
+          }
+          return [key, value];
+        })
       );
 
       const timeoutPromise = new Promise((_, reject) =>
@@ -127,7 +136,23 @@ const SearchResultsPage = () => {
   };
 
   const handleFilterChange = (filterName, value) => {
+    // For price fields, only allow numbers
+    if (filterName === "priceMin" || filterName === "priceMax") {
+      const numericValue = value.replace(/\D/g, "");
+      setFilters((prev) => ({ ...prev, [filterName]: numericValue }));
+      return;
+    }
     setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
+
+  const handleCategoryToggle = (cat) => {
+    setFilters((prev) => {
+      const currentCats = prev.category;
+      const newCats = currentCats.includes(cat)
+        ? currentCats.filter((c) => c !== cat)
+        : [...currentCats, cat];
+      return { ...prev, category: newCats };
+    });
   };
 
 
@@ -177,7 +202,7 @@ const SearchResultsPage = () => {
             opacity: '1'
           }}
         />
-        
+
         {/* Subtle overlay only if needed for text readability, but remarkably lighter */}
         <div className="absolute inset-0 bg-black/20" />
 
@@ -256,9 +281,14 @@ const SearchResultsPage = () => {
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MIN</span>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={tempMin}
-                        onChange={(e) => setTempMin(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setTempMin(val);
+                        }}
                         onBlur={() => handleFilterChange("priceMin", tempMin)}
                         className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="0"
@@ -268,9 +298,14 @@ const SearchResultsPage = () => {
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 italic">MAX</span>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={tempMax}
-                        onChange={(e) => setTempMax(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setTempMax(val);
+                        }}
                         onBlur={() => handleFilterChange("priceMax", tempMax)}
                         className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="10K+"
@@ -313,8 +348,8 @@ const SearchResultsPage = () => {
                   ].map(cat => (
                     <button
                       key={cat}
-                      onClick={() => handleFilterChange("category", cat)}
-                      className={`block w-full text-center text-[9px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.category === cat ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
+                      onClick={() => handleCategoryToggle(cat)}
+                      className={`block w-full text-center text-[9px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.category.includes(cat) ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
                         }`}
                     >
                       {cat}
@@ -339,7 +374,7 @@ const SearchResultsPage = () => {
               </FilterSection>
 
               <button
-                onClick={() => setFilters({ category: "", priceMin: "", priceMax: "", condition: "" })}
+                onClick={() => setFilters({ category: [], priceMin: "", priceMax: "", condition: "" })}
                 className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
               >
                 Reset All Filters
@@ -358,13 +393,13 @@ const SearchResultsPage = () => {
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
                     {pagination?.totalItems || 0} Products Identified
                   </p>
-                  {Object.values(filters).filter(v => v !== "").length > 0 && (
+                  {Object.entries(filters).filter(([_, v]) => Array.isArray(v) ? v.length > 0 : v !== "").length > 0 && (
                     <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
                       <span className="bg-yellow-500 text-black text-[8px] font-black uppercase px-2 py-1 italic">
-                        {Object.values(filters).filter(v => v !== "").length} Filters Applied
+                        {Object.entries(filters).reduce((acc, [_, v]) => acc + (Array.isArray(v) ? v.length : (v !== "" ? 1 : 0)), 0)} Filters Applied
                       </span>
                       <button
-                        onClick={() => setFilters({ category: "", priceMin: "", priceMax: "", condition: "" })}
+                        onClick={() => setFilters({ category: [], priceMin: "", priceMax: "", condition: "" })}
                         className="text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 font-black flex items-center gap-1 transition-colors italic"
                       >
                         <X size={10} /> Clear All Filters
