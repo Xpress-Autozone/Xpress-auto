@@ -1,9 +1,130 @@
-import React, { useState } from "react";
-import { ChevronDown, ShoppingCart, ArrowLeft, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  ChevronDown,
+  ShoppingCart,
+  ArrowLeft,
+  Check,
+  Share2,
+  Facebook,
+  MessageCircle,
+  Link2,
+  CheckCircle
+} from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { getProductById, getProductsByCategory } from "../../lib/productService";
 import SkeletonLoader from "../SkeletonLoader/skeletonLoader";
+import toast from "react-hot-toast";
+
+const XIcon = ({ size = 24, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.294 19.497h2.039L6.482 2.846H4.294l13.313 17.804z" />
+  </svg>
+);
+
+const ShareActions = ({ product }) => {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = window.location.href;
+  const shareTitle = `Check out ${product.name} on Xpress Autozone! 🏎️💨`;
+  const shareText = `Check out ${product.name} by ${product.brand || 'Xpress Autozone'}! \n\nImage: ${product.image}\n\n${shareUrl}`;
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: `Check out ${product.name} on Xpress Autozone!`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error("Error sharing:", err);
+        }
+      }
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    toast.success("Link copied!");
+    setTimeout(() => setCopied(false), 3000);
+  };
+
+  const shareAvenues = [
+    {
+      name: "WhatsApp",
+      icon: <MessageCircle size={18} fill="currentColor" />,
+      color: "text-[#25D366]",
+      hoverBg: "hover:bg-[#25D366]/10",
+      action: () => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank")
+    },
+    {
+      name: "X",
+      icon: <XIcon size={16} />,
+      color: "text-black",
+      hoverBg: "hover:bg-black/10",
+      action: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`, "_blank")
+    },
+    {
+      name: "Facebook",
+      icon: <Facebook size={18} fill="currentColor" />,
+      color: "text-[#1877F2]",
+      hoverBg: "hover:bg-[#1877F2]/10",
+      action: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank")
+    }
+  ];
+
+  return (
+    <div className="mt-8 pt-6 border-t border-gray-100">
+      <div className="flex items-center gap-4">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Share</span>
+
+        <div className="flex items-center gap-2">
+          {shareAvenues.map((avenue) => (
+            <button
+              key={avenue.name}
+              onClick={avenue.action}
+              title={`Share on ${avenue.name}`}
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${avenue.color} ${avenue.hoverBg} border border-transparent hover:border-gray-100`}
+            >
+              {avenue.icon}
+            </button>
+          ))}
+
+          <button
+            onClick={handleCopyLink}
+            title="Copy Link"
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all border ${copied ? "bg-green-500 border-green-500 text-white" : "text-gray-600 hover:text-black hover:bg-gray-50 border-transparent hover:border-gray-100"}`}
+          >
+            {copied ? <CheckCircle size={18} /> : <Link2 size={18} />}
+          </button>
+
+          {navigator.share && (
+            <div className="h-6 w-[1px] bg-gray-100 mx-1" />
+          )}
+
+          {navigator.share && (
+            <button
+              onClick={handleNativeShare}
+              title="More Options"
+              className="w-10 h-10 flex items-center justify-center rounded-full transition-all text-black hover:bg-yellow-500 border border-transparent hover:border-yellow-500"
+            >
+              <Share2 size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ActiveProductPage = () => {
   const navigate = useNavigate();
@@ -188,7 +309,7 @@ const ActiveProductPage = () => {
             {/* CTA */}
             <button
               onClick={handleAddToCart}
-              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-10 ${addedToCart
+              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-2 ${addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-yellow-500 hover:bg-black hover:text-white text-black"
                 }`}
@@ -196,6 +317,8 @@ const ActiveProductPage = () => {
               <ShoppingCart size={20} />
               {addedToCart ? "Added to Cart!" : "Add to Cart"}
             </button>
+
+            <ShareActions product={product} />
 
             {/* INFO ACCORDION */}
             <div className="border-t border-gray-100">
