@@ -8,7 +8,7 @@ import SearchBar from "../Search/searchBar";
 const Navbar = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -55,18 +55,13 @@ const Navbar = () => {
 
             {/* Auth: Login/Signup Desktop */}
             <div className="hidden md:flex items-center gap-4 text-[11px] font-black uppercase tracking-widest italic">
-              {isAuthenticated ? (
+              {isAuthenticated && isOnboarded ? (
                 <Link to="/account" className="hover:text-white flex items-center gap-2">
                   <User size={16} />
                   My Account
                 </Link>
               ) : (
-                <>
-                  <Link to="/login" className="hover:text-white">Sign In</Link>
-                  <Link to="/signup" className="bg-black text-white px-4 py-2 hover:bg-white hover:text-black transition-all">
-                    Get Started
-                  </Link>
-                </>
+                <Link to="/login" className="hover:text-white">Sign In</Link>
               )}
             </div>
 
@@ -101,13 +96,10 @@ const Navbar = () => {
             <Link to="/xplore" onClick={() => setIsMobileMenuOpen(false)}>Xplore</Link>
             <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Partner</Link>
             <div className="h-px bg-black/10 w-full" />
-            {isAuthenticated ? (
+            {isAuthenticated && isOnboarded ? (
               <Link to="/account" onClick={() => setIsMobileMenuOpen(false)}>My Account</Link>
             ) : (
-              <>
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
-                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-black text-white p-4 text-center">Get Started</Link>
-              </>
+              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
             )}
           </div>
         </div>

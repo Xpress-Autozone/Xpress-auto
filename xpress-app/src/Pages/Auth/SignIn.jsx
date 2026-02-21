@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../../Redux/userSlice";
 import SEO from "../../lib/SEOHelper";
 import { getPageMetadata } from "../../data/pageMetadata";
@@ -16,6 +16,18 @@ import { app } from "../../Firebase/firebase";
 const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      if (isOnboarded) {
+        navigate("/");
+      } else {
+        navigate("/onboarding");
+      }
+    }
+  }, [isAuthenticated, isOnboarded, navigate]);
+
   const metadata = getPageMetadata("login");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
