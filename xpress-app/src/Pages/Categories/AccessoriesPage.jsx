@@ -7,7 +7,7 @@ export default function AccessoriesPage() {
     <CategoryPage
       title="Interior & Exterior Accessories"
       categoryId="Accessories"
-      categoryQuery="car accessories"
+      categoryQuery="accessories"
       heroImage={slideImage}
       heroDescription="Enhance your vehicle's comfort, style, and functionality."
       partTypeFilters={[

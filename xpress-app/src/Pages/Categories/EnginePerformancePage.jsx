@@ -6,7 +6,7 @@ export default function EnginePerformancePage() {
   return (
     <CategoryPage
       title="Engine & Performance"
-      categoryQuery="engine performance turbocharger"
+      categoryQuery="engine-performance"
       heroImage={slideImage}
       heroDescription="High-performance engine components for maximum power and efficiency."
       partTypeFilters={[

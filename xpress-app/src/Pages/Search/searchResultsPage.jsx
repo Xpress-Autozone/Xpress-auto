@@ -341,18 +341,22 @@ const SearchResultsPage = () => {
               <FilterSection title="Categories">
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    "Body & Parts", "Engine & Performance",
-                    "Wheels & Tires", "Lighting & Electronics",
-                    "Accessories", "Automotive Tools",
-                    "Fluids & Car Care", "Cooling & AC"
+                    { id: "body-chassis", label: "Body & Parts" },
+                    { id: "engine-performance", label: "Engine" },
+                    { id: "wheels-tires", label: "Wheels & Tires" },
+                    { id: "lighting-electronics", label: "Electronics" },
+                    { id: "accessories", label: "Accessories" },
+                    { id: "automotive-tools", label: "Tools" },
+                    { id: "fluids-care", label: "Fluids" },
+                    { id: "cooling-ac", label: "Cooling & AC" }
                   ].map(cat => (
                     <button
-                      key={cat}
-                      onClick={() => handleCategoryToggle(cat)}
-                      className={`block w-full text-center text-[9px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.category.includes(cat) ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
+                      key={cat.id}
+                      onClick={() => handleCategoryToggle(cat.id)}
+                      className={`block w-full text-center text-[9px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.category.includes(cat.id) ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
                         }`}
                     >
-                      {cat}
+                      {cat.label}
                     </button>
                   ))}
                 </div>

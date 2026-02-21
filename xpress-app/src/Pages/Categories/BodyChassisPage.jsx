@@ -6,7 +6,7 @@ export default function BodyChassisPage() {
   return (
     <CategoryPage
       title="Body & Parts"
-      categoryQuery="body chassis suspension brakes"
+      categoryQuery="body-chassis"
       heroImage={slideImage}
       heroDescription="Premium body, steering, suspension, brake and chassis components for safety and performance."
       partTypeFilters={[

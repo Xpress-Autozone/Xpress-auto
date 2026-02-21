@@ -6,7 +6,7 @@ export default function WheelsTiresPage() {
   return (
     <CategoryPage
       title="Wheels & Tires"
-      categoryQuery="wheels tires rims"
+      categoryQuery="wheels-tires"
       heroImage={slideImage}
       heroDescription="Premium wheels and tires for every vehicle and driving condition."
       partTypeFilters={[

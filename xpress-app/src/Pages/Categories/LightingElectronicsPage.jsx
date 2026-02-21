@@ -6,7 +6,7 @@ export default function LightingElectronicsPage() {
   return (
     <CategoryPage
       title="Lighting & Electronics"
-      categoryQuery="car lighting electronics battery"
+      categoryQuery="lighting-electronics"
       heroImage={slideImage}
       heroDescription="Advanced lighting and electronic solutions for your vehicle."
       partTypeFilters={

@@ -6,7 +6,7 @@ export default function CoolingACPage() {
   return (
     <CategoryPage
       title="Cooling & AC"
-      categoryQuery="cooling ac radiator condenser compressor"
+      categoryQuery="cooling-ac"
       heroImage={slideImage}
       heroDescription="High-performance cooling systems and air conditioning components to keep your vehicle at optimal temperature."
       partTypeFilters={[

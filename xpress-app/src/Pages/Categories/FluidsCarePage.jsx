@@ -6,7 +6,7 @@ export default function FluidsCarePage() {
   return (
     <CategoryPage
       title="Fluids & Car Care"
-      categoryQuery="car fluids maintenance"
+      categoryQuery="fluids-care"
       heroImage={slideImage}
       heroDescription="Essential fluids and care products to keep your vehicle running smoothly."
       partTypeFilters={
