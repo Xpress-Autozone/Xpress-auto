@@ -17,6 +17,7 @@ import {
 import SEO from "../../lib/SEOHelper";
 import { getAuth } from "firebase/auth";
 import { app } from "../../Firebase/firebase";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://xpress-backend-eeea.onrender.com";
 
 const countryCodes = [
   { code: "+233", country: "Ghana", flag: "🇬🇭" },
@@ -28,6 +29,7 @@ const countryCodes = [
   { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
   { code: "+44", country: "UK", flag: "🇬🇧" },
 ];
+
 
 const fuelTypes = ["Petrol", "Diesel", "Hybrid", "Electric", "Other"];
 
@@ -102,7 +104,7 @@ const Onboarding = () => {
 
       // Update onboarding status in backend
       const response = await fetch(
-        `/api/users/${firebaseUser.uid}/onboarding`,
+        `${API_BASE_URL}/users/${firebaseUser.uid}/onboarding`,
         {
           method: "POST",
           headers: {
@@ -125,8 +127,17 @@ const Onboarding = () => {
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to update onboarding status");
+        const errorText = await response.text();
+        let errorMessage;
+        try {
+          // Try to parse the error response as JSON
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || "Failed to update onboarding status.";
+        } catch (e) {
+          // If it's not JSON, use the raw text or a default message
+          errorMessage = errorText || `Request failed with status ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
       console.log("✓ Onboarding status updated successfully");
