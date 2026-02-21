@@ -76,7 +76,7 @@ const SignIn = () => {
       console.log("User data:", userData);
 
       if (isOnboarded === true) {
-        navigate("/dashboard");
+        navigate("/");
       } else {
         navigate("/onboarding");
       }
