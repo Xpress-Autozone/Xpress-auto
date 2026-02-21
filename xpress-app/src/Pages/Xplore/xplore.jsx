@@ -107,6 +107,10 @@ export default function XplorePage() {
                             image: p.mainImage?.url || "/api/placeholder/200/200",
                             rating: 4.5,
                             reviews: 0,
+                            featured: p.featured,
+                            hotProduct: p.hotProduct,
+                            newProduct: p.newProduct,
+                            showOnHome: p.showOnHome,
                         }))
                     );
                 } else {
@@ -125,9 +129,9 @@ export default function XplorePage() {
 
     if (isLoading) return <SkeletonLoader />;
 
-    const featuredProducts = products.slice(0, 3);
-    const hotProducts = products.slice(3, 7);
-    const newProducts = products.slice(7, 11);
+    const featuredProducts = products.filter(p => p.featured).slice(0, 3);
+    const hotProducts = products.filter(p => p.hotProduct).slice(0, 4);
+    const newProducts = products.filter(p => p.newProduct).slice(0, 4);
 
     return (
         <main className="min-h-screen bg-white pb-20">
