@@ -14,6 +14,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { getProductById, getProductsByCategory } from "../../lib/productService";
 import SkeletonLoader from "../SkeletonLoader/skeletonLoader";
+import SEO from "../../lib/SEOHelper";
 import toast from "react-hot-toast";
 
 const XIcon = ({ size = 24, ...props }) => (
@@ -156,14 +157,18 @@ const ActiveProductPage = () => {
                 id: data.id,
                 name: data.itemName,
                 price: parseFloat(data.price) || 0,
-                image: data.mainImage?.url || "/api/placeholder/200/200",
-                images: data.images?.map(img => img.url) || [data.mainImage?.url],
+                image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
+                images: [
+                  ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
+                  ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
+                ],
                 description: data.description,
                 category: data.category,
                 brand: data.brand,
-                status: data.quantity > 0 ? "In Stock" : "Out of Stock",
-                specifications: data.specifications,
-                compatibility: data.compatibility,
+                partNumber: data.partNumber,
+                status: (data.quantity > 0 || data.stock > 0) ? "In Stock" : "Out of Stock",
+                specifications: Array.isArray(data.specifications) ? data.specifications : [],
+                compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
               });
             } else {
               setError("Product not found");
@@ -214,11 +219,20 @@ const ActiveProductPage = () => {
 
   const images = product.images || [product.image, "/api/placeholder/400/400"];
 
-  const specifications = product.specifications || [
-    { label: "Manufacturer:", value: product.brand || "Not specified" },
-    { label: "Part Number:", value: "XP-" + (product.id || "000") },
-    { label: "Category:", value: product.category || "General" },
+  const specifications = [
+    ...(Array.isArray(product.specifications) ? product.specifications : []),
+    ...(product.brand ? [{ label: "Manufacturer:", value: product.brand }] : []),
+    ...(product.partNumber ? [{ label: "Part Number:", value: product.partNumber }] : []),
+    ...(product.category ? [{ label: "Category:", value: product.category }] : []),
   ];
+
+  // Default fallbacks if no specs at all
+  if (specifications.length === 0) {
+    specifications.push(
+      { label: "Manufacturer:", value: "Not specified" },
+      { label: "Category:", value: "General" }
+    );
+  }
 
   const compatibility = product.compatibility || ["Universal Fit"];
 
@@ -240,6 +254,13 @@ const ActiveProductPage = () => {
 
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
+      <SEO
+        title={product.name}
+        description={product.description || `Buy ${product.name} at Xpress Autozone. Quality part for ${product.brand || 'your vehicle'}.`}
+        ogImage={product.image}
+        ogUrl={window.location.href}
+        ogType="product"
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-6">
 
         {/* BREADCRUMB & BACK */}
