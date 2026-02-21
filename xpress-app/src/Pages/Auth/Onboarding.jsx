@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { completeOnboarding, updateUser, signOut } from "../../Redux/userSlice";
+import { useCart } from "../../Context/CartContext";
 import {
   Car,
   User,
@@ -43,6 +44,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const { cartItems } = useCart();
   const auth = getAuth(app);
   const [step, setStep] = useState(1);
   const [isSkipped, setIsSkipped] = useState(false);
@@ -165,7 +167,12 @@ const Onboarding = () => {
 
       dispatch(updateUser(updatedUserData));
       dispatch(completeOnboarding());
-      navigate("/cart");
+
+      if (cartItems && cartItems.length > 0) {
+        navigate("/cart");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Error updating onboarding:", error);
       alert("Failed to save onboarding. Please try again.");
