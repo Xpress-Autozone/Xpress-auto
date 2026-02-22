@@ -8,17 +8,17 @@
   "theme_color": "#1a56db",
   "icons": [
     {
-      "src": "/assets/favicon-192x192.png",
+      "src": "/assets/browsericon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/assets/favicon-512x512.png",
+      "src": "/assets/browsericon.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/assets/favicon-512x512.png",
+      "src": "/assets/browsericon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

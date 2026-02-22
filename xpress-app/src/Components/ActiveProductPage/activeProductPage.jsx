@@ -8,11 +8,12 @@ import {
   Facebook,
   MessageCircle,
   Link2,
-  CheckCircle
+  CheckCircle,
+  ArrowRight
 } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
-import { getProductById, getProductsByCategory } from "../../lib/productService";
+import { getProductById, getProductsByCategory, getAllProducts } from "../../lib/productService";
 import SkeletonLoader from "../SkeletonLoader/skeletonLoader";
 import SEO from "../../lib/SEOHelper";
 import toast from "react-hot-toast";
@@ -199,14 +200,14 @@ const ActiveProductPage = () => {
           console.log(`[ActiveProductPage] 🔍 Fetching recommendations for category: ${product.category}`);
           // Use getAllProducts with a larger limit to ensure we find matches if the specific category endpoint is flaky
           const data = await getAllProducts({ limit: 100, page: 1 });
-          
+
           if (data.success && data.data) {
             const currentCat = product.category || product.categoryId;
-            
+
             // Filter products by category and exclude current product
             const filtered = data.data
-              .filter(p => 
-                (p.category === currentCat || p.categoryId === currentCat) && 
+              .filter(p =>
+                (p.category === currentCat || p.categoryId === currentCat) &&
                 p.id !== product.id
               )
               .slice(0, 6)
