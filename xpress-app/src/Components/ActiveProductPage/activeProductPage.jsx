@@ -143,45 +143,52 @@ const ActiveProductPage = () => {
 
   React.useEffect(() => {
     const fetchProduct = async () => {
-      // Clear product if ID changed and we don't have it in state
-      if (id && (!product || product.id !== id)) {
-        if (location.state?.product?.id === id) {
-          setProduct(location.state.product);
-          setIsLoading(false);
+      if (!id) return;
+
+      // Ensure we have a loading state if we don't even have partial state
+      if (!product || product.id !== id) {
+        setIsLoading(true);
+      }
+
+      try {
+        console.log(`[ActiveProductPage] 🔄 Hydrating product data for: ${id}`);
+        const data = await getProductById(id);
+
+        if (data) {
+          const fullProduct = {
+            id: data.id,
+            name: data.itemName,
+            price: parseFloat(data.price) || 0,
+            image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
+            images: [
+              ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
+              ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
+            ],
+            description: data.description,
+            category: data.category,
+            brand: data.brand,
+            partNumber: data.partNumber,
+            status: (data.quantity > 0 || data.stock > 0) ? "In Stock" : "Out of Stock",
+            specifications: Array.isArray(data.specifications) ? data.specifications : [],
+            compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
+          };
+
+          setProduct(fullProduct);
+          setError(null);
         } else {
-          setIsLoading(true);
-          try {
-            const data = await getProductById(id);
-            if (data) {
-              setProduct({
-                id: data.id,
-                name: data.itemName,
-                price: parseFloat(data.price) || 0,
-                image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
-                images: [
-                  ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
-                  ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
-                ],
-                description: data.description,
-                category: data.category,
-                brand: data.brand,
-                partNumber: data.partNumber,
-                status: (data.quantity > 0 || data.stock > 0) ? "In Stock" : "Out of Stock",
-                specifications: Array.isArray(data.specifications) ? data.specifications : [],
-                compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
-              });
-            } else {
-              setError("Product not found");
-            }
-          } catch (err) {
-            console.error("Error fetching product:", err);
-            setError("Failed to load product details");
-          } finally {
-            setIsLoading(false);
-          }
+          setError("Product not found");
         }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        // If we have partial state, don't show full error yet, just log it
+        if (!product) {
+          setError("Failed to load product details");
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchProduct();
   }, [id]);
 
