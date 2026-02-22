@@ -46,15 +46,15 @@ jobs:
 
       - name: Combine Builds 📁
         run: |
-          mkdir -p xpress-app/dist/admin
-          cp -r admin-repo/xpress-app/dist/* xpress-app/dist/admin/
+          mkdir -p xpress-app/dist/xpress-admin
+          cp -r admin-repo/xpress-app/dist/* xpress-app/dist/xpress-admin/
 
       - name: Verify Build Structure 🔍
         run: |
           echo "Main dist structure:"
           ls -F xpress-app/dist
           echo "Admin interior structure:"
-          ls -F xpress-app/dist/admin
+          ls -F xpress-app/dist/xpress-admin
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4

@@ -13,9 +13,9 @@
       (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
       l.hash;
 
-    // If the path starts with /admin, redirect to the admin's index with a trailing slash
-    if (path.toLowerCase().startsWith('/admin')) {
-      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/admin/');
+    // If the path contains 'admin', redirect to the canonical /xpress-admin/
+    if (path.toLowerCase().includes('admin')) {
+      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/xpress-admin/');
     } else {
       l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/?');
     }
