@@ -6,11 +6,18 @@
     <script type="text/javascript">
       var pathSegmentsToKeep = 0;
       var l = window.location;
-      sessionStorage.redirect = l.pathname.slice(1)
+      var path = l.pathname;
+      sessionStorage.redirect = path.slice(1)
         .replace(/&/g, '~and~') +
         (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
         l.hash;
-      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/?');
+      
+      // If the path starts with /Xpress-admin, redirect to the admin's index
+      if (path.toLowerCase().startsWith('/xpress-admin')) {
+        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/Xpress-admin/?');
+      } else {
+        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/?');
+      }
     </script>
   </head>
   <body>
