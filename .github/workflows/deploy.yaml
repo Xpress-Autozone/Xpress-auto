@@ -14,23 +14,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout Client 🛎️
         uses: actions/checkout@v4
+
+      - name: Checkout Admin 🛎️
+        uses: actions/checkout@v4
+        with:
+          repository: Xpress-Autozone/Xpress-admin
+          path: admin-repo
 
       - name: Setup Node.js ⚙️
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: xpress-app/package-lock.json
 
-      - name: Install Dependencies 🔧
+      - name: Install Client Dependencies 🔧
         run: npm ci --legacy-peer-deps
         working-directory: xpress-app
 
-      - name: Build 🏗️
+      - name: Build Client 🏗️
         run: npm run build
         working-directory: xpress-app
+
+      - name: Install Admin Dependencies 🔧
+        run: npm ci --legacy-peer-deps
+        working-directory: admin-repo/xpress-app
+
+      - name: Build Admin 🏗️
+        run: npm run build
+        working-directory: admin-repo/xpress-app
+
+      - name: Combine Builds 📁
+        run: |
+          mkdir -p xpress-app/dist/Xpress-admin
+          cp -r admin-repo/xpress-app/dist/* xpress-app/dist/Xpress-admin/
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
