@@ -266,7 +266,9 @@ const ActiveProductPage = () => {
     );
   }
 
-  const compatibility = product.compatibility || ["Universal Fit"];
+  const compatibility = Array.isArray(product.compatibility)
+    ? product.compatibility
+    : (product.compatibility ? [product.compatibility] : ["Universal Fit"]);
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
