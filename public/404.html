@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <script>
+        // Function to handle SPA routing
+        function handleRouting() {
+            const path = window.location.pathname;
+            if (path === '/xpress-admin') {
+                // Redirect to SPA's admin page
+                window.location.replace('/admin');
+            } else {
+                // Handle 404 or redirect to home
+                window.location.replace('/');
+            }
+        }
+        window.onload = handleRouting;
+    </script>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+    <p>We're sorry, but the page you're looking for doesn't exist.</p>
+</body>
+</html>
