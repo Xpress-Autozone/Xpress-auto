@@ -63,14 +63,6 @@ const ProductCard = ({ product, navigate, badge }) => (
                 {product.name}
             </h3>
 
-            <div className="flex items-center gap-1 mb-3">
-                <div className="flex text-yellow-500">
-                    {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={12} fill={i < Math.floor(product.rating || 0) ? "currentColor" : "none"} />
-                    ))}
-                </div>
-                <span className="text-[10px] font-bold text-gray-400">({product.reviews || 0})</span>
-            </div>
 
             <div className="mt-auto flex items-end justify-between">
                 <div>
@@ -100,18 +92,35 @@ export default function XplorePage() {
                 if (data.success && data.data) {
                     console.log(`[Xplore] ✅ Received ${data.data.length} products`);
                     setProducts(
-                        data.data.map((p) => ({
-                            id: p.id,
-                            name: p.itemName,
-                            price: parseFloat(p.price) || 0,
-                            image: p.mainImage?.url || "/api/placeholder/200/200",
-                            rating: 4.5,
-                            reviews: 0,
-                            featured: p.featured,
-                            hotProduct: p.hotProduct,
-                            newProduct: p.newProduct,
-                            showOnHome: p.showOnHome,
-                        }))
+                        data.data.map((p) => {
+                            let imageUrl = "/api/placeholder/400/320";
+                            if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
+                                imageUrl = p.mainImage;
+                            } else if (p.mainImage?.url) {
+                                imageUrl = p.mainImage.url;
+                            } else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) {
+                                imageUrl = p.image;
+                            } else if (p.mainImage?.imageUrl) {
+                                imageUrl = p.mainImage.imageUrl;
+                            }
+
+                            return {
+                                id: p.id,
+                                name: p.itemName,
+                                price: parseFloat(p.price) || 0,
+                                image: imageUrl,
+                                featured: p.featured,
+                                hotProduct: p.hotProduct,
+                                newProduct: p.newProduct,
+                                showOnHome: p.showOnHome,
+                                // Pass full data for detail page
+                                description: p.description,
+                                specifications: p.specifications,
+                                compatibility: p.compatibility,
+                                category: p.category,
+                                additionalImages: p.additionalImages || []
+                            };
+                        })
                     );
                 } else {
                     console.warn("[Xplore] ⚠️ No products found");

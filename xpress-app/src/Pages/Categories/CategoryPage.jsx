@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Filter, Check, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
-import { getProductsByCategory } from "../../lib/productService";
+import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
 
@@ -35,25 +35,55 @@ export default function CategoryPage({
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        console.log(`[CategoryPage] 🚀 Fetching products for category: ${title}`);
-        const data = await getProductsByCategory(categoryQuery, { limit: 100, page: 1 });
+        console.log(`[CategoryPage] 🚀 Fetching all products for client-side filtering (${title})`);
+        const data = await getAllProducts({ limit: 500, page: 1 });
 
         if (data.success && data.data) {
-          console.log(`[CategoryPage] ✅ Received ${data.data.length} products`);
+          // Filter products by categoryId (harmonized ID)
+          const allProducts = data.data;
+          const matchedProducts = allProducts.filter(p =>
+            p.categoryId === categoryQuery ||
+            p.category === categoryQuery ||
+            p.category === title // Fallback for legacy data
+          );
+
+          console.log(`[CategoryPage] ✅ Filtered ${matchedProducts.length} products from ${allProducts.length} total`);
+
           setProducts(
-            data.data.map((p) => ({
-              id: p.id,
-              name: p.itemName,
-              price: parseFloat(p.price) || 0,
-              image: p.mainImage?.url || "/api/placeholder/200/200",
-              status: p.quantity > 0 ? "In Stock" : "Out of Stock",
-              verified: true,
-              partType: p.partType || "",
-              brand: p.brand || "",
-            }))
+            matchedProducts.map((p) => {
+              // Robust image handling 
+              let imageUrl = "/api/placeholder/400/320";
+              if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
+                imageUrl = p.mainImage;
+              } else if (p.mainImage?.url) {
+                imageUrl = p.mainImage.url;
+              } else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) {
+                imageUrl = p.image;
+              } else if (p.mainImage?.imageUrl) {
+                imageUrl = p.mainImage.imageUrl;
+              }
+
+              return {
+                id: p.id,
+                name: p.itemName || p.name || "Unnamed Product",
+                price: parseFloat(p.price) || 0,
+                image: imageUrl,
+                status: (p.quantity > 0 || p.stock > 0) ? "In Stock" : "Out of Stock",
+                verified: true,
+                partType: p.partType || "",
+                brand: p.brand || "",
+                // Pass full product data for detail page hydration
+                description: p.description,
+                specifications: p.specifications,
+                compatibility: p.compatibility,
+                categoryId: p.categoryId,
+                category: p.category,
+                additionalImages: p.additionalImages || []
+              };
+            })
           );
         } else {
-          console.warn(`[CategoryPage] ⚠️ No products found for category: ${title}`);
+          console.warn(`[CategoryPage] ⚠️ No products found in database`);
           setProducts([]);
         }
       } catch (error) {

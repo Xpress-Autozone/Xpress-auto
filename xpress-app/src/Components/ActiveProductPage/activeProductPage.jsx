@@ -8,11 +8,12 @@ import {
   Facebook,
   MessageCircle,
   Link2,
-  CheckCircle
+  CheckCircle,
+  ArrowRight
 } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
-import { getProductById, getProductsByCategory } from "../../lib/productService";
+import { getProductById, getProductsByCategory, getAllProducts } from "../../lib/productService";
 import SkeletonLoader from "../SkeletonLoader/skeletonLoader";
 import SEO from "../../lib/SEOHelper";
 import toast from "react-hot-toast";
@@ -143,66 +144,97 @@ const ActiveProductPage = () => {
 
   React.useEffect(() => {
     const fetchProduct = async () => {
-      // Clear product if ID changed and we don't have it in state
-      if (id && (!product || product.id !== id)) {
-        if (location.state?.product?.id === id) {
-          setProduct(location.state.product);
-          setIsLoading(false);
+      if (!id) return;
+
+      // Ensure we have a loading state if we don't even have partial state
+      if (!product || product.id !== id) {
+        setIsLoading(true);
+      }
+
+      try {
+        console.log(`[ActiveProductPage] 🔄 Hydrating product data for: ${id}`);
+        const data = await getProductById(id);
+
+        if (data) {
+          const fullProduct = {
+            id: data.id,
+            name: data.itemName,
+            price: parseFloat(data.price) || 0,
+            image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
+            images: [
+              ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
+              ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
+            ],
+            description: data.description,
+            category: data.category,
+            brand: data.brand,
+            partNumber: data.partNumber,
+            status: (data.quantity > 0 || data.stock > 0) ? "In Stock" : "Out of Stock",
+            specifications: Array.isArray(data.specifications) ? data.specifications : [],
+            compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
+          };
+
+          setProduct(fullProduct);
+          setError(null);
         } else {
-          setIsLoading(true);
-          try {
-            const data = await getProductById(id);
-            if (data) {
-              setProduct({
-                id: data.id,
-                name: data.itemName,
-                price: parseFloat(data.price) || 0,
-                image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
-                images: [
-                  ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
-                  ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
-                ],
-                description: data.description,
-                category: data.category,
-                brand: data.brand,
-                partNumber: data.partNumber,
-                status: (data.quantity > 0 || data.stock > 0) ? "In Stock" : "Out of Stock",
-                specifications: Array.isArray(data.specifications) ? data.specifications : [],
-                compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
-              });
-            } else {
-              setError("Product not found");
-            }
-          } catch (err) {
-            console.error("Error fetching product:", err);
-            setError("Failed to load product details");
-          } finally {
-            setIsLoading(false);
-          }
+          setError("Product not found");
         }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        // If we have partial state, don't show full error yet, just log it
+        if (!product) {
+          setError("Failed to load product details");
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchProduct();
   }, [id]);
 
   React.useEffect(() => {
     const fetchRelated = async () => {
-      if (product?.category) {
+      if (product?.category || product?.categoryId) {
         try {
-          const data = await getProductsByCategory(product.category, { limit: 5 });
+          console.log(`[ActiveProductPage] 🔍 Fetching recommendations for category: ${product.category}`);
+          // Use getAllProducts with a larger limit to ensure we find matches if the specific category endpoint is flaky
+          const data = await getAllProducts({ limit: 100, page: 1 });
+
           if (data.success && data.data) {
-            // Filter out current product and map to UI format
+            const currentCat = product.category || product.categoryId;
+
+            // Filter products by category and exclude current product
             const filtered = data.data
-              .filter(p => p.id !== product.id)
-              .slice(0, 4)
-              .map(p => ({
-                id: p.id,
-                name: p.itemName,
-                price: `GH₵${parseFloat(p.price).toFixed(2)}`,
-                image: p.mainImage?.url || "/api/placeholder/150/150",
-                badge: p.brand || "Verified",
-                fullProduct: p // Store full product to pass in state
-              }));
+              .filter(p =>
+                (p.category === currentCat || p.categoryId === currentCat) &&
+                p.id !== product.id
+              )
+              .slice(0, 6)
+              .map(p => {
+                // Robust image handling consistent with CategoryPage.jsx
+                let imageUrl = "/api/placeholder/400/320";
+                if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
+                  imageUrl = p.mainImage;
+                } else if (p.mainImage?.url) {
+                  imageUrl = p.mainImage.url;
+                } else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) {
+                  imageUrl = p.image;
+                } else if (p.mainImage?.imageUrl) {
+                  imageUrl = p.mainImage.imageUrl;
+                }
+
+                return {
+                  id: p.id,
+                  name: p.itemName || p.name || "Unnamed Product",
+                  price: `GH₵${parseFloat(p.price || 0).toFixed(2)}`,
+                  image: imageUrl,
+                  badge: p.brand || "Verified",
+                  fullProduct: p
+                };
+              });
+
+            console.log(`[ActiveProductPage] ✅ Found ${filtered.length} matching recommendations`);
             setRelatedProducts(filtered);
           }
         } catch (err) {
@@ -211,7 +243,7 @@ const ActiveProductPage = () => {
       }
     };
     fetchRelated();
-  }, [product?.id, product?.category]);
+  }, [product?.id, product?.category, product?.categoryId]);
 
   if (isLoading) return <SkeletonLoader />;
   if (error) return <div className="pt-24 text-center font-black uppercase italic">{error}</div>;
@@ -234,7 +266,9 @@ const ActiveProductPage = () => {
     );
   }
 
-  const compatibility = product.compatibility || ["Universal Fit"];
+  const compatibility = Array.isArray(product.compatibility)
+    ? product.compatibility
+    : (product.compatibility ? [product.compatibility] : ["Universal Fit"]);
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -395,7 +429,7 @@ const ActiveProductPage = () => {
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recommended Extras</span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedProducts.map((p, idx) => (
               <div
                 key={p.id || idx}
@@ -412,6 +446,16 @@ const ActiveProductPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => navigate("/xplore")}
+              className="bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] px-12 py-5 transition-all flex items-center gap-2 group"
+            >
+              Xplore autozone
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
         </div>
       </div>
