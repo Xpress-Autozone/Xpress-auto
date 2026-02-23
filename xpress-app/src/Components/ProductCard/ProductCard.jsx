@@ -29,7 +29,7 @@ export default function ProductCard({ product, variant = "default" }) {
         onClick={handleClick}
         className="bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left"
       >
-        <div className="aspect-[4/5] bg-gray-50 flex items-center justify-center p-6 border-b border-gray-50 overflow-hidden">
+        <div className="aspect-[4/5] bg-gray-50 flex items-center justify-center border-b border-gray-50 overflow-hidden">
           {product.image ? (
             <img
               src={product.image}

@@ -14,10 +14,10 @@ const ProductCard = ({ product, navigate }) => (
             <img 
                 src={product.image} 
                 alt={product.name} 
-                className="w-full h-full object-contain p-6 transform group-hover:scale-105 transition-transform duration-700" 
+                className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700" 
             />
             <div className="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-2">
-                Hot Seller
+                Hot 
             </div>
             <div className="absolute bottom-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <button className="bg-black p-4 text-white hover:bg-yellow-500 hover:text-black transition-colors">
