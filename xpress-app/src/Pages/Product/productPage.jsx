@@ -7,7 +7,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import slideImage from "../../assets/ProductsBanner.webp";
+import slideImage from "../../assets/productsBanner.webp";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 
 export default function ProductsPage() {
