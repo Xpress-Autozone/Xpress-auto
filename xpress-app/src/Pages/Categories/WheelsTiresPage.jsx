@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/wheels-tires.jpg";
+import slideImage from "../../assets/wheels-tires.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function WheelsTiresPage() {

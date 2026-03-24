@@ -33,7 +33,7 @@ const SignUp = () => {
         canonicalUrl={metadata.url}
       />
       <div className="max-w-md w-full text-center p-8">
-        <img src="/assets/icons/parts.png" alt="Sign Up Icon" className="mx-auto h-24 w-auto mb-6" />
+        <img src="/assets/icons/parts.webp" alt="Sign Up Icon" className="mx-auto h-24 w-auto mb-6" />
         <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Get Started</h2>
         <p className="mb-8 text-gray-600">Create an account to start shopping and manage your orders.</p>
         <button

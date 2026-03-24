@@ -14,29 +14,29 @@ import {
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
 import { getAllProducts } from "../../lib/productService";
-import productsSrip from "../../assets/productsStrip.jpg";
+import productsSrip from "../../assets/productsStrip.webp";
 
 const categories = [
     {
         name: "Body & Parts",
         id: "body-chassis",
-        icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="w-8 h-8 mx-auto" />
+        icon: <img src="/assets/category-icons/body-parts.webp" alt="Body & Parts" className="w-10 h-10 mx-auto object-contain" />
     },
     {
         name: "Engine & Performance",
         id: "engine-performance",
-        icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="w-10 h-8 mx-auto" />
+        icon: <img src="/assets/category-icons/engine-performance.webp" alt="Engine & Performance" className="w-10 h-10 mx-auto object-contain" />
     },
     {
         name: "Lighting & Electronics",
         id: "lighting-electronics",
-        icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="w-10 h-8 mx-auto" />
+        icon: <img src="/assets/category-icons/lighting-electronics.webp" alt="Lighting & Electronics" className="w-10 h-10 mx-auto object-contain" />
     },
     {
         name: "Accessories",
         id: "accessories",
-        icon: <img src="/assets/icons/steer.png" alt="Accessories" className="w-8 h-8 mx-auto" />
-    }
+        icon: <img src="/assets/category-icons/accessories.webp" alt="Accessories" className="w-10 h-10 mx-auto object-contain" />
+    },
 ];
 
 const ProductCard = ({ product, navigate, badge }) => (

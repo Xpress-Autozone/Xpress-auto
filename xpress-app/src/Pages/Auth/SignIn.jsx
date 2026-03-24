@@ -113,7 +113,7 @@ const SignIn = () => {
       />
       <div className="max-w-md w-full text-center p-8">
         <img
-          src="/assets/icons/parts.png"
+          src="/assets/icons/parts.webp"
           alt="Sign In Icon"
           className="mx-auto h-24 w-auto mb-6"
         />

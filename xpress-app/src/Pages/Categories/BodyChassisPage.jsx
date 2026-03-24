@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/body-chassis.jpg";
+import slideImage from "../../assets/body-chassis.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function BodyChassisPage() {

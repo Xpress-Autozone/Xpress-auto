@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/engine-performance.jpg";
+import slideImage from "../../assets/engine-performance.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function EnginePerformancePage() {

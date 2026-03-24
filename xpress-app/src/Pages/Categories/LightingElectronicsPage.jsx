@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/lighting-electronics.jpg";
+import slideImage from "../../assets/lighting-electronics.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function LightingElectronicsPage() {

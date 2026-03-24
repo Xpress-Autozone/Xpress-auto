@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, ArrowRight } from "lucide-react";
-import slideImage from "../../assets/slide.jpg";
+import slideImage from "../../assets/slide.webp";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { getAllProducts } from "../../lib/productService";
@@ -14,9 +14,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/parts.png"
+          src="/assets/category-icons/body-parts.webp"
           alt="Body & Parts"
-          className="h-6 w-6"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Body & Parts",
@@ -25,9 +25,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/engine.png"
+          src="/assets/category-icons/engine-performance.webp"
           alt="Engine & Performance"
-          className="h-6 w-8"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Engine & Performance",
@@ -36,9 +36,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/wheel.png"
+          src="/assets/category-icons/wheels-tires.webp"
           alt="Wheels & Tires"
-          className="h-6 w-6"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Wheels & Tires",
@@ -47,9 +47,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/battery.png"
+          src="/assets/category-icons/lighting-electronics.webp"
           alt="Lighting & Electronics"
-          className="h-6 w-9"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Lighting & Electronics",
@@ -58,9 +58,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/steer.png"
+          src="/assets/category-icons/accessories.webp"
           alt="Accessories"
-          className="h-6 w-6"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Accessories",
@@ -69,9 +69,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/tools.png"
+          src="/assets/category-icons/automotive-tools.webp"
           alt="Automotive Tools"
-          className="h-6 w-6"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Automotive Tools",
@@ -80,9 +80,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/fluids.png"
+          src="/assets/category-icons/fluids-car-care.webp"
           alt="Fluids & Car Care"
-          className="h-8 w-8"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Fluids & Car Care",
@@ -91,9 +91,9 @@ function Home() {
     {
       icon: (
         <img
-          src="/assets/icons/cooling.png"
+          src="/assets/category-icons/cooling-ac.webp"
           alt="Cooling & AC"
-          className="h-7 w-7"
+          className="h-12 w-12 object-contain"
         />
       ),
       name: "Cooling & AC",

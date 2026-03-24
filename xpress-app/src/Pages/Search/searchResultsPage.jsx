@@ -5,7 +5,7 @@ import SearchBar from "../../Components/Search/searchBar";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { ChevronDown, Filter, Check, X, AlertTriangle, RefreshCw, Home } from "lucide-react";
 
-import SearchResultHero from "../../assets/SearchResultMobile.jpg";
+import SearchResultHero from "../../assets/SearchResultMobile.webp";
 
 // --- 1. INTEGRATED ERROR BOUNDARY ---
 class ErrorBoundary extends React.Component {
@@ -433,7 +433,7 @@ const SearchResultsPage = () => {
                   <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="group cursor-pointer">
                     <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all">
                       <img
-                        src={product.mainImage?.url || "/placeholder.jpg"}
+                        src={product.mainImage?.url || "/placeholder.webp"}
                         alt={product.itemName}
                         className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
                       />

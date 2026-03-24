@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/toolsHero.jpeg";
+import slideImage from "../../assets/toolsHero.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function AutomotiveToolsPage() {

@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/fluids-care.jpg";
+import slideImage from "../../assets/fluids-care.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function FluidsCarePage() {

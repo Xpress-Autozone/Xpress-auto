@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/coolingHero.jpg";
+import slideImage from "../../assets/coolingHero.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function CoolingACPage() {

@@ -39,7 +39,7 @@ const Navbar = () => {
           {/* LEFT: Logo & Nav Links */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex-shrink-0">
-              <img src="/assets/favicon.png" alt="Xpress Autozone Logo" className="h-10 w-auto p-2" />
+              <img src="/assets/favicon.webp" alt="Xpress Autozone Logo" className="h-10 w-auto p-2" />
             </Link>
 
             <div className="hidden md:flex items-center space-x-6 text-[11px] font-black uppercase tracking-widest italic">

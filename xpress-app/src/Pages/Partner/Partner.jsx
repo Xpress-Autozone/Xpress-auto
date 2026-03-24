@@ -10,7 +10,7 @@ import {
   ArrowRight
 } from "lucide-react";
 
-import hero from "../../assets/cargo.jpg";
+import hero from "../../assets/cargo.webp";
 
 export default function PartnerPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);

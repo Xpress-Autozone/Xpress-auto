@@ -1,5 +1,5 @@
 import React from "react";
-import slideImage from "../../assets/accessories.jpg";
+import slideImage from "../../assets/accessories.webp";
 import CategoryPage from "./CategoryPage";
 
 export default function AccessoriesPage() {

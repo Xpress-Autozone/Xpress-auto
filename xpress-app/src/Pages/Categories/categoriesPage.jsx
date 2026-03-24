@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import slideImage from "../../assets/productsStrip.jpg";
+import slideImage from "../../assets/productsStrip.webp";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../../Components/Search/searchBar";
 
@@ -16,49 +16,49 @@ export default function CategoriesPage() {
 
   const categories = [
     {
-      icon: <img src="/assets/icons/parts.png" alt="Body & Parts" className="h-6 w-6" />,
+      icon: <img src="/assets/category-icons/body-parts.webp" alt="Body & Parts" className="h-10 w-10 object-contain" />,
       name: "Body & Parts",
       id: "body-chassis",
       description: "Brakes, suspension, and body components"
     },
     {
-      icon: <img src="/assets/icons/engine.png" alt="Engine & Performance" className="h-6 w-8" />,
+      icon: <img src="/assets/category-icons/engine-performance.webp" alt="Engine & Performance" className="h-10 w-10 object-contain" />,
       name: "Engine & Performance",
       id: "engine-performance",
       description: "Engine parts and performance upgrades"
     },
     {
-      icon: <img src="/assets/icons/wheel.png" alt="Wheels & Tires" className="h-6 w-6" />,
+      icon: <img src="/assets/category-icons/wheels-tires.webp" alt="Wheels & Tires" className="h-10 w-10 object-contain" />,
       name: "Wheels & Tires",
       id: "wheels-tires",
       description: "Tires, rims, and wheel accessories"
     },
     {
-      icon: <img src="/assets/icons/battery.png" alt="Lighting & Electronics" className="h-6 w-9" />,
+      icon: <img src="/assets/category-icons/lighting-electronics.webp" alt="Lighting & Electronics" className="h-10 w-10 object-contain" />,
       name: "Lighting & Electronics",
       id: "lighting-electronics",
       description: "Lights, audio, and vehicle electronics"
     },
     {
-      icon: <img src="/assets/icons/steer.png" alt="Accessories" className="h-6 w-6" />,
+      icon: <img src="/assets/category-icons/accessories.webp" alt="Accessories" className="h-10 w-10 object-contain" />,
       name: "Accessories",
       id: "accessories",
       description: "Interior and exterior vehicle accessories"
     },
     {
-      icon: <img src="/assets/icons/tools.png" alt="Automotive Tools" className="h-6 w-6" />,
+      icon: <img src="/assets/category-icons/automotive-tools.webp" alt="Automotive Tools" className="h-10 w-10 object-contain" />,
       name: "Automotive Tools",
       id: "automotive-tools",
       description: "Professional and DIY auto repair tools"
     },
     {
-      icon: <img src="/assets/icons/fluids.png" alt="Fluids & Car Care" className="h-8 w-8" />,
+      icon: <img src="/assets/category-icons/fluids-car-care.webp" alt="Fluids & Car Care" className="h-10 w-10 object-contain" />,
       name: "Fluids & Car Care",
       id: "fluids-care",
       description: "Oils, cleaners, and maintenance products"
     },
     {
-      icon: <img src="/assets/icons/cooling.png" alt="Cooling & AC" className="h-7 w-7" />,
+      icon: <img src="/assets/category-icons/cooling-ac.webp" alt="Cooling & AC" className="h-10 w-10 object-contain" />,
       name: "Cooling & AC",
       id: "cooling-ac",
       description: "Radiators, compressors, and AC components"
