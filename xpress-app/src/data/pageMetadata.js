@@ -13,7 +13,7 @@ export const pageMetadata = {
     },
     signup: {
         title: 'Get Started',
-        description: 'Create an account at Xpress Auto.',
+        description: 'Create an account at Xpress Auto. Shop confidently',
         keywords: 'signup, register, auth',
         url: 'https://xpress-auto.com/signup',
     },
