@@ -101,7 +101,7 @@ const Navbar = () => {
         {/* INLINE SEARCH BAR */}
         <div 
           className={`overflow-hidden transition-all duration-300 ease-in-out bg-yellow-500 ${
-            isSearchOpen ? "max-h-24 opacity-100 border-t border-black/10" : "max-h-0 opacity-0"
+            isSearchOpen ? "max-h-32 opacity-100 border-t border-black/10" : "max-h-0 opacity-0"
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 py-4">
@@ -111,6 +111,9 @@ const Navbar = () => {
                 placeholders={searchPlaceholders}
                 onSearch={() => setIsSearchOpen(false)}
               />
+              <p className="mt-2 text-[10px] text-black/50 font-medium italic tracking-wider text-center">
+                Add all relevant details to your search, we'll find what you need
+              </p>
             </div>
           </div>
         </div>
