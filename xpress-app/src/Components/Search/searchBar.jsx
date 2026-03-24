@@ -4,25 +4,42 @@ import { Search, X, ArrowRight } from 'lucide-react';
 
 const SearchBar = ({ className = "", placeholder = "Search auto parts...", placeholders = null, onSearch }) => {
   const [query, setQuery] = useState('');
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholder);
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [reverse, setReverse] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState("");
   const navigate = useNavigate();
 
-  // Rotating placeholder effect
+  // Typewriting effect for rotating placeholders
   useEffect(() => {
     if (!placeholders || placeholders.length === 0) {
+      setCurrentPlaceholder(placeholder);
       return;
     }
 
-    let currentIndex = 0;
-    setCurrentPlaceholder(placeholders[0]);
+    if (subIndex === placeholders[index].length + 1 && !reverse) {
+      const timer = setTimeout(() => setReverse(true), 1200); // Wait at end
+      return () => clearTimeout(timer);
+    }
 
-    const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % placeholders.length;
-      setCurrentPlaceholder(placeholders[currentIndex]);
-    }, 4000);
+    if (subIndex === 0 && reverse) {
+      setReverse(false);
+      setIndex((prev) => (prev + 1) % placeholders.length);
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, [placeholders]);
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (reverse ? -1 : 1));
+    }, reverse ? 20 : 35); // Speed of typing/deleting
+
+    return () => clearTimeout(timeout);
+  }, [subIndex, index, reverse, placeholders, placeholder]);
+
+  useEffect(() => {
+    if (placeholders && placeholders.length > 0) {
+      setCurrentPlaceholder(placeholders[index].substring(0, subIndex));
+    }
+  }, [subIndex, index, placeholders]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,7 +71,7 @@ const SearchBar = ({ className = "", placeholder = "Search auto parts...", place
           placeholder={currentPlaceholder}
           className={`w-full pl-10 pr-24 md:pr-10 py-3 border outline-none transition-all ${className.includes('bg-transparent') || className.includes('bg-white/')
             ? 'bg-transparent border-white/20 text-white focus:border-yellow-500 placeholder-white/30 rounded-lg'
-            : 'bg-white border-2 border-black text-black focus:bg-yellow-50 placeholder-gray-400 font-bold italic rounded-none shadow-[4px_4px_0px_black]'
+            : 'bg-white border-2 border-black text-black focus:bg-yellow-50 placeholder-gray-400 font-bold italic rounded-none'
             } ${className.includes('text-') ? 'text-inherit' : 'text-sm'}`}
         />
         <div className="absolute right-1.5 top-1/2 transform -translate-y-1/2 flex items-center gap-1">

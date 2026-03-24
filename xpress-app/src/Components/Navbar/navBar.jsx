@@ -21,6 +21,16 @@ const Navbar = () => {
     "Performance air intake for Ford Ranger Raptor"
   ];
 
+  React.useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        setIsSearchOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   return (
     <>
       <nav className="bg-yellow-500 border-b border-black/10 fixed w-full z-50 px-4 py-2">
@@ -47,10 +57,10 @@ const Navbar = () => {
 
             {/* Search Trigger */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="p-2 hover:bg-black/5 rounded-none transition-colors"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className={`p-2 transition-colors ${isSearchOpen ? 'bg-black text-yellow-500' : 'hover:bg-black/5 text-black'}`}
             >
-              <Search className="h-5 w-5 text-black" />
+              {isSearchOpen ? <X size={20} /> : <Search className="h-5 w-5" />}
             </button>
 
             {/* Auth: Login/Signup Desktop */}
@@ -88,6 +98,23 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* INLINE SEARCH BAR */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out bg-yellow-500 ${
+            isSearchOpen ? "max-h-24 opacity-100 border-t border-black/10" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-2xl mx-auto relative">
+              <SearchBar
+                className="bg-white text-black text-sm outline-none w-full"
+                placeholders={searchPlaceholders}
+                onSearch={() => setIsSearchOpen(false)}
+              />
+            </div>
+          </div>
+        </div>
+
         {/* MOBILE MENU */}
         <div className={`md:hidden absolute top-full left-0 w-full bg-yellow-500 border-t border-black/10 overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-screen pb-8" : "max-h-0"}`}>
           <div className="flex flex-col p-6 space-y-6 text-sm font-black uppercase italic tracking-widest">
@@ -104,43 +131,6 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
-      {/* SEARCH OVERLAY */}
-      {isSearchOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-start pt-32 px-6">
-          <button
-            onClick={() => setIsSearchOpen(false)}
-            className="absolute top-8 right-8 text-white hover:text-yellow-500 transition-colors"
-          >
-            <X size={32} strokeWidth={1} />
-          </button>
-
-          <div className="w-full max-w-xl space-y-4">
-            <div className="text-center space-y-1">
-              <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px]">Xpress Search</span>
-              <h2 className="text-white text-xl md:text-2xl font-black uppercase italic tracking-tighter">What are we looking for?</h2>
-            </div>
-
-            <div className="relative w-full">
-              <SearchBar
-                className="bg-white text-black text-base md:text-lg outline-none w-full shadow-[0_0_20px_rgba(0,0,0,0.3)]"
-                placeholders={searchPlaceholders}
-                onSearch={() => setIsSearchOpen(false)}
-              />
-            </div>
-
-            <p className="text-yellow-400 text-center text-[10px] font-bold uppercase tracking-widest opacity-80">
-              Ask like a human - we'll find exactly what you need!
-            </p>
-
-            <div className="pt-4 flex justify-center">
-              <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em] italic bg-white/5 px-3 py-1">
-                Press <span className="text-white">ESC</span> to close
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
