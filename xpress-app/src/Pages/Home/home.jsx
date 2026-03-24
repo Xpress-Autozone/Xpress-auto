@@ -207,7 +207,7 @@ function Home() {
       </section>
 
       {/* REMAINDER OF HOME PAGE */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-2 py-10">
         {/* Categories Section */}
         <div className="bg-white border border-gray-100 p-6 md:p-8 mb-12">
           <div className="mb-8">
@@ -260,7 +260,7 @@ function Home() {
         </div>
 
         {/* Featured Parts Section */}
-        <div className="bg-white border border-gray-100 p-6 md:p-12 text-center mt-4">
+        <div className="bg-white border border-gray-100 p-3 md:p-12 text-center mt-4">
           <div className="max-w-3xl mx-auto mb-10">
             <h2 className="text-3xl md:text-5xl font-black text-black uppercase italic tracking-tighter mb-4">
               Featured Auto Parts
