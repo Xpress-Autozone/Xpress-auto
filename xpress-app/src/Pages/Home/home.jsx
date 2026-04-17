@@ -1,10 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import slideImage from "../../assets/slide.webp";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
+
+const XpressHeroVideo = ({ mediaBase, isActive }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        // Explicitly trigger play when active
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.warn("[HeroVideo] Autoplay blocked or failed:", error);
+          });
+        }
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive]);
+
+  return (
+    <div
+      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+        isActive ? "opacity-60" : "opacity-0"
+      }`}
+    >
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        loop
+        muted
+        playsInline
+        webkit-playsinline="true"
+        preload="auto"
+      >
+        <source src={`/assets/videos/${mediaBase}.webm`} type="video/webm" />
+        <source src={`/assets/videos/${mediaBase}.mp4`} type="video/mp4" />
+      </video>
+    </div>
+  );
+};
 
 function Home() {
   const navigate = useNavigate();
@@ -242,32 +283,29 @@ function Home() {
         {/* MEDIA LAYERS: Render all so they preload, cross-fade with opacity */}
         {heroSequence.map((phase, index) => {
           const isActive = index === currentPhaseIndex;
-          return (
-            <div
-              key={phase.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                isActive ? "opacity-60" : "opacity-0"
-              }`}
-            >
-              {phase.mediaType === "image" ? (
+          if (phase.mediaType === "image") {
+            return (
+              <div
+                key={phase.id}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  isActive ? "opacity-60" : "opacity-0"
+                }`}
+              >
                 <div
                   className="w-full h-full bg-cover bg-center"
                   style={{ backgroundImage: `url(${phase.mediaSrc})` }}
                 />
-              ) : (
-                <video
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                >
-                  <source src={`/assets/videos/${phase.mediaBase}.webm`} type="video/webm" />
-                  <source src={`/assets/videos/${phase.mediaBase}.mp4`} type="video/mp4" />
-                </video>
-              )}
-            </div>
+              </div>
+            );
+          }
+
+          // Video Component with programmatic play for iOS
+          return (
+            <XpressHeroVideo 
+              key={phase.id}
+              mediaBase={phase.mediaBase}
+              isActive={isActive}
+            />
           );
         })}
 

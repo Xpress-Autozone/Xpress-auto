@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Star,
@@ -41,6 +41,41 @@ const categories = [
 ];
 
 import ProductCard from "../../Components/ProductCard/ProductCard";
+
+const CinematicVideo = ({ video, isActive }) => {
+    const videoRef = useRef(null);
+
+    useEffect(() => {
+        if (videoRef.current) {
+            if (isActive) {
+                const playPromise = videoRef.current.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn("[CinematicVideo] Autoplay blocked:", error);
+                    });
+                }
+            } else {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+            }
+        }
+    }, [isActive]);
+
+    return (
+        <video
+            ref={videoRef}
+            muted
+            loop
+            playsInline
+            webkit-playsinline="true"
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"}`}
+        >
+            <source src={video.webm} type="video/webm" />
+            <source src={video.mp4} type="video/mp4" />
+        </video>
+    );
+};
 
 export default function XplorePage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -192,18 +227,11 @@ export default function XplorePage() {
                 {/* Cinematic Video Sequence (Passive State) */}
                 <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                     {cinematicVideos.map((video, idx) => (
-                        <video
+                        <CinematicVideo 
                             key={idx}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="auto"
-                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentVideoIndex ? "opacity-100" : "opacity-0"}`}
-                        >
-                            <source src={video.webm} type="video/webm" />
-                            <source src={video.mp4} type="video/mp4" />
-                        </video>
+                            video={video}
+                            isActive={idx === currentVideoIndex}
+                        />
                     ))}
                 </div>
             </section>
