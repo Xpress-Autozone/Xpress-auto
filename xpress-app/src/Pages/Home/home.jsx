@@ -118,9 +118,6 @@ function Home() {
 
         console.log("[Home] 📦 API response:", data);
         if (data.success && data.data && data.data.length > 0) {
-          console.log(
-            `[Home] ✅ Received ${data.data.length} featured products`,
-          );
           setFeaturedProducts(
             data.data.map((p) => ({
               id: p.id,
@@ -128,8 +125,8 @@ function Home() {
               price: parseFloat(p.price) || 0,
               status: p.quantity > 0 ? "In Stock" : "Low Stock",
               verified: true,
-              image:
-                p.mainImage?.url || p.imageUrl || "/api/placeholder/200/200",
+              image: p.mainImage?.url || p.imageUrl || "/api/placeholder/200/200",
+              additionalImages: p.additionalImages || []
             })),
           );
         } else {

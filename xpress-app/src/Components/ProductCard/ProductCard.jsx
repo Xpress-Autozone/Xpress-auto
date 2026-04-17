@@ -20,22 +20,22 @@ export default function ProductCard({ product, variant = "default", badge }) {
   const [isManualActive, setIsManualActive] = useState(false);
   const cardRef = useRef(null);
 
-  // Combine images into a stable array
-  const imageSources = [
+  // Combine images into a stable, deduplicated array
+  const imageSources = Array.from(new Set([
     product.image,
     ...(product.additionalImages || [])
       .map(img => (typeof img === 'string' ? img : img.url || img.imageUrl))
       .filter(img => img && img.startsWith('http'))
-  ];
+  ])).filter(Boolean);
 
-  // Passively track visibility 
+  // Passively track visibility with a lower threshold for mobile
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) registerVisible(product.id);
         else unregisterVisible(product.id);
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 } // Lower threshold for better mobile detection
     );
 
     if (cardRef.current) observer.observe(cardRef.current);
@@ -72,15 +72,20 @@ export default function ProductCard({ product, variant = "default", badge }) {
     });
   };
 
-  // Interaction handlers
+  // Interaction handlers - optimized for mobile
   const startManual = (e) => {
-    if (e.pointerType === 'touch') e.currentTarget.setPointerCapture(e.pointerId);
+    // Only capture on touch to allow browser to handle drag/scroll on others
+    if (e.pointerType === 'touch') {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
     setIsManualActive(true);
     setManualStatus(true);
   };
 
   const stopManual = (e) => {
-    if (e.pointerType === 'touch') e.currentTarget.releasePointerCapture(e.pointerId);
+    if (e.pointerType === 'touch') {
+      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err) {}
+    }
     setIsManualActive(false);
     setManualStatus(false);
   };
@@ -96,7 +101,13 @@ export default function ProductCard({ product, variant = "default", badge }) {
       className={cardClasses}
       onPointerDown={startManual}
       onPointerUp={stopManual}
-      onPointerEnter={() => { setIsManualActive(true); setManualStatus(true); }}
+      onPointerEnter={(e) => {
+        // Only trigger manual on mouse enter, ignore ghost touch enters
+        if (e.pointerType === 'mouse') {
+          setIsManualActive(true);
+          setManualStatus(true);
+        }
+      }}
       onPointerLeave={stopManual}
       onPointerCancel={stopManual}
     >

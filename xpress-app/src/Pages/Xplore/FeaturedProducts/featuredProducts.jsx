@@ -27,6 +27,7 @@ export default function FeaturedProducts() {
                             name: p.itemName,
                             price: parseFloat(p.price) || 0,
                             image: p.mainImage?.url || "/api/placeholder/300/300",
+                            additionalImages: p.additionalImages || [],
                             rating: 4.5,
                             reviews: 0,
                         }))
