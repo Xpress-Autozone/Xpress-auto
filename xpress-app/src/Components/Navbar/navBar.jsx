@@ -48,7 +48,7 @@ const Navbar = () => {
               </Link>
               <Link to="/categories" className="hover:text-white transition-colors">Categories</Link>
               <Link to="/xplore" className="hover:text-white transition-colors">Xplore</Link>
-              <Link to="/partner" className="hover:text-white transition-colors">Partner</Link>
+              <Link to="/partner" className="hover:text-white transition-colors">Sell on Xpress</Link>
             </div>
           </div>
 
@@ -124,7 +124,7 @@ const Navbar = () => {
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
             <Link to="/categories" onClick={() => setIsMobileMenuOpen(false)}>Categories</Link>
             <Link to="/xplore" onClick={() => setIsMobileMenuOpen(false)}>Xplore</Link>
-            <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Partner</Link>
+            <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Sell on Xpress</Link>
             <div className="h-px bg-black/10 w-full" />
             {isAuthenticated && isOnboarded ? (
               <Link to="/account" onClick={() => setIsMobileMenuOpen(false)}>My Account</Link>

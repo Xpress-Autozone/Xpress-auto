@@ -11,6 +11,7 @@ import {
     ArrowRight,
     TrendingUp
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
 import { getAllProducts } from "../../lib/productService";
@@ -39,48 +40,23 @@ const categories = [
     },
 ];
 
-const ProductCard = ({ product, navigate, badge }) => (
-    <div
-        onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-        className="group bg-white border border-gray-200 hover:border-black transition-colors duration-300 overflow-hidden cursor-pointer flex flex-col h-full"
-    >
-        <div className="relative h-56 overflow-hidden bg-gray-50 border-b border-gray-100">
-            <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-contain p-4 transform group-hover:scale-105 transition-transform duration-500"
-            />
-            {badge && (
-                <div className={`absolute top-0 left-0 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 ${badge === 'Featured' ? 'bg-yellow-500 text-black' : badge === 'Hot' ? 'bg-red-600' : 'bg-black'
-                    }`}>
-                    {badge}
-                </div>
-            )}
-        </div>
-
-        <div className="p-4 flex flex-col flex-1">
-            <h3 className="font-bold text-gray-900 uppercase tracking-tight line-clamp-1 text-sm mb-1">
-                {product.name}
-            </h3>
-
-
-            <div className="mt-auto flex items-end justify-between">
-                <div>
-                    <span className="text-xs text-gray-400 block font-bold uppercase tracking-tighter">Price</span>
-                    <span className="text-lg font-black text-black">GH₵{product.price}</span>
-                </div>
-                <button className="bg-gray-100 p-2 hover:bg-black hover:text-white transition-colors">
-                    <ShoppingCart size={18} />
-                </button>
-            </div>
-        </div>
-    </div>
-);
+import ProductCard from "../../Components/ProductCard/ProductCard";
 
 export default function XplorePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([]);
+    const [transitionToVideo, setTransitionToVideo] = useState(false);
+    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+    const cinematicVideos = [
+        "/src/assets/videos/source/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.mp4",
+        "/src/assets/videos/source/2. yellow car engine video upclose.mp4",
+        "/src/assets/videos/source/3. OIG1.mp4"
+    ];
+
     const navigate = useNavigate();
+    const user = useSelector((state) => state.user.user);
+    const vehicle = user?.vehicle;
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -136,8 +112,46 @@ export default function XplorePage() {
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setTransitionToVideo(true);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Rotate videos every 7 seconds
+    useEffect(() => {
+        if (transitionToVideo) {
+            const interval = setInterval(() => {
+                setCurrentVideoIndex((prev) => (prev + 1) % cinematicVideos.length);
+            }, 7000);
+            return () => clearInterval(interval);
+        }
+    }, [transitionToVideo]);
+
     if (isLoading) return <SkeletonLoader />;
 
+    // --- PERSONALIZATION ENGINE ---
+    const getMatchedProducts = () => {
+        if (!vehicle || !vehicle.make) return [];
+        
+        const makeStr = vehicle.make.toLowerCase();
+        const modelStr = vehicle.model?.toLowerCase() || "";
+        
+        return products.filter(p => {
+            const name = p.name?.toLowerCase() || "";
+            const desc = p.description?.toLowerCase() || "";
+            const comp = p.compatibility ? JSON.stringify(p.compatibility).toLowerCase() : "";
+            
+            return name.includes(makeStr) || 
+                   desc.includes(makeStr) || 
+                   comp.includes(makeStr) ||
+                   (modelStr && (name.includes(modelStr) || desc.includes(modelStr) || comp.includes(modelStr)));
+        }).slice(0, 4);
+    };
+
+    const matchedProducts = getMatchedProducts();
     const featuredProducts = products.filter(p => p.featured).slice(0, 3);
     const hotProducts = products.filter(p => p.hotProduct).slice(0, 4);
     const newProducts = products.filter(p => p.newProduct).slice(0, 4);
@@ -146,21 +160,39 @@ export default function XplorePage() {
         <main className="min-h-screen bg-white pb-20">
 
             {/* HERO SECTION */}
-            <section className="relative h-[450px] w-full bg-black overflow-hidden">
-                <div
-                    className="absolute inset-0 bg-cover bg-center opacity-50"
-                    style={{ backgroundImage: `url(${productsSrip})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+            <section className="relative h-[450px] w-full bg-black overflow-hidden group">
+                {/* Static Hero (Initial State) */}
+                <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-0" : "opacity-100"}`}>
+                    <div
+                        className="absolute inset-0 bg-cover bg-center opacity-50"
+                        style={{ backgroundImage: `url(${productsSrip})` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent font-medium" />
+                    
+                    <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
+                        <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">Quality Guaranteed</span>
+                        <h1 className="text-4xl md:text-7xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
+                            UPGRADE <br />YOUR RIDE
+                        </h1>
+                        <p className="text-base md:text-lg text-gray-300 mb-8 max-w-lg font-medium border-l-2 border-yellow-500 pl-4">
+                            Professional-grade components for the modern driver. Trusted performance, inspected for excellence.
+                        </p>
+                    </div>
+                </div>
 
-                <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
-                    <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">Quality Guaranteed</span>
-                    <h1 className="text-4xl md:text-7xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
-                        UPGRADE <br />YOUR RIDE
-                    </h1>
-                    <p className="text-base md:text-lg text-gray-300 mb-8 max-w-lg font-medium border-l-2 border-yellow-500 pl-4">
-                        Professional-grade components for the modern driver. Trusted performance, inspected for excellence.
-                    </p>
+                {/* Cinematic Video Sequence (Passive State) */}
+                <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                    {cinematicVideos.map((video, idx) => (
+                        <video
+                            key={video}
+                            src={video}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentVideoIndex ? "opacity-100" : "opacity-0"}`}
+                        />
+                    ))}
                 </div>
             </section>
 
@@ -196,6 +228,69 @@ export default function XplorePage() {
 
             {/* PRODUCT SECTIONS */}
             <div className="max-w-7xl mx-auto px-6 mt-12 md:mt-24 space-y-24">
+
+                {/* PERSONALIZED MATCHES or GUEST CTA */}
+                {matchedProducts.length > 0 ? (
+                    <section className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="flex items-end justify-between mb-8 border-b-2 border-yellow-500 pb-4">
+                            <div>
+                                <span className="text-yellow-500 font-black uppercase tracking-widest text-[10px]">Your Garage Matching</span>
+                                <h2 className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-2">
+                                    <Car size={24} className="text-black" /> Matches for your {vehicle.make} {vehicle.model}
+                                </h2>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {matchedProducts.map(product => (
+                                <ProductCard key={product.id} product={product} navigate={navigate} badge="Matching" />
+                            ))}
+                        </div>
+                    </section>
+                ) : !user ? (
+                    <section className="bg-black border-2 border-yellow-500/20 p-8 md:p-16 text-white overflow-hidden relative group animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-50" />
+                        
+                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                            <div className="max-w-xl text-center md:text-left">
+                                <h2 className="text-3xl md:text-6xl font-black uppercase italic tracking-tighter leading-[0.9] mb-6">
+                                    FUEL YOUR <br />
+                                    <span className="text-yellow-500/50">DISCOVERY ENGINE</span>
+                                </h2>
+                                
+                                <ul className="space-y-4 mb-8 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-300">
+                                    <li className="flex items-center gap-3 justify-center md:justify-start">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Compatibility Verification
+                                    </li>
+                                    <li className="flex items-center gap-3 justify-center md:justify-start">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Personalized Trending Alerts
+                                    </li>
+                                    <li className="flex items-center gap-3 justify-center md:justify-start">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Admin-Verified Parts Access
+                                    </li>
+                                </ul>
+
+                                <p className="text-xs md:text-sm font-medium text-gray-400 max-w-sm mx-auto md:mx-0 leading-relaxed">
+                                    Create an account to unlock parts curated specifically for your machine.
+                                </p>
+                            </div>
+
+                            <div className="shrink-0 w-full md:w-auto">
+                                <button 
+                                    onClick={() => navigate("/signup")}
+                                    className="w-full md:w-auto bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-black px-10 py-5 font-black uppercase italic tracking-[0.2em] text-xs shadow-[0_10px_40px_rgba(234,179,8,0.2)] hover:shadow-[0_15px_50px_rgba(234,179,8,0.35)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group/btn"
+                                >
+                                    Create Account <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
+                                </button>
+                                <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.3em] text-gray-600">
+                                    Setup takes 60 seconds
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                ) : null}
 
                 {/* Featured */}
                 <section>

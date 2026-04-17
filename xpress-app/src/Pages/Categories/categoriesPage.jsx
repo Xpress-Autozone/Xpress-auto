@@ -103,19 +103,19 @@ export default function CategoriesPage() {
               <div className="h-1.5 w-20 bg-yellow-500 mt-2"></div>
             </div>
 
-            {/* Flat Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-l border-gray-100">
+            {/* Horizontal Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-l border-gray-100">
               {categories.map((category, index) => (
                 <button
                   key={index}
                   onClick={() => handleCategoryClick(category.id)}
-                  className="flex flex-col items-start text-left p-8 border-r border-b border-gray-100 hover:bg-gray-50 transition-all group relative overflow-hidden"
+                  className="flex flex-row items-center gap-8 text-left p-8 border-r border-b border-gray-100 hover:bg-gray-50 transition-all group relative overflow-hidden h-40"
                 >
-                  <div className="text-gray-400 group-hover:text-black group-hover:scale-110 transition-all duration-300 mb-6">
+                  <div className="shrink-0 text-gray-400 group-hover:text-black transition-all transform scale-[1.5] group-hover:scale-[1.7] duration-500 ml-2">
                     {category.icon}
                   </div>
-                  <div>
-                    <span className="text-black font-black text-sm uppercase tracking-widest block mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-black font-black text-sm md:text-[15px] uppercase tracking-widest block mb-1">
                       {category.name}
                     </span>
                     <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight leading-relaxed block max-w-[200px]">

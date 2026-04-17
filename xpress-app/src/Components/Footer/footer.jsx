@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, MapPin, Facebook, Instagram, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Instagram, ArrowUpRight, ArrowRight } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 
 const Footer = () => {
@@ -8,69 +8,80 @@ const Footer = () => {
 
   return (
     <footer className="bg-black text-white w-full border-t border-gray-800">
-      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-6 py-10 md:py-16">
         
         {/* TOP SECTION: LOGO & LINKS */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-y-10 gap-x-6 mb-16">
           
           {/* Brand Block */}
-          <div className="md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter">
+          <div className="col-span-2 space-y-4">
+            <h3 className="text-xl font-bold uppercase italic tracking-tighter">
               Xpress <span className="text-yellow-500">AutoZone</span>
             </h3>
-            <p className="text-gray-400 text-sm font-medium leading-relaxed max-w-sm uppercase tracking-tight">
-              Ghana's premier verified aftermarket platform. We bridge the gap 
-              between high-performance engineering and the local consumer 
-              through uncompromised quality control.
-            </p>
-            <div className="flex gap-4">
-              <a href="#" className="p-3 border border-gray-800 hover:border-yellow-500 transition-colors">
-                <Facebook size={18} />
-              </a>
-              <a 
-                href="https://www.instagram.com/xpressautozone" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="p-3 border border-gray-800 hover:border-yellow-500 transition-colors"
-              >
-                <Instagram size={18} />
-              </a>
+            <div className="space-y-3">
+              <p className="text-white text-[11px] font-bold uppercase italic tracking-tight leading-tight max-w-sm">
+                Ghana’s Trusted Aftermarket Pit Stop <br /> 
+                <span className="text-yellow-500">for Quality Parts & Accessories</span>
+              </p>
+              <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest italic border-l-2 border-yellow-500 pl-3">
+                Ghana Drives on Xpress — And So Do You!
+              </p>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-8">
+          <div className="col-span-1">
+            <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-yellow-500 mb-6">
               Navigation
             </h4>
-            <ul className="space-y-4 text-xs font-black uppercase tracking-widest italic">
+            <ul className="space-y-3 text-[10px] font-bold uppercase tracking-widest italic">
               <li><Link to="/" className="hover:text-yellow-500 transition-colors">Home</Link></li>
               <li><Link to="/categories" className="hover:text-yellow-500 transition-colors">Categories</Link></li>
               <li><Link to="/xplore" className="hover:text-yellow-500 transition-colors">Xplore Inventory</Link></li>
-              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Partner Tracks</Link></li>
+              <li><Link to="/feedback" className="hover:text-yellow-500 transition-colors">Give Feedback</Link></li>
+            </ul>
+          </div>
+
+          {/* Make Money With Us */}
+          <div className="col-span-1">
+            <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-yellow-500 mb-6">
+              Pros
+            </h4>
+            <ul className="space-y-3 text-[10px] font-bold uppercase tracking-widest italic">
+              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Sell</Link></li>
+              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Affiliate</Link></li>
+              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Supply</Link></li>
+              <li><Link to="/partner" className="hover:text-yellow-500 transition-colors">Deliver</Link></li>
             </ul>
           </div>
 
           {/* Contact Block */}
-          <div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-8">
+          <div className="col-span-2 md:col-span-1">
+            <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-yellow-500 mb-6">
               Inquiries
             </h4>
-            <ul className="space-y-6 text-[11px] font-bold uppercase tracking-tight text-gray-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-white shrink-0" />
-                <span>Accra, Ghana</span>
+            <ul className="space-y-4 text-[10px] font-medium uppercase tracking-tight text-gray-400">
+              <li className="flex items-center gap-2">
+                <Phone className="w-3 h-3 text-white shrink-0" />
+                <a href="tel:+233271665737" className="hover:text-white transition-colors">+233 27 166 5737</a>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-white shrink-0" />
-                <a href="tel:+233209021991" className="hover:text-white transition-colors">+233 20 902 1991</a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-white shrink-0" />
+              <li className="flex items-center gap-2">
+                <Mail className="w-3 h-3 text-white shrink-0" />
                 <a href="mailto:xpressautozone@gmail.com" className="hover:text-white transition-colors">xpressautozone@gmail.com</a>
               </li>
             </ul>
           </div>
+        </div>
+
+        {/* FEEDBACK TAB BAR */}
+        <div className="bg-yellow-500 p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 group cursor-pointer" onClick={() => navigate("/feedback")}>
+          <div>
+            <h3 className="text-black text-xl font-black uppercase italic tracking-tighter">We’d love to hear what you think!</h3>
+            <p className="text-black/60 text-[10px] font-black uppercase tracking-[0.2em] italic">Help us build the future of Ghana's aftermarket</p>
+          </div>
+          <button className="bg-black text-white px-10 py-4 text-xs font-black uppercase italic tracking-widest hover:scale-105 transition-transform flex items-center gap-2">
+            Give Feedback <ArrowRight size={16} />
+          </button>
         </div>
 
         {/* BOTTOM SECTION: LEGAL & POWERED BY */}

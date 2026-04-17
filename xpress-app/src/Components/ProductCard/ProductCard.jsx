@@ -1,14 +1,63 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ShoppingCart } from "lucide-react";
+import { Check, ShoppingCart, Sparkles } from "lucide-react";
 import { useCart } from "../../Context/CartContext";
+import { usePassiveSwipe } from "../../Context/PassiveSwipeContext";
 
-export default function ProductCard({ product, variant = "default" }) {
+/**
+ * UniversalProductCard Component
+ * Features:
+ * - Passively auto-swipes images for visible products (one at a time globally).
+ * - Interactive auto-swipes on hover/touch (overrides passive).
+ * - High-perf layered image rendering for zero-latency mobile swiping.
+ */
+export default function ProductCard({ product, variant = "default", badge }) {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { activeId, registerVisible, unregisterVisible, setManualStatus } = usePassiveSwipe();
+  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isManualActive, setIsManualActive] = useState(false);
+  const cardRef = useRef(null);
+
+  // Combine images into a stable array
+  const imageSources = [
+    product.image,
+    ...(product.additionalImages || [])
+      .map(img => (typeof img === 'string' ? img : img.url || img.imageUrl))
+      .filter(img => img && img.startsWith('http'))
+  ];
+
+  // Passively track visibility 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) registerVisible(product.id);
+        else unregisterVisible(product.id);
+      },
+      { threshold: 0.5 }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [product.id, registerVisible, unregisterVisible]);
+
+  // Combined Swipe Logic
+  const isActuallySwiping = isManualActive || (activeId === product.id);
+
+  useEffect(() => {
+    let interval;
+    if (isActuallySwiping && imageSources.length > 1) {
+      interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % imageSources.length);
+      }, isManualActive ? 1200 : 3000); // Passive is 3s, Manual is 1.2s
+    } else {
+      setCurrentImageIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [isActuallySwiping, imageSources.length, isManualActive]);
 
   const handleClick = () => {
-    console.log(`[ProductCard] 🔗 Navigating to product: ${product.id} - ${product.name}`);
     navigate(`/product/${product.id}`, { state: { product } });
   };
 
@@ -23,96 +72,106 @@ export default function ProductCard({ product, variant = "default" }) {
     });
   };
 
-  if (variant === "featured") {
-    return (
-      <div
-        onClick={handleClick}
-        className="bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left"
-      >
-        <div className="aspect-[4/5] bg-gray-50 flex items-center justify-center border-b border-gray-50 overflow-hidden">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-            />
-          ) : (
-            <div className="text-gray-300 font-black uppercase tracking-widest text-xs">Image</div>
-          )}
-        </div>
-        <div className="p-4">
-          <h3 className="font-bold text-xs md:text-sm text-gray-900 uppercase tracking-tight mb-2 line-clamp-2 h-10">
-            {product.name}
-          </h3>
-          {product.verified && (
-            <div className="flex items-center gap-1 text-[10px] font-black text-green-600 uppercase mb-3">
-              <Check className="w-3 h-3" />
-              <span>Verified</span>
-            </div>
-          )}
-          <div className="flex flex-col gap-1 mb-3">
-            <span className="text-xl font-black italic">GH₵{product.price.toFixed(2)}</span>
-            <span
-              className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
-                product.status === "In Stock"
-                  ? "border-green-500 text-green-600"
-                  : "border-orange-500 text-orange-600"
-              }`}
-            >
-              {product.status}
-            </span>
-          </div>
-          <button
-            onClick={handleAddToCart}
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 text-xs uppercase transition-colors flex items-center justify-center gap-2"
-          >
-            <ShoppingCart className="w-3 h-3" />
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Interaction handlers
+  const startManual = (e) => {
+    if (e.pointerType === 'touch') e.currentTarget.setPointerCapture(e.pointerId);
+    setIsManualActive(true);
+    setManualStatus(true);
+  };
+
+  const stopManual = (e) => {
+    if (e.pointerType === 'touch') e.currentTarget.releasePointerCapture(e.pointerId);
+    setIsManualActive(false);
+    setManualStatus(false);
+  };
+
+  const cardClasses = variant === "featured" 
+    ? "bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left flex flex-col h-full"
+    : "group cursor-pointer flex flex-col h-full";
 
   return (
-    <div onClick={handleClick} className="group cursor-pointer">
-      <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50">
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 font-black uppercase tracking-widest text-xs">
-            Image
+    <div
+      ref={cardRef}
+      onClick={handleClick}
+      className={cardClasses}
+      onPointerDown={startManual}
+      onPointerUp={stopManual}
+      onPointerEnter={() => { setIsManualActive(true); setManualStatus(true); }}
+      onPointerLeave={stopManual}
+      onPointerCancel={stopManual}
+    >
+      <div className={`relative bg-gray-50 flex items-center justify-center border-b border-gray-50 overflow-hidden ${variant === 'featured' ? 'aspect-[4/5]' : 'aspect-square mb-4'}`}>
+        {imageSources.length > 0 ? (
+          <div className="relative w-full h-full">
+            {imageSources.map((src, idx) => (
+              <img
+                key={`${src}-${idx}`}
+                src={src}
+                alt={`${product.name} view ${idx}`}
+                className={`absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-all duration-700 ${
+                  idx === currentImageIndex ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                } ${isActuallySwiping && idx === currentImageIndex ? "scale-105" : ""}`}
+                loading={idx === 0 ? "eager" : "lazy"}
+              />
+            ))}
           </div>
+        ) : (
+          <div className="text-gray-300 font-black uppercase tracking-widest text-xs italic">No Visual</div>
+        )}
+
+        {/* Badges Overlay */}
+        {(badge || product.featured) && (
+            <div className={`absolute top-0 left-0 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 z-10 ${
+                badge === 'Matching' ? 'bg-yellow-500 text-black' : 
+                badge === 'Hot' ? 'bg-red-600' : 
+                badge === 'New' ? 'bg-black' : 'bg-yellow-500 text-black'
+            }`}>
+              {badge || (product.featured ? 'Featured' : '')}
+            </div>
+        )}
+
+        {/* Multi-image indicator dots */}
+        {isActuallySwiping && imageSources.length > 1 && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                {imageSources.map((_, i) => (
+                    <div 
+                        key={i} 
+                        className={`w-1 h-1 rounded-full transition-all ${i === currentImageIndex ? "bg-black w-2" : "bg-black/20"}`}
+                    />
+                ))}
+            </div>
         )}
       </div>
-      <div className="space-y-2">
-        <h3 className="text-xs md:text-sm font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-red-600 transition-colors">
+
+      <div className={`${variant === 'featured' ? 'p-4' : 'space-y-2'} flex flex-col flex-1`}>
+        <h3 className="font-black text-xs md:text-sm text-gray-900 uppercase tracking-tight mb-2 line-clamp-2 h-10 leading-tight">
           {product.name}
         </h3>
-        <div className="flex flex-col gap-1 pt-1">
-          <span className="text-lg font-black italic tracking-tighter text-black">
-            GH₵{product.price.toFixed(2)}
-          </span>
-          <div
-            className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
-              product.status === "In Stock"
-                ? "border-green-500 text-green-600"
-                : "border-red-500 text-red-600"
-            }`}
-          >
-            {product.status}
+
+        {product.verified && variant === 'featured' && (
+          <div className="flex items-center gap-1 text-[10px] font-black text-green-600 uppercase mb-3 italic">
+            <Check className="w-3 h-3" />
+            <span>Xpress Verified</span>
+          </div>
+        )}
+
+        <div className="mt-auto flex flex-col gap-1 mb-3 pt-4 border-t border-gray-50">
+          <div className="flex items-end justify-between">
+            <span className="text-lg md:text-xl font-black italic tracking-tighter">GH₵{product.price.toFixed(2)}</span>
+            <div className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
+                product.status === "In Stock" ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
+              }`}>
+              {product.status}
+            </div>
           </div>
         </div>
+
         <button
           onClick={handleAddToCart}
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-1.5 text-xs uppercase transition-colors flex items-center justify-center gap-2 mt-2"
+          className="w-full bg-yellow-500 hover:bg-black hover:text-white text-black font-black py-2.5 text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 group-hover:scale-105 active:scale-95 shadow-sm"
         >
-          <ShoppingCart className="w-3 h-3" />
-          Add
+          <ShoppingCart className="w-3.5 h-3.5" />
+          Add To Cart
         </button>
       </div>
     </div>

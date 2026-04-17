@@ -9,6 +9,7 @@ import { store } from './Redux/store';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
+import { PassiveSwipeProvider } from "./Context/PassiveSwipeContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,7 +17,9 @@ createRoot(document.getElementById("root")).render(
       <HelmetProvider>
         <Provider store={store}>
           <CartProvider>
-            <MainLayout />
+            <PassiveSwipeProvider>
+              <MainLayout />
+            </PassiveSwipeProvider>
             <Toaster
               position="bottom-center"
               toastOptions={{

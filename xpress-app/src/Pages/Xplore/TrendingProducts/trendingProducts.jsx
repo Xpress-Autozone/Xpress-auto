@@ -5,53 +5,7 @@ import SkeletonLoader from "../../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../../Components/EmptyState/EmptyState";
 import { getAllProducts } from "../../../lib/productService";
 
-const ProductCard = ({ product, navigate }) => (
-    <div 
-        onClick={() => navigate(`/product/${product.id}`)}
-        className="group bg-white border border-gray-200 hover:border-black transition-all duration-300 overflow-hidden cursor-pointer flex flex-col h-full"
-    >
-        <div className="relative h-64 overflow-hidden bg-gray-50 border-b border-gray-100">
-            <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700" 
-            />
-            <div className="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-2">
-                Hot 
-            </div>
-            <div className="absolute bottom-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                <button className="bg-black p-4 text-white hover:bg-yellow-500 hover:text-black transition-colors">
-                    <ShoppingCart size={20} />
-                </button>
-            </div>
-        </div>
-
-        <div className="p-5 flex flex-col flex-1">
-            <h3 className="font-black text-gray-900 uppercase tracking-tight line-clamp-2 text-sm mb-2 leading-tight group-hover:text-red-600 transition-colors">
-                {product.name}
-            </h3>
-            
-            <div className="flex items-center gap-1 mb-4">
-                <div className="flex text-yellow-500">
-                    {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={12} fill={i < Math.floor(product.rating || 0) ? "currentColor" : "none"} strokeWidth={3} />
-                    ))}
-                </div>
-                <span className="text-[10px] font-black text-gray-400">({product.reviews || 0})</span>
-            </div>
-
-            <div className="mt-auto flex items-end justify-between border-t border-gray-50 pt-4">
-                <div>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Price</span>
-                    <span className="text-xl font-black italic text-black">GH₵{product.price.toFixed(2)}</span>
-                </div>
-                <div className="text-[9px] font-black uppercase px-2 py-1 border border-red-500 text-red-600 italic">
-                    Trending
-                </div>
-            </div>
-        </div>
-    </div>
-);
+import ProductCard from "../../../Components/ProductCard/ProductCard";
 
 export default function TrendingProducts() {
     const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +27,7 @@ export default function TrendingProducts() {
                             name: p.itemName,
                             price: parseFloat(p.price) || 0,
                             image: p.mainImage?.url || "/api/placeholder/200/200",
+                            additionalImages: p.additionalImages || [],
                             rating: 4.5,
                             reviews: 0,
                         }))
@@ -126,7 +81,7 @@ export default function TrendingProducts() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {products.map(product => (
-                            <ProductCard key={product.id} product={product} navigate={navigate} />
+                            <ProductCard key={product.id} product={product} badge="Hot" />
                         ))}
                     </div>
                 )}

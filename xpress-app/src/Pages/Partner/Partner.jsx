@@ -33,39 +33,41 @@ export default function PartnerPage() {
         <img src={hero} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent"></div>
         
-        <div className="max-w-7xl mx-auto px-3 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
           <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block italic">
-            Revolutionizing Auto Commerce
+            Economic Opportunity
           </span>
-          <span className="text-5xl md:text-8xl font-black italic tracking-tighter leading-[0.85] text-white mb-15">Join Us </span>
-          <p className="text-base md:text-lg text-gray-200 max-w-2xl font-medium border-l-2 border-yellow-500 pl-6  pt-3 leading-relaxed">
-            Xpress AutoZone is Ghana's premier platform for verified aftermarket components. 
-            We provide the digital infrastructure to connect high-quality suppliers 
-            with a growing market of discerning vehicle owners.
+          <h1 className="text-5xl md:text-9xl font-black italic tracking-tighter leading-[0.8] text-white mb-6 uppercase">
+            Make Money <br /> 
+            <span className="text-gray-400">With Us</span>
+          </h1>
+          <p className="text-base md:text-lg text-gray-200 max-w-2xl font-medium border-l-2 border-yellow-500 pl-6 pt-3 leading-relaxed mx-auto text-left">
+            Xpress AutoZone is more than a marketplace—it's an ecosystem. 
+            Join Ghana's fastest-growing aftermarket network and leverage our 
+            digital infrastructure to scale your business.
           </p>
         </div>
       </section>
 
       {/* 2. ABOUT THE PLATFORM */}
-      <section className="py-24 px-6 border-b border-gray-100">
+      <section className="py-24 px-6 border-b border-gray-100 uppercase">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Professional Standards</h2>
-              <p className="text-gray-800 leading-relaxed text-md">
-                The aftermarket parts industry in Ghana faces challenges with transparency 
-                and quality consistency. Xpress AutoZone solves this through a rigorous 
-                admin-review process. Every part listed is vetted for condition and 
-                authenticity, ensuring that our partners can sell with authority.
+              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Your Hub for Growth</h2>
+              <p className="text-gray-800 leading-relaxed text-md font-medium">
+                Whether you're a high-volume dealer looking to scale, a mechanic wanting to verify your builds, 
+                or a logistics expert aiming for last-mile dominance—Xpress provides the tools to succeed. 
+                Our rigorous admin-review process ensures that your association with us is a mark of quality.
               </p>
               <div className="grid grid-cols-2 gap-8 pt-6">
                 <div className="space-y-1">
-                  <h4 className="text-4xl font-black italic uppercase text-black">Vetted</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Supply Chain Control</p>
+                  <h4 className="text-4xl font-black italic uppercase text-black">Ghana</h4>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Drives on Xpress</p>
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-4xl font-black italic uppercase text-black">Scalable</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Digital Infrastructure</p>
+                  <h4 className="text-4xl font-black italic uppercase text-black">Verified</h4>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Authentic Infrastructure</p>
                 </div>
               </div>
             </div>
@@ -73,13 +75,13 @@ export default function PartnerPage() {
             <div className="grid grid-cols-1 gap-4">
                <div className="border-l-4 border-yellow-500 bg-gray-50 p-10 hover:bg-white hover:border-black transition-all group">
                   <ShieldCheck className="mb-4 text-black group-hover:text-yellow-600" size={28} />
-                  <h3 className="font-black uppercase tracking-tight text-sm">Quality Verification</h3>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">Stringent admin oversight for every SKU.</p>
+                  <h3 className="font-black uppercase tracking-tight text-sm text-black">Verified Partnerships</h3>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">Stringent vetting for every partner entity.</p>
                </div>
                <div className="border-l-4 border-yellow-500 bg-gray-50 p-10 hover:bg-white hover:border-black transition-all group">
                   <Truck className="mb-4 text-black group-hover:text-yellow-600" size={28} />
-                  <h3 className="font-black uppercase tracking-tight text-sm">Logistics Support</h3>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">End-to-end fulfillment for high-volume dealers.</p>
+                  <h3 className="font-black uppercase tracking-tight text-sm text-black">Scale & Logistics</h3>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">Leverage our logistics network for efficiency.</p>
                </div>
             </div>
           </div>
@@ -90,45 +92,70 @@ export default function PartnerPage() {
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">Partner Categories</h2>
+            <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">Choose Your Track</h2>
             <div className="h-1.5 w-24 bg-yellow-500 mx-auto" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Dealer Track */}
-            <div className="bg-white border-2 border-transparent p-12 hover:border-yellow-500 transition-all group">
-              <Building2 size={40} className="mb-8 text-black group-hover:text-yellow-600" />
-              <h3 className="text-2xl font-black uppercase italic mb-6">Inventory Partners</h3>
-              <ul className="space-y-4 mb-12">
-                {['Verified Storefront Listing', 'Access to National Demand Data', 'Automated Stock Management', 'Bulk Logistics Handling'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-[10px] font-black text-gray-500 uppercase tracking-widest italic">
-                    <div className="w-2 h-0.5 bg-yellow-500" /> {item}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={scrollToForm} className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors flex items-center gap-2">
-                Apply for Dealership <ArrowRight size={14} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Track 1: Sell */}
+            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+              <div>
+                <Building2 size={32} className="mb-6 text-black group-hover:text-yellow-600" />
+                <h3 className="text-xl font-black uppercase italic mb-4">Sell on Xpress</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
+                  List your verified inventory and reach a national audience of car enthusiasts.
+                </p>
+              </div>
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+                Apply Now
               </button>
             </div>
 
-            {/* Mechanic Track */}
-            <div className="bg-white border-2 border-transparent p-12 hover:border-yellow-500 transition-all group">
-              <Wrench size={40} className="mb-8 text-black group-hover:text-yellow-600" />
-              <h3 className="text-2xl font-black uppercase italic mb-6">Service Partners</h3>
-              <ul className="space-y-4 mb-12">
-                {['Certified Installer Program', 'Preferred Parts Referral', 'Technical Tooling Access', 'Verified Lead Generation'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-[10px] font-black text-gray-500 uppercase tracking-widest italic">
-                    <div className="w-2 h-0.5 bg-yellow-500" /> {item}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={scrollToForm} className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors flex items-center gap-2">
-                Apply for Certification <ArrowRight size={14} />
+            {/* Track 2: Affiliate */}
+            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+              <div>
+                <Users size={32} className="mb-6 text-black group-hover:text-yellow-600" />
+                <h3 className="text-xl font-black uppercase italic mb-4">Become an Affiliate</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
+                  Promote verified parts and earn competitive commissions on every sale.
+                </p>
+              </div>
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+                Join Program
+              </button>
+            </div>
+
+            {/* Track 3: Supply */}
+            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+              <div>
+                <ShieldCheck size={32} className="mb-6 text-black group-hover:text-yellow-600" />
+                <h3 className="text-xl font-black uppercase italic mb-4">Supply to Xpress</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
+                  Become a bulk supplier for our curated collections and seasonal drops.
+                </p>
+              </div>
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+                Get Verified
+              </button>
+            </div>
+
+            {/* Track 4: Deliver */}
+            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+              <div>
+                <Truck size={32} className="mb-6 text-black group-hover:text-yellow-600" />
+                <h3 className="text-xl font-black uppercase italic mb-4">Deliver Packages</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
+                  Join our last-mile logistics team and help us deliver excellence.
+                </p>
+              </div>
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+                Start Driving
               </button>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* 4. APPLICATION FORM ACCORDION */}
       <section ref={formRef} className="max-w-4xl mx-auto px-6 py-24">
@@ -153,10 +180,10 @@ export default function PartnerPage() {
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nature of Partnership</label>
                 <select name="type" className="w-full border-b-2 border-gray-200 p-4 outline-none focus:border-yellow-500 transition-colors font-black uppercase text-xs appearance-none bg-gray-50">
-                  <option>Spare Part Dealer</option>
-                  <option>Certified Mechanic</option>
-                  <option>Logistics/Delivery Partner</option>
-                  <option>Corporate Fleet Services</option>
+                  <option>Parts Dealer / Seller</option>
+                  <option>Affiliate Partner</option>
+                  <option>Bulk Supplier</option>
+                  <option>Logistics / Delivery</option>
                 </select>
               </div>
 

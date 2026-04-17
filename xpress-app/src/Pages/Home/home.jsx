@@ -170,38 +170,157 @@ function Home() {
     setTimeout(() => setIsLoading(false), 1500);
   }, []);
 
-  if (isLoading) {
-    return <SkeletonLoader />;
-  }
+  // --- HERO SEQUENCE CONFIGURATION ---
+  const heroSequence = [
+    {
+      id: "phase-0",
+      mediaType: "image",
+      mediaSrc: slideImage,
+      h1: (
+        <>
+          DISCOVER <br />
+          <span className="text-gray-300">QUALITY PARTS</span>
+        </>
+      ),
+      subtitle: "Ghana's premier marketplace for authentic, admin-verified automotive components.",
+      durationMs: 5000, // Updated to 5 seconds
+    },
+    {
+      id: "phase-1",
+      mediaType: "video",
+      mediaBase: "1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300",
+      h1: (
+        <>
+          ELEVATE <br />
+          <span className="text-gray-300">PERFORMANCE</span>
+        </>
+      ),
+      subtitle: "High-octane upgrades and elite body parts designed for the modern driving experience.",
+      durationMs: 6000,
+    },
+    {
+      id: "phase-2",
+      mediaType: "video",
+      mediaBase: "2. yellow car engine video upclose",
+      h1: (
+        <>
+          PRECISION <br />
+          <span className="text-gray-300">ENGINEERING</span>
+        </>
+      ),
+      subtitle: "Meticulously inspected engine components and professional tools for uncompromised reliability.",
+      durationMs: 5000,
+    },
+    {
+      id: "phase-3",
+      mediaType: "video",
+      mediaBase: "3. OIG1",
+      h1: (
+        <>
+          SHOP WITH <br />
+          <span className="text-gray-300">TOTAL CONFIDENCE</span>
+        </>
+      ),
+      subtitle: "Every part is rigorously reviewed by our experts to ensure the highest standards of quality.",
+      durationMs: 5000,
+    }
+  ];
+
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
+
+  // Timer logic for cycling through the hero sequence
+  useEffect(() => {
+    const currentPhase = heroSequence[currentPhaseIndex];
+    const timer = setTimeout(() => {
+      setCurrentPhaseIndex((prevIndex) => (prevIndex + 1) % heroSequence.length);
+    }, currentPhase.durationMs);
+
+    return () => clearTimeout(timer);
+  }, [currentPhaseIndex]);
 
   return (
     <div className="bg-white min-h-screen w-full">
-      {/* NEW XPLORE-STYLE HERO SECTION */}
+      {/* HERO SECTION WITH DYNAMIC SEQUENCE */}
       <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-50"
-          style={{ backgroundImage: `url(${slideImage})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+        {/* MEDIA LAYERS: Render all so they preload, cross-fade with opacity */}
+        {heroSequence.map((phase, index) => {
+          const isActive = index === currentPhaseIndex;
+          return (
+            <div
+              key={phase.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                isActive ? "opacity-60" : "opacity-0"
+              }`}
+            >
+              {phase.mediaType === "image" ? (
+                <div
+                  className="w-full h-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${phase.mediaSrc})` }}
+                />
+              ) : (
+                <video
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                >
+                  <source src={`/assets/videos/${phase.mediaBase}.webm`} type="video/webm" />
+                  <source src={`/assets/videos/${phase.mediaBase}.mp4`} type="video/mp4" />
+                </video>
+              )}
+            </div>
+          );
+        })}
+
+        {/* PERSISTENT DARK OVERLAY */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center text-white">
-          <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
+          <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4">
             Verified by Xpress AutoZone
           </span>
-          <h1 className="text-4xl md:text-8xl font-black mb-6 leading-[0.9] uppercase italic tracking-tighter">
-            DISCOVER <br />
-            <span className="text-gray-300">QUALITY PARTS</span>
-          </h1>
-          <p className="text-base md:text-lg text-gray-300 mb-10 max-w-2xl font-medium border-l-2 border-yellow-500 pl-4 leading-relaxed">
-            Every part goes through a rigorous inspection. Shop with total
-            confidence on Ghana's premier aftermarket platform for authentic
-            vehicle components.
-          </p>
+
+          <div className="relative h-32 md:h-48 mb-6 overflow-hidden">
+            {/* TEXT ANIMATION: Cross-fade H1 layers */}
+            {heroSequence.map((phase, index) => {
+              const isActive = index === currentPhaseIndex;
+              return (
+                <h1
+                  key={`h1-${phase.id}`}
+                  className={`absolute inset-0 text-4xl md:text-8xl font-black leading-[0.9] uppercase italic tracking-tighter transition-all duration-1000 ease-in-out ${
+                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  {phase.h1}
+                </h1>
+              );
+            })}
+          </div>
+
+          <div className="relative h-24 mb-10 max-w-2xl border-l-2 border-yellow-500 pl-4">
+            {/* TEXT ANIMATION: Cross-fade Subtitle layers */}
+            {heroSequence.map((phase, index) => {
+              const isActive = index === currentPhaseIndex;
+              return (
+                <p 
+                  key={`sub-${phase.id}`}
+                  className={`absolute inset-0 text-base md:text-lg text-gray-300 font-medium leading-relaxed transition-all duration-1000 ease-in-out ${
+                    isActive ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                  }`}
+                >
+                  {phase.subtitle}
+                </p>
+              );
+            })}
+          </div>
+          
           <button
             onClick={handleNavigate}
-            className="w-fit bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-10 transition-all duration-300"
+            className="w-fit bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-black font-black uppercase italic tracking-[0.2em] text-xs md:text-sm py-3 px-8 md:py-5 md:px-12 transition-all duration-500 shadow-[0_10px_30px_rgba(234,179,8,0.25)] hover:shadow-[0_15px_40px_rgba(234,179,8,0.4)] hover:scale-105 active:scale-95 border-2 border-black/10 group flex items-center gap-3"
           >
-            Shop Verified Parts
+            Shop Verified Parts <ArrowRight className="group-hover:translate-x-1 transition-transform w-4 h-4 md:w-5 md:h-5" />
           </button>
         </div>
       </section>
@@ -223,9 +342,9 @@ function Home() {
               <button
                 key={index}
                 onClick={() => handleCategoryClick(category.name)}
-                className="flex items-center space-x-4 text-left w-full p-4 h-24 border border-gray-100 hover:border-black transition-all group"
+                className="flex items-center space-x-4 text-left w-full p-4 h-24 border border-gray-100 hover:border-black transition-all group overflow-hidden"
               >
-                <span className="text-gray-400 group-hover:text-black transition-colors">
+                <span className="text-gray-400 group-hover:text-black transition-all transform scale-125 group-hover:scale-[1.4] duration-500">
                   {category.icon}
                 </span>
                 <div>
@@ -246,9 +365,9 @@ function Home() {
               <button
                 key={index}
                 onClick={() => handleCategoryClick(category.name)}
-                className="border border-gray-100 p-4 flex flex-col items-center text-center group"
+                className="border border-gray-100 p-4 flex flex-col items-center text-center group overflow-hidden"
               >
-                <div className="mb-2 text-gray-400 group-hover:text-black">
+                <div className="mb-3 text-gray-400 group-hover:text-black transition-all transform scale-[1.3] group-hover:scale-[1.5] duration-500">
                   {category.icon}
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-tight text-gray-900 leading-tight">

@@ -29,8 +29,10 @@ import SignIn from "../Pages/Auth/SignIn";
 import SignUp from "../Pages/Auth/SignUp";
 import MyAccount from "../Pages/Account/MyAccount";
 import Partner from "../Pages/Partner/Partner";
+import FeedbackPage from "../Pages/Feedback/FeedbackPage";
 import Onboarding from "../Pages/Auth/Onboarding";
 import ProtectedRoute from "../Components/Auth/ProtectedRoute";
+import WhatsAppButton from "../Components/WhatsApp/WhatsAppButton";
 
 function LayoutContent() {
   useScrollToTop();
@@ -79,8 +81,10 @@ function LayoutContent() {
           }
         />
         <Route path="/partner" element={<Partner />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
       </Routes>
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }
