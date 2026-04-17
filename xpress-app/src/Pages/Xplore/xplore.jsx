@@ -124,7 +124,7 @@ export default function XplorePage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setTransitionToVideo(true);
-        }, 5000);
+        }, 3500);
 
         return () => clearTimeout(timer);
     }, []);

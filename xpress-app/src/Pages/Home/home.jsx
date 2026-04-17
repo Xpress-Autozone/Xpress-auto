@@ -180,7 +180,7 @@ function Home() {
         </>
       ),
       subtitle: "Ghana's premier marketplace for authentic, admin-verified automotive components.",
-      durationMs: 5000, // Updated to 5 seconds
+      durationMs: 3500, // Updated to 3.5 seconds
     },
     {
       id: "phase-1",
