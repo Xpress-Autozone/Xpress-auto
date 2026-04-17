@@ -49,9 +49,18 @@ export default function XplorePage() {
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
     const cinematicVideos = [
-        "/src/assets/videos/source/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.mp4",
-        "/src/assets/videos/source/2. yellow car engine video upclose.mp4",
-        "/src/assets/videos/source/3. OIG1.mp4"
+        {
+            webm: "/assets/videos/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.webm",
+            mp4: "/assets/videos/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.mp4"
+        },
+        {
+            webm: "/assets/videos/2. yellow car engine video upclose.webm",
+            mp4: "/assets/videos/2. yellow car engine video upclose.mp4"
+        },
+        {
+            webm: "/assets/videos/3. OIG1.webm",
+            mp4: "/assets/videos/3. OIG1.mp4"
+        }
     ];
 
     const navigate = useNavigate();
@@ -184,14 +193,17 @@ export default function XplorePage() {
                 <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                     {cinematicVideos.map((video, idx) => (
                         <video
-                            key={video}
-                            src={video}
+                            key={idx}
                             autoPlay
                             muted
                             loop
                             playsInline
+                            preload="auto"
                             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentVideoIndex ? "opacity-100" : "opacity-0"}`}
-                        />
+                        >
+                            <source src={video.webm} type="video/webm" />
+                            <source src={video.mp4} type="video/mp4" />
+                        </video>
                     ))}
                 </div>
             </section>
