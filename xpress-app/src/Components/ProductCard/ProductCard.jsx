@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ShoppingCart, Sparkles } from "lucide-react";
+import { Check, ShoppingCart } from "lucide-react";
 import { useCart } from "../../Context/CartContext";
 import { usePassiveSwipe } from "../../Context/PassiveSwipeContext";
 
@@ -9,18 +9,22 @@ import { usePassiveSwipe } from "../../Context/PassiveSwipeContext";
  * Features:
  * - Passively auto-swipes images for visible products (one at a time globally).
  * - Interactive auto-swipes on hover/touch (overrides passive).
+ * - Manual gesture swiping: drag/swipe left/right to browse images.
  * - High-perf layered image rendering for zero-latency mobile swiping.
  */
 export default function ProductCard({ product, variant = "default", badge }) {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { activeId, registerVisible, unregisterVisible, setManualStatus } = usePassiveSwipe();
-  
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isManualActive, setIsManualActive] = useState(false);
   const cardRef = useRef(null);
-  const [startX, setStartX] = useState(0);
-  const [swipePerformed, setSwipePerformed] = useState(false);
+
+  // Refs for touch tracking — avoids stale closure bug with useState
+  const startXRef = useRef(0);
+  const swipedRef = useRef(false);
+  const isManualActiveRef = useRef(false);
 
   // Combine images into a stable, deduplicated array
   const imageSources = Array.from(new Set([
@@ -30,6 +34,9 @@ export default function ProductCard({ product, variant = "default", badge }) {
       .filter(img => img && img.startsWith('http'))
   ])).filter(Boolean);
 
+  const imageSourcesRef = useRef(imageSources);
+  useEffect(() => { imageSourcesRef.current = imageSources; }, [imageSources]);
+
   // Passively track visibility with a lower threshold for mobile
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,33 +44,37 @@ export default function ProductCard({ product, variant = "default", badge }) {
         if (entry.isIntersecting) registerVisible(product.id);
         else unregisterVisible(product.id);
       },
-      { threshold: 0.2 } // Lower threshold for better mobile detection
+      { threshold: 0.2 }
     );
-
     if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, [product.id, registerVisible, unregisterVisible]);
 
-  // Combined Swipe Logic
+  // Auto-swipe interval (passive + hover hold)
   const isActuallySwiping = isManualActive || (activeId === product.id);
 
   useEffect(() => {
+    // Don't run auto-interval if user just manually swiped
+    if (swipedRef.current) return;
+
     let interval;
-    if (isActuallySwiping && imageSources.length > 1 && !swipePerformed) {
+    if (isActuallySwiping && imageSources.length > 1) {
       interval = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % imageSources.length);
-      }, isManualActive ? 1200 : 3000); // Passive is 3s, Manual is 1.2s
+        setCurrentImageIndex(prev => (prev + 1) % imageSources.length);
+      }, isManualActive ? 1200 : 3000);
     } else {
-      setCurrentImageIndex(prev => (swipePerformed ? prev : 0));
+      setCurrentImageIndex(0);
     }
     return () => clearInterval(interval);
-  }, [isActuallySwiping, imageSources.length, isManualActive, swipePerformed]);
+  }, [isActuallySwiping, imageSources.length, isManualActive]);
 
-  const handleClick = (e) => {
-    // Only navigate if we didn't just perform a manual swipe
-    if (!swipePerformed) {
-      navigate(`/product/${product.id}`, { state: { product } });
+  const handleClick = () => {
+    // Block navigation if user just swiped
+    if (swipedRef.current) {
+      swipedRef.current = false;
+      return;
     }
+    navigate(`/product/${product.id}`, { state: { product } });
   };
 
   const handleAddToCart = (e) => {
@@ -77,48 +88,56 @@ export default function ProductCard({ product, variant = "default", badge }) {
     });
   };
 
-  // Interaction handlers - optimized for mobile + manual gestures
+  // ─── Touch / Pointer Handlers ───────────────────────────────────────────────
+
   const startManual = (e) => {
-    if (e.pointerType === 'touch') {
+    // Capture pointer so we keep receiving events even if finger leaves the element
+    try {
       e.currentTarget.setPointerCapture(e.pointerId);
-    }
-    setStartX(e.clientX);
-    setSwipePerformed(false);
+    } catch (_) {}
+
+    startXRef.current = e.clientX;
+    swipedRef.current = false;
+    isManualActiveRef.current = true;
     setIsManualActive(true);
     setManualStatus(true);
   };
 
   const handlePointerMove = (e) => {
-    if (!isManualActive || imageSources.length <= 1) return;
+    // Use refs so values are always current (no stale closure)
+    if (!isManualActiveRef.current) return;
+    const sources = imageSourcesRef.current;
+    if (sources.length <= 1) return;
 
-    const deltaX = e.clientX - startX;
-    const threshold = 40; // 40px movement to trigger a swipe
+    const deltaX = e.clientX - startXRef.current;
+    const THRESHOLD = 35; // px before a swipe is counted
 
-    if (Math.abs(deltaX) > threshold) {
+    if (Math.abs(deltaX) > THRESHOLD) {
       if (deltaX > 0) {
-        // Swipe Right (Prev)
-        setCurrentImageIndex(prev => (prev - 1 + imageSources.length) % imageSources.length);
+        // Swipe Right → Previous image
+        setCurrentImageIndex(prev => (prev - 1 + sources.length) % sources.length);
       } else {
-        // Swipe Left (Next)
-        setCurrentImageIndex(prev => (prev + 1) % imageSources.length);
+        // Swipe Left → Next image
+        setCurrentImageIndex(prev => (prev + 1) % sources.length);
       }
-      setStartX(e.clientX); // Reset start point for chained swipes
-      setSwipePerformed(true); // Mark as swiped to block navigation
+      // Reset origin so chained swipes work correctly
+      startXRef.current = e.clientX;
+      swipedRef.current = true;
     }
   };
 
   const stopManual = (e) => {
-    if (e.pointerType === 'touch') {
-      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err) {}
-    }
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+    isManualActiveRef.current = false;
     setIsManualActive(false);
     setManualStatus(false);
-    // Note: swipePerformed is kept true until the next pointerDown or click resolves
   };
 
-  const cardClasses = variant === "featured" 
-    ? "bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left flex flex-col h-full touch-pan-y"
-    : "group cursor-pointer flex flex-col h-full touch-pan-y";
+  const cardClasses = variant === "featured"
+    ? "bg-white border border-gray-100 hover:border-black transition-all cursor-pointer group text-left flex flex-col h-full touch-pan-y select-none"
+    : "group cursor-pointer flex flex-col h-full touch-pan-y select-none";
 
   return (
     <div
@@ -126,18 +145,20 @@ export default function ProductCard({ product, variant = "default", badge }) {
       onPointerDown={startManual}
       onPointerMove={handlePointerMove}
       onPointerUp={stopManual}
+      onPointerCancel={stopManual}
+      onPointerLeave={stopManual}
       onPointerEnter={(e) => {
         if (e.pointerType === 'mouse') {
+          isManualActiveRef.current = true;
           setIsManualActive(true);
           setManualStatus(true);
-          setSwipePerformed(false);
+          swipedRef.current = false;
         }
       }}
-      onPointerLeave={stopManual}
-      onPointerCancel={stopManual}
       onClick={handleClick}
       className={cardClasses}
     >
+      {/* Image Area */}
       <div className={`relative bg-gray-50 flex items-center justify-center border-b border-gray-50 overflow-hidden ${variant === 'featured' ? 'aspect-[4/5]' : 'aspect-square mb-4'}`}>
         {imageSources.length > 0 ? (
           <div className="relative w-full h-full">
@@ -146,10 +167,11 @@ export default function ProductCard({ product, variant = "default", badge }) {
                 key={`${src}-${idx}`}
                 src={src}
                 alt={`${product.name} view ${idx}`}
-                className={`absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-all duration-700 ${
+                className={`absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-all duration-500 ${
                   idx === currentImageIndex ? "opacity-100 scale-100" : "opacity-0 scale-95"
                 } ${isActuallySwiping && idx === currentImageIndex ? "scale-105" : ""}`}
                 loading={idx === 0 ? "eager" : "lazy"}
+                draggable={false}
               />
             ))}
           </div>
@@ -159,28 +181,29 @@ export default function ProductCard({ product, variant = "default", badge }) {
 
         {/* Badges Overlay */}
         {(badge || product.featured) && (
-            <div className={`absolute top-0 left-0 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 z-10 ${
-                badge === 'Matching' ? 'bg-yellow-500 text-black' : 
-                badge === 'Hot' ? 'bg-red-600' : 
-                badge === 'New' ? 'bg-black' : 'bg-yellow-500 text-black'
-            }`}>
-              {badge || (product.featured ? 'Featured' : '')}
-            </div>
+          <div className={`absolute top-0 left-0 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 z-10 ${
+            badge === 'Matching' ? 'bg-yellow-500 text-black' :
+            badge === 'Hot' ? 'bg-red-600' :
+            badge === 'New' ? 'bg-black' : 'bg-yellow-500 text-black'
+          }`}>
+            {badge || (product.featured ? 'Featured' : '')}
+          </div>
         )}
 
-        {/* Multi-image indicator dots */}
-        {isActuallySwiping && imageSources.length > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-                {imageSources.map((_, i) => (
-                    <div 
-                        key={i} 
-                        className={`w-1 h-1 rounded-full transition-all ${i === currentImageIndex ? "bg-black w-2" : "bg-black/20"}`}
-                    />
-                ))}
-            </div>
+        {/* Image Dots — always show when multiple images exist */}
+        {imageSources.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+            {imageSources.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 rounded-full transition-all duration-300 ${i === currentImageIndex ? "bg-black w-3" : "bg-black/20 w-1"}`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
+      {/* Card Info */}
       <div className={`${variant === 'featured' ? 'p-4' : 'space-y-2'} flex flex-col flex-1`}>
         <h3 className="font-black text-xs md:text-sm text-gray-900 uppercase tracking-tight mb-2 line-clamp-2 h-10 leading-tight">
           {product.name}
@@ -197,8 +220,8 @@ export default function ProductCard({ product, variant = "default", badge }) {
           <div className="flex items-end justify-between">
             <span className="text-lg md:text-xl font-black italic tracking-tighter">GH₵{product.price.toFixed(2)}</span>
             <div className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
-                product.status === "In Stock" ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
-              }`}>
+              product.status === "In Stock" ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
+            }`}>
               {product.status}
             </div>
           </div>
