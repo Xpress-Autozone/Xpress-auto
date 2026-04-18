@@ -314,15 +314,14 @@ export default function CategoryPage({
         )}
 
         <div className="flex flex-col lg:flex-row gap-10">
-          {/* Filters Sidebar */}
           <aside
             className={`
-            ${showFilters ? "block" : "hidden"} 
+            ${showFiltersMobile ? "block" : "hidden"} 
             lg:block lg:w-72 lg:shrink-0
             border-b lg:border-none border-gray-100 mb-8 lg:mb-0
           `}
           >
-            <div className="sticky top-24 space-y-2">
+            <div className="lg:sticky lg:top-24 space-y-2">
               <h2 className="hidden lg:block text-xl font-black uppercase italic mb-6 tracking-tighter">
                 Refine Search
               </h2>
@@ -377,14 +376,14 @@ export default function CategoryPage({
                 </div>
               </FilterSection>
 
-              {/* Brand Filter - Dynamic */}
+              {/* Brand Filter */}
               {facets.brands.length > 0 && (
                 <FilterSection
                   title="Brand"
                   filterName="brand"
                   badge={selectedBrands.length}
                 >
-                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
+                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5 custom-scrollbar">
                     {facets.brands.map((brand) => (
                       <CheckboxItem
                         key={brand.name}
@@ -398,14 +397,14 @@ export default function CategoryPage({
                 </FilterSection>
               )}
 
-              {/* Part Type Filter - Dynamic */}
+              {/* Part Type Filter */}
               {facets.partTypes.length > 0 && (
                 <FilterSection
                   title="Part Type"
                   filterName="partType"
                   badge={selectedPartTypes.length}
                 >
-                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
+                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5 custom-scrollbar">
                     {facets.partTypes.map((pt) => (
                       <CheckboxItem
                         key={pt.name}
@@ -419,7 +418,7 @@ export default function CategoryPage({
                 </FilterSection>
               )}
 
-              {/* Condition Filter - Dynamic */}
+              {/* Condition Filter */}
               {facets.conditions.length > 0 && (
                 <FilterSection
                   title="Condition"
@@ -455,10 +454,6 @@ export default function CategoryPage({
                   checked={inStockOnly}
                   onChange={() => setInStockOnly(!inStockOnly)}
                 />
-                <div className="flex justify-between text-[9px] font-bold text-gray-400 mt-2 pt-2 border-t border-gray-50">
-                  <span>In Stock: {facets.stockStatus?.inStock || 0}</span>
-                  <span>Out of Stock: {facets.stockStatus?.outOfStock || 0}</span>
-                </div>
               </FilterSection>
 
               {/* Clear All */}
@@ -474,7 +469,7 @@ export default function CategoryPage({
           </aside>
 
           {/* Product Grid */}
-          <main className="flex-1">
+          <main className="flex-1 relative min-h-[400px]">
             <div className="hidden lg:flex justify-between items-end mb-8 border-b border-gray-100 pb-4">
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
                 Inventory Catalog
@@ -484,21 +479,31 @@ export default function CategoryPage({
               </p>
             </div>
 
-            {isLoading ? (
-              <SkeletonLoader />
-            ) : products.length === 0 ? (
-              <div className="py-20">
-                <EmptyState message="No products listed for this category." />
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="py-20">
-                <EmptyState message="Zero results for current filters." />
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12 md:gap-x-8">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} variant="default" />
-                ))}
+            <div className={`transition-all duration-500 ${isLoading ? "opacity-30 pointer-events-none blur-[1px]" : "opacity-100"}`}>
+              {products.length === 0 && !isLoading ? (
+                <div className="py-20">
+                  <EmptyState message="No products listed for this category." />
+                </div>
+              ) : filteredProducts.length === 0 && !isLoading ? (
+                <div className="py-20">
+                  <EmptyState message="Zero results for current filters." />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12 md:gap-x-8">
+                  {filteredProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} variant="default" />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Subtle Overlay Loading Indicator */}
+            {isLoading && (
+              <div className="absolute top-40 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+                <div className="w-12 h-12 border-4 border-gray-100 border-t-yellow-500 rounded-full animate-spin" />
+                <span className="text-[10px] font-black uppercase italic tracking-widest text-black animate-pulse bg-white/90 px-5 py-2 backdrop-blur-md border border-gray-100 shadow-xl">
+                  {products.length === 0 ? "Loading Inventory..." : "Updating Catalog..."}
+                </span>
               </div>
             )}
           </main>

@@ -311,17 +311,30 @@ const SearchResultsPage = () => {
         )}
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar Filters */}
-          <aside className={`${showFiltersMobile ? "fixed inset-0 z-[60] bg-white p-6 overflow-y-auto" : "hidden lg:block lg:w-64 lg:shrink-0"}`}>
+          {/* Sidebar Filters - Persistent on Desktop */}
+          <aside className={`
+            ${showFiltersMobile ? "fixed inset-0 z-[60] bg-white p-6 overflow-y-auto lg:relative lg:inset-auto lg:z-0 lg:p-0 lg:w-64 lg:h-auto lg:block lg:bg-transparent" : "hidden lg:block lg:w-64 lg:shrink-0"}
+          `}>
             <div className="flex justify-between items-center mb-8 lg:hidden">
               <h2 className="text-2xl font-black italic uppercase">Filters</h2>
-              <button onClick={() => setShowFiltersMobile(false)} className="p-2 bg-gray-100 rounded-full"><X className="w-6 h-6" /></button>
+              <button 
+                onClick={() => setShowFiltersMobile(false)} 
+                className="p-2 bg-gray-100 rounded-full hover:bg-black hover:text-white transition-colors"
+                aria-label="Close filters"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
 
-            <div className="sticky top-28 space-y-2">
+            <div className="lg:sticky lg:top-28 space-y-2">
+              <h2 className="hidden lg:block text-xl font-black uppercase italic mb-6 tracking-tighter">
+                Refine Search
+              </h2>
+
               {/* Price Range */}
               <FilterSection title="Price Range">
                 <div className="space-y-6">
+                  {/* ... (rest of price filter) ... */}
                   <div className="px-2 pt-2">
                     <div className="relative h-1.5 w-full bg-gray-100 rounded-full">
                       <div
@@ -429,10 +442,10 @@ const SearchResultsPage = () => {
                 </div>
               </FilterSection>
 
-              {/* Brand Filter - Dynamic from facets */}
+              {/* Brand Filter */}
               {facets.brands.length > 0 && (
                 <FilterSection title="Brand" badge={filters.brand.length}>
-                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
+                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5 custom-scrollbar">
                     {facets.brands.map((brand) => (
                       <CheckboxItem
                         key={brand.name}
@@ -446,21 +459,7 @@ const SearchResultsPage = () => {
                 </FilterSection>
               )}
 
-              {/* Part Type Filter - Dynamic from facets */}
-              {facets.partTypes && facets.partTypes.length > 0 && (
-                <FilterSection title="Part Type">
-                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
-                    {facets.partTypes.map((pt) => (
-                      <div key={pt.name} className="flex items-center justify-between py-1">
-                        <span className="text-sm font-bold text-gray-500 uppercase">{pt.name}</span>
-                        <span className="text-[10px] font-bold text-gray-400">{pt.count}</span>
-                      </div>
-                    ))}
-                  </div>
-                </FilterSection>
-              )}
-
-              {/* Condition Filter - Enhanced with facet counts */}
+              {/* Condition Filter */}
               <FilterSection title="Condition">
                 <div className="grid grid-cols-3 gap-1">
                   {(facets.conditions.length > 0
@@ -487,7 +486,7 @@ const SearchResultsPage = () => {
                 </div>
               </FilterSection>
 
-              {/* Stock Availability - New */}
+              {/* Stock Availability */}
               <FilterSection title="Availability">
                 <CheckboxItem
                   label="In Stock Only"
@@ -495,15 +494,11 @@ const SearchResultsPage = () => {
                   checked={filters.inStock}
                   onChange={() => setFilters(prev => ({ ...prev, inStock: !prev.inStock }))}
                 />
-                <div className="flex justify-between text-[9px] font-bold text-gray-400 mt-2 pt-2 border-t border-gray-50">
-                  <span>In Stock: {facets.stockStatus?.inStock || 0}</span>
-                  <span>Out of Stock: {facets.stockStatus?.outOfStock || 0}</span>
-                </div>
               </FilterSection>
 
               <button
                 onClick={clearAllFilters}
-                className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
+                className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50 transition-colors"
               >
                 Reset All Filters
               </button>
@@ -511,10 +506,13 @@ const SearchResultsPage = () => {
           </aside>
 
           {/* Results Area */}
-          <main className="flex-1">
+          <main className="flex-1 relative min-h-[400px]">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 border-b border-gray-50 pb-6 gap-4">
               <div className="flex flex-wrap items-center gap-4">
-                <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
+                <button 
+                  onClick={() => setShowFiltersMobile(true)} 
+                  className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic hover:bg-yellow-500 hover:text-black transition-all"
+                >
                   <Filter size={14} /> Filters
                   {activeFilterCount > 0 && (
                     <span className="bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 ml-1">
@@ -531,12 +529,6 @@ const SearchResultsPage = () => {
                       <span className="bg-yellow-500 text-black text-[8px] font-black uppercase px-2 py-1 italic">
                         {activeFilterCount} Filters Applied
                       </span>
-                      <button
-                        onClick={clearAllFilters}
-                        className="text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 flex items-center gap-1 transition-colors italic"
-                      >
-                        <X size={10} /> Clear All
-                      </button>
                     </div>
                   )}
                 </div>
@@ -552,85 +544,111 @@ const SearchResultsPage = () => {
                     <button
                       key={`cat-${cat}`}
                       onClick={() => handleCategoryToggle(cat)}
-                      className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                      className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors group"
                     >
-                      {catLabel} <X size={10} />
+                      {catLabel} <X size={10} className="group-hover:rotate-90 transition-transform" />
                     </button>
                   );
                 })}
+                {/* ... other pills ... */}
                 {filters.brand.map((b) => (
                   <button
                     key={`brand-${b}`}
                     onClick={() => handleBrandToggle(b)}
-                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors group"
                   >
-                    {b} <X size={10} />
+                    {b} <X size={10} className="group-hover:rotate-90 transition-transform" />
                   </button>
                 ))}
                 {filters.condition && (
                   <button
                     onClick={() => handleFilterChange("condition", "")}
-                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors group"
                   >
-                    {filters.condition} <X size={10} />
+                    {filters.condition} <X size={10} className="group-hover:rotate-90 transition-transform" />
                   </button>
                 )}
                 {filters.inStock && (
                   <button
                     onClick={() => setFilters(prev => ({ ...prev, inStock: false }))}
-                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors group"
                   >
-                    In Stock Only <X size={10} />
+                    In Stock Only <X size={10} className="group-hover:rotate-90 transition-transform" />
                   </button>
                 )}
+                <button
+                  onClick={clearAllFilters}
+                  className="text-[9px] font-black uppercase tracking-widest text-red-600 hover:underline ml-2"
+                >
+                  Clear All
+                </button>
               </div>
             )}
 
-            {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                {[...Array(6)].map((_, i) => <SkeletonLoader key={i} />)}
-              </div>
-            ) : error ? (
-              <div className="text-center py-20 border-2 border-dashed border-red-50">
-                <p className="text-red-500 font-black uppercase tracking-widest">{error}</p>
-                <button onClick={performSearch} className="mt-4 bg-black text-white px-8 py-3 text-xs font-black uppercase italic transition-all hover:bg-yellow-500 hover:text-black">Retry Fetch</button>
-              </div>
-            ) : results.length === 0 ? (
-              <div className="text-center py-32 border border-gray-100">
-                <p className="text-gray-400 font-black uppercase tracking-widest">Zero Matches Found</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
-                {results.map((product) => (
-                  <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="group cursor-pointer">
-                    <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all">
-                      <img
-                        src={product.mainImage?.url || "/placeholder.webp"}
-                        alt={product.itemName}
-                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-yellow-600 transition-colors italic">
-                        {product.itemName}
-                      </h3>
-                      <div className="flex flex-col gap-1 pt-1">
-                        <span className="text-lg font-black italic tracking-tighter text-black">GH₵{(product.price || 0).toFixed(2)}</span>
-                        <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
-                          }`}>
-                          {product.quantity > 0 ? "In Stock" : "Sold Out"}
+            {/* Results Grid with Non-Intrusive Loading */}
+            <div className={`transition-all duration-500 ${loading ? "opacity-30 pointer-events-none grayscale-[0.5] blur-[1px]" : "opacity-100"}`}>
+              {results.length === 0 && !loading ? (
+                <div className="text-center py-32 border border-gray-100 bg-gray-50/50">
+                  <p className="text-gray-400 font-black uppercase tracking-widest leading-relaxed">
+                    Zero Matches Found<br/>
+                    <span className="text-[10px] font-bold italic tracking-normal">Try broadening your search criteria</span>
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
+                  {results.map((product) => (
+                    <div 
+                      key={product.id} 
+                      onClick={() => navigate(`/product/${product.id}`)} 
+                      className="group cursor-pointer"
+                    >
+                      <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all duration-500">
+                        <img
+                          src={product.mainImage?.url || "/placeholder.webp"}
+                          alt={product.itemName}
+                          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
+                        />
+                        {/* Status overlays in the grid */}
+                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                          {product.condition === 'new' && (
+                            <span className="bg-yellow-500 text-black text-[7px] font-black uppercase px-2 py-0.5 italic shadow-sm">NEW</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-yellow-600 transition-colors duration-300 italic">
+                          {product.itemName}
+                        </h3>
+                        <div className="flex flex-col gap-1 pt-1">
+                          <span className="text-lg font-black italic tracking-tighter text-black">GH₵{(product.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                          <div className={`text-[8px] font-black uppercase w-fit px-2 py-0.5 border ${product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
+                            }`}>
+                            {product.quantity > 0 ? "Available" : "Sold Out"}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Subtle Overlay Loading Indicator */}
+            {loading && (
+              <div className="absolute top-40 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+                <div className="w-12 h-12 border-4 border-gray-100 border-t-yellow-500 rounded-full animate-spin" />
+                <span className="text-[10px] font-black uppercase italic tracking-widest text-black animate-pulse bg-white/90 px-5 py-2 backdrop-blur-md border border-gray-100 shadow-xl">
+                  {results.length === 0 ? "Searching Marketplace..." : "Refining Results..."}
+                </span>
               </div>
             )}
+
             <div className="mt-20">
               {renderPagination()}
             </div>
           </main>
         </div>
+
       </div>
     </div>
   );
