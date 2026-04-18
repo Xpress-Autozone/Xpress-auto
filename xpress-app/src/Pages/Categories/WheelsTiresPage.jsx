@@ -9,15 +9,6 @@ export default function WheelsTiresPage() {
       categoryQuery="wheels-tires"
       heroImage={slideImage}
       heroDescription="Premium wheels and tires for every vehicle and driving condition."
-      partTypeFilters={[
-        "All-Season Tires",
-        "Winter Tires",
-        "Performance Tires",
-        "Alloy Wheels",
-        "Steel Wheels",
-        "Tire & Wheel Packages"
-      ]}
-      brandFilters={["Michelin", "Bridgestone", "Goodyear", "American Racing", "Enkei"]}
     />
   );
 }

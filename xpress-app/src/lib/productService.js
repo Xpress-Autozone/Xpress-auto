@@ -197,3 +197,44 @@ export async function getAllProducts(options = {}) {
     throw error;
   }
 }
+
+export async function getProductFacets(category = null) {
+  try {
+    log("INFO", `🔍 Fetching product facets`, { category });
+
+    const params = new URLSearchParams();
+    if (category) params.append("category", category);
+
+    const url = `${API_BASE_URL}/products/facets?${params}`;
+    log("DEBUG", `📡 Request URL: ${url}`);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      log("ERROR", `❌ API Error: ${response.status}`, errorText);
+      throw new Error(`Failed to fetch facets: ${response.status}`);
+    }
+
+    const data = await response.json();
+    log("SUCCESS", `✅ Facets retrieved`, {
+      brands: data.data?.brands?.length,
+      conditions: data.data?.conditions?.length,
+      partTypes: data.data?.partTypes?.length,
+      priceRange: data.data?.priceRange,
+    });
+
+    return data.data;
+  } catch (error) {
+    log("ERROR", `❌ Error fetching product facets: ${error.message}`, error);
+    // Return safe defaults so the UI doesn't break
+    return {
+      brands: [],
+      conditions: [],
+      partTypes: [],
+      priceRange: { min: 0, max: 10000 },
+      stockStatus: { inStock: 0, outOfStock: 0 },
+      totalProducts: 0,
+    };
+  }
+}

@@ -1,51 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import slideImage from "../../assets/slide.webp";
+import brakesImage from "../../assets/brakes.webp";
+import tiresImage from "../../assets/wheels-tires.webp";
+import featuredHero from "../../assets/heroes/featured-hero.png";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
+import HeroMedia from "../../Components/HeroMedia/HeroMedia";
 import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 
-const XpressHeroVideo = ({ mediaBase, isActive }) => {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      if (isActive) {
-        // Explicitly trigger play when active
-        const playPromise = videoRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.warn("[HeroVideo] Autoplay blocked or failed:", error);
-          });
-        }
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [isActive]);
-
-  return (
-    <div
-      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-        isActive ? "opacity-60" : "opacity-0"
-      }`}
-    >
-      <video
-        ref={videoRef}
-        className="w-full h-full object-cover"
-        loop
-        muted
-        playsInline
-        webkit-playsinline="true"
-        preload="auto"
-      >
-        <source src={`/assets/videos/${mediaBase}.webm`} type="video/webm" />
-        <source src={`/assets/videos/${mediaBase}.mp4`} type="video/mp4" />
-      </video>
-    </div>
-  );
-};
+// Programmatic Video component removed, replaced by HeroMedia
 
 function Home() {
   const navigate = useNavigate();
@@ -226,6 +191,7 @@ function Home() {
     {
       id: "phase-1",
       mediaType: "video",
+      poster: tiresImage,
       mediaBase: "1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300",
       h1: (
         <>
@@ -239,6 +205,7 @@ function Home() {
     {
       id: "phase-2",
       mediaType: "video",
+      poster: brakesImage,
       mediaBase: "2. yellow car engine video upclose",
       h1: (
         <>
@@ -252,6 +219,7 @@ function Home() {
     {
       id: "phase-3",
       mediaType: "video",
+      poster: featuredHero,
       mediaBase: "3. OIG1",
       h1: (
         <>
@@ -276,6 +244,10 @@ function Home() {
     return () => clearTimeout(timer);
   }, [currentPhaseIndex]);
 
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
+
   return (
     <div className="bg-white min-h-screen w-full">
       {/* HERO SECTION WITH DYNAMIC SEQUENCE */}
@@ -283,27 +255,15 @@ function Home() {
         {/* MEDIA LAYERS: Render all so they preload, cross-fade with opacity */}
         {heroSequence.map((phase, index) => {
           const isActive = index === currentPhaseIndex;
-          if (phase.mediaType === "image") {
-            return (
-              <div
-                key={phase.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  isActive ? "opacity-60" : "opacity-0"
-                }`}
-              >
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${phase.mediaSrc})` }}
-                />
-              </div>
-            );
-          }
-
-          // Video Component with programmatic play for iOS
+          // Video / Image Component with preloading logic
           return (
-            <XpressHeroVideo 
+            <HeroMedia 
               key={phase.id}
-              mediaBase={phase.mediaBase}
+              type={phase.mediaType}
+              src={phase.mediaSrc}
+              poster={phase.poster}
+              videoWebm={`/assets/videos/${phase.mediaBase}.webm`}
+              videoMp4={`/assets/videos/${phase.mediaBase}.mp4`}
               isActive={isActive}
             />
           );

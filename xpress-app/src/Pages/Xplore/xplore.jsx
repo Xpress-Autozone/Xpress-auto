@@ -14,8 +14,12 @@ import {
 import { useSelector } from "react-redux";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
+import HeroMedia from "../../Components/HeroMedia/HeroMedia";
 import { getAllProducts } from "../../lib/productService";
 import productsSrip from "../../assets/productsStrip.webp";
+import brakesImage from "../../assets/brakes.webp";
+import tiresImage from "../../assets/wheels-tires.webp";
+import featuredHero from "../../assets/heroes/featured-hero.png";
 
 const categories = [
     {
@@ -42,40 +46,7 @@ const categories = [
 
 import ProductCard from "../../Components/ProductCard/ProductCard";
 
-const CinematicVideo = ({ video, isActive }) => {
-    const videoRef = useRef(null);
-
-    useEffect(() => {
-        if (videoRef.current) {
-            if (isActive) {
-                const playPromise = videoRef.current.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.warn("[CinematicVideo] Autoplay blocked:", error);
-                    });
-                }
-            } else {
-                videoRef.current.pause();
-                videoRef.current.currentTime = 0;
-            }
-        }
-    }, [isActive]);
-
-    return (
-        <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            webkit-playsinline="true"
-            preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"}`}
-        >
-            <source src={video.webm} type="video/webm" />
-            <source src={video.mp4} type="video/mp4" />
-        </video>
-    );
-};
+// CinematicVideo removed, replaced by HeroMedia
 
 export default function XplorePage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -85,14 +56,17 @@ export default function XplorePage() {
 
     const cinematicVideos = [
         {
+            poster: tiresImage,
             webm: "/assets/videos/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.webm",
             mp4: "/assets/videos/1. 3d-rendered-orange-colored-super-car-running-on-street-at_34634300.mp4"
         },
         {
+            poster: brakesImage,
             webm: "/assets/videos/2. yellow car engine video upclose.webm",
             mp4: "/assets/videos/2. yellow car engine video upclose.mp4"
         },
         {
+            poster: featuredHero,
             webm: "/assets/videos/3. OIG1.webm",
             mp4: "/assets/videos/3. OIG1.mp4"
         }
@@ -225,11 +199,14 @@ export default function XplorePage() {
                 </div>
 
                 {/* Cinematic Video Sequence (Passive State) */}
-                <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0"}`}>
                     {cinematicVideos.map((video, idx) => (
-                        <CinematicVideo 
+                        <HeroMedia 
                             key={idx}
-                            video={video}
+                            type="video"
+                            poster={video.poster}
+                            videoWebm={video.webm}
+                            videoMp4={video.mp4}
                             isActive={idx === currentVideoIndex}
                         />
                     ))}

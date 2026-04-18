@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  ChevronDown,
   ShoppingCart,
   ArrowLeft,
   Check,
@@ -137,7 +136,6 @@ const ActiveProductPage = () => {
   const [product, setProduct] = useState(location.state?.product || null);
   const [isLoading, setIsLoading] = useState(!product);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [expandedSection, setExpandedSection] = useState("details");
   const [addedToCart, setAddedToCart] = useState(false);
   const [error, setError] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -160,6 +158,9 @@ const ActiveProductPage = () => {
             id: data.id,
             name: data.itemName,
             price: parseFloat(data.price) || 0,
+            featured: data.featured === true || data.isFeatured === true,
+            newProduct: data.newProduct === true || data.isNew === true,
+            hotProduct: data.hotProduct === true || data.isTrending === true,
             image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
             images: [
               ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
@@ -245,7 +246,7 @@ const ActiveProductPage = () => {
     fetchRelated();
   }, [product?.id, product?.category, product?.categoryId]);
 
-  if (isLoading) return <SkeletonLoader />;
+  if (isLoading) return <SkeletonLoader type="product" />;
   if (error) return <div className="pt-24 text-center font-black uppercase italic">{error}</div>;
   if (!product) return <div className="pt-24 text-center font-black uppercase italic">Product not found</div>;
 
@@ -270,9 +271,6 @@ const ActiveProductPage = () => {
     ? product.compatibility
     : (product.compatibility ? [product.compatibility] : ["Universal Fit"]);
 
-  const toggleSection = (section) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
 
   const handleAddToCart = () => {
     addToCart({
@@ -285,6 +283,71 @@ const ActiveProductPage = () => {
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  const getCategoryPath = (name) => {
+    if (!name) return "/categories";
+    
+    // Normalize string to handle case-insensitivity or slight naming variations
+    const normalized = name.trim().toLowerCase();
+    
+    const mapping = {
+      // Body & Chassis
+      "body-chassis": "/body-chassis",
+      "body & chassis": "/body-chassis",
+      "body & parts": "/body-chassis",
+      "chassis": "/body-chassis",
+      
+      // Engine & Performance
+      "engine-performance": "/engine-performance",
+      "engine & performance": "/engine-performance",
+      "engine performance": "/engine-performance",
+      "engine": "/engine-performance",
+      
+      // Wheels & Tires
+      "wheels-tires": "/wheels-tires",
+      "wheels & tires": "/wheels-tires",
+      "wheels": "/wheels-tires",
+      "tires": "/wheels-tires",
+      
+      // Lighting & Electronics
+      "lighting-electronics": "/lighting-electronics",
+      "lighting & electronics": "/lighting-electronics",
+      "electronics": "/lighting-electronics",
+      "lighting": "/lighting-electronics",
+      
+      // Accessories
+      "accessories": "/accessories",
+      "car accessories": "/accessories",
+      
+      // Fluids & Care
+      "fluids-care": "/fluids-care",
+      "fluids & care": "/fluids-care",
+      "oils & fluids": "/fluids-care",
+      
+      // Automotive Tools
+      "automotive-tools": "/automotive-tools",
+      "test-tools": "/automotive-tools",
+      "tools": "/automotive-tools",
+      
+      // Cooling & AC
+      "cooling-ac": "/cooling-ac",
+      "cooling & ac": "/cooling-ac",
+      "ac": "/cooling-ac",
+      "cooling": "/cooling-ac"
+    };
+
+    return mapping[normalized] || "/categories";
+  };
+
+  const TagPill = ({ label, color, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`${color} text-[9px] font-black uppercase tracking-widest px-3 py-1.5 hover:opacity-80 transition-opacity flex items-center gap-1.5`}
+    >
+      <div className="w-1 h-1 bg-current opacity-50 rounded-full" />
+      {label}
+    </button>
+  );
 
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
@@ -348,12 +411,12 @@ const ActiveProductPage = () => {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">Verified Inventory</span>
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-black text-black uppercase italic tracking-tighter leading-none mb-4">
+              <h1 className="text-2xl md:text-3xl font-black text-black uppercase italic tracking-tighter leading-none mb-4">
                 {product.name || "Automotive Component"}
               </h1>
 
               <div className="flex items-baseline gap-4 mt-6">
-                <span className="text-4xl font-black italic">GH₵{(product.price || 0).toFixed(2)}</span>
+                <span className="text-2xl font-black italic">GH₵{(product.price || 0).toFixed(2)}</span>
                 <span className={`text-[10px] font-black uppercase px-2 py-0.5 border ${product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
                   }`}>
                   {product.status || "Check Availability"}
@@ -364,36 +427,60 @@ const ActiveProductPage = () => {
             {/* CTA */}
             <button
               onClick={handleAddToCart}
-              className={`w-full font-black uppercase italic tracking-[0.2em] py-5 transition-all flex items-center justify-center gap-3 mb-2 ${addedToCart
+              className={`w-full font-black uppercase italic tracking-[0.2em] py-4 transition-all flex items-center justify-center gap-3 mb-4 ${addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-yellow-500 hover:bg-black hover:text-white text-black"
                 }`}
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={18} />
               {addedToCart ? "Added to Cart!" : "Add to Cart"}
             </button>
 
+            {/* PRODUCT TAGS - Minimal Solid Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {product.featured && (
+                <TagPill
+                  label="Featured"
+                  color="bg-yellow-500 text-black"
+                  onClick={() => navigate("/xplore/featured")}
+                />
+              )}
+              {product.newProduct && (
+                <TagPill
+                  label="New Arrival"
+                  color="bg-blue-600 text-white"
+                  onClick={() => navigate("/xplore/new")}
+                />
+              )}
+              {product.hotProduct && (
+                <TagPill
+                  label="Hot Right Now"
+                  color="bg-red-600 text-white"
+                  onClick={() => navigate("/xplore/trending")}
+                />
+              )}
+              {product.category && (
+                <TagPill
+                  label={product.category}
+                  color="bg-black text-white"
+                  onClick={() => navigate(getCategoryPath(product.category))}
+                />
+              )}
+            </div>
+
             <ShareActions product={product} />
 
-            {/* INFO ACCORDION */}
-            <div className="border-t border-gray-100">
-              <Section
-                title="Description"
-                id="details"
-                active={expandedSection}
-                toggle={toggleSection}
-              >
+            {/* PRODUCT DETAILS LIST */}
+            <div className="border-t border-gray-100 mt-8 space-y-8 pt-8">
+              <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Description</h3>
                 <p className="text-sm font-medium text-gray-500 leading-relaxed uppercase tracking-tight">
                   {product.description || "No manual description provided for this verified component."}
                 </p>
-              </Section>
+              </div>
 
-              <Section
-                title="Technical Specs"
-                id="specs"
-                active={expandedSection}
-                toggle={toggleSection}
-              >
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Technical Specs</h3>
                 <div className="grid grid-cols-1 gap-4">
                   {specifications.map((spec, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
@@ -402,22 +489,18 @@ const ActiveProductPage = () => {
                     </div>
                   ))}
                 </div>
-              </Section>
+              </div>
 
-              <Section
-                title="Vehicle Compatibility"
-                id="compatibility"
-                active={expandedSection}
-                toggle={toggleSection}
-              >
-                <ul className="space-y-3">
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Vehicle Compatibility</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {compatibility.map((v, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs font-bold text-gray-600 uppercase">
-                      <div className="w-1 h-1 bg-yellow-500" /> {v}
+                      <div className="w-1.5 h-1.5 bg-yellow-500 shrink-0" /> {v}
                     </li>
                   ))}
                 </ul>
-              </Section>
+              </div>
             </div>
           </div>
         </div>
@@ -463,21 +546,5 @@ const ActiveProductPage = () => {
   );
 };
 
-const Section = ({ title, id, active, toggle, children }) => (
-  <div className="border-b border-gray-100 last:border-0">
-    <button
-      onClick={() => toggle(id)}
-      className="w-full flex items-center justify-between py-5 text-left group"
-    >
-      <span className={`text-xs font-black uppercase tracking-widest transition-colors ${active === id ? 'text-black' : 'text-gray-400 group-hover:text-black'}`}>
-        {title}
-      </span>
-      <ChevronDown size={16} className={`transition-transform duration-300 ${active === id ? "rotate-180" : ""}`} />
-    </button>
-    <div className={`overflow-hidden transition-all duration-300 ${active === id ? "max-h-96 pb-6" : "max-h-0"}`}>
-      {children}
-    </div>
-  </div>
-);
 
 export default ActiveProductPage;

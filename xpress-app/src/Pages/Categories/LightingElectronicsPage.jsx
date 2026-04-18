@@ -9,10 +9,6 @@ export default function LightingElectronicsPage() {
       categoryQuery="lighting-electronics"
       heroImage={slideImage}
       heroDescription="Advanced lighting and electronic solutions for your vehicle."
-      partTypeFilters={
-        ["LED Lights", "Batteries", "Audio Systems", "Alarms", "Backup Cameras", "GPS Navigation"]
-      }
-      brandFilters={["Philips", "Optima", "Pioneer", "Kenwood", "Viper"]}
     />
   );
 }

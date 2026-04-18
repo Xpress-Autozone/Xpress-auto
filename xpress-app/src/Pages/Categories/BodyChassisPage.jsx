@@ -9,15 +9,6 @@ export default function BodyChassisPage() {
       categoryQuery="body-chassis"
       heroImage={slideImage}
       heroDescription="Premium body, steering, suspension, brake and chassis components for safety and performance."
-      partTypeFilters={[
-        "Brake Systems",
-        "Suspension Kits",
-        "Control Arms",
-        "Bushings",
-        "Body Panels",
-        "Bumpers"
-      ]}
-      brandFilters={["Brembo", "Monroe", "KYB", "Moog", "ACDelco"]}
     />
   );
 }

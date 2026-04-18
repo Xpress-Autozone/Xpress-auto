@@ -9,10 +9,6 @@ export default function AutomotiveToolsPage() {
       categoryQuery="automotive-tools"
       heroImage={slideImage}
       heroDescription="Professional-grade tools for all your automotive needs."
-      partTypeFilters={
-        ["Tool Sets", "Diagnostic Tools", "Lifting Equipment", "Air Tools", "Hand Tools", "Cleaning Equipment"]
-      }
-      brandFilters={["Snap-on", "Craftsman", "DEWALT", "Milwaukee", "Harbor Freight"]}
     />
   );
 }

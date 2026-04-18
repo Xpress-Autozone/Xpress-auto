@@ -10,15 +10,6 @@ export default function AccessoriesPage() {
       categoryQuery="accessories"
       heroImage={slideImage}
       heroDescription="Enhance your vehicle's comfort, style, and functionality."
-      partTypeFilters={[
-        "Seat Covers",
-        "Floor Mats",
-        "Car Covers",
-        "Hitch & Towing",
-        "Roof Racks",
-        "Window Visors"
-      ]}
-      brandFilters={["WeatherTech", "Husky", "Covercraft", "Thule", "Yakima"]}
     />
   );
 }

@@ -25,8 +25,7 @@ import FeaturedProducts from "../Pages/Xplore/FeaturedProducts/featuredProducts"
 import TrendingProducts from "../Pages/Xplore/TrendingProducts/trendingProducts";
 import NewProducts from "../Pages/Xplore/NewProducts/newProducts";
 import { useScrollToTop } from "../hooks/useScrollToTop";
-import SignIn from "../Pages/Auth/SignIn";
-import SignUp from "../Pages/Auth/SignUp";
+import Auth from "../Pages/Auth/Auth";
 import MyAccount from "../Pages/Account/MyAccount";
 import Partner from "../Pages/Partner/Partner";
 import FeedbackPage from "../Pages/Feedback/FeedbackPage";
@@ -62,8 +61,8 @@ function LayoutContent() {
         <Route path="/xplore/featured" element={<FeaturedProducts />} />
         <Route path="/xplore/trending" element={<TrendingProducts />} />
         <Route path="/xplore/new" element={<NewProducts />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/signup" element={<Auth />} />
         <Route
           path="/onboarding"
           element={

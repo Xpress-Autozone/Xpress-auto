@@ -9,15 +9,6 @@ export default function EnginePerformancePage() {
       categoryQuery="engine-performance"
       heroImage={slideImage}
       heroDescription="High-performance engine components for maximum power and efficiency."
-      partTypeFilters={[
-        "Spark Plugs",
-        "Fuel Pumps",
-        "Air Filters",
-        "Turbochargers",
-        "Superchargers",
-        "ECU Tuning"
-      ]}
-      brandFilters={["Bosch", "NGK", "K&N", "Garrett", "HKS"]}
     />
   );
 }

@@ -16,7 +16,6 @@ export default function PartnerPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const formRef = useRef(null);
 
-  // Helper to scroll and open form
   const scrollToForm = () => {
     setIsFormOpen(true);
     setTimeout(() => {
@@ -27,128 +26,132 @@ export default function PartnerPage() {
   return (
     <div className="bg-white min-h-screen pt-12">
       
-      {/* 1. BUSINESS HERO */}
-      <section className="relative h-[40vh] md:h-[50vh] flex items-center  overflow-hidden">
-        {/* Fixed Background Image Formatting */}
+      {/* HERO */}
+      <section className="relative h-[40vh] md:h-[45vh] flex items-center overflow-hidden">
         <img src={hero} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block italic">
-            Economic Opportunity
-          </span>
-          <h1 className="text-5xl md:text-9xl font-black italic tracking-tighter leading-[0.8] text-white mb-6 uppercase">
-            Make Money <br /> 
-            <span className="text-gray-400">With Us</span>
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">
+            Sell on Xpress
           </h1>
-          <p className="text-base md:text-lg text-gray-200 max-w-2xl font-medium border-l-2 border-yellow-500 pl-6 pt-3 leading-relaxed mx-auto text-left">
-            Xpress AutoZone is more than a marketplace—it's an ecosystem. 
-            Join Ghana's fastest-growing aftermarket network and leverage our 
-            digital infrastructure to scale your business.
+          <p className="text-sm md:text-base text-gray-200 max-w-lg leading-relaxed">
+            Join Ghana's growing auto parts marketplace. List your products, 
+            reach more customers, and grow your business with us.
           </p>
         </div>
       </section>
 
-      {/* 2. ABOUT THE PLATFORM */}
-      <section className="py-24 px-6 border-b border-gray-100 uppercase">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Your Hub for Growth</h2>
-              <p className="text-gray-800 leading-relaxed text-md font-medium">
-                Whether you're a high-volume dealer looking to scale, a mechanic wanting to verify your builds, 
-                or a logistics expert aiming for last-mile dominance—Xpress provides the tools to succeed. 
-                Our rigorous admin-review process ensures that your association with us is a mark of quality.
+      {/* WHY PARTNER */}
+      <section className="py-16 px-6 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-gray-900">Why partner with us?</h2>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Whether you're a parts dealer looking to reach more buyers, a supplier 
+                wanting to move inventory, or a logistics provider — Xpress gives you 
+                the platform and tools to grow. Every partner goes through a review 
+                process to maintain quality for our customers.
               </p>
-              <div className="grid grid-cols-2 gap-8 pt-6">
-                <div className="space-y-1">
-                  <h4 className="text-4xl font-black italic uppercase text-black">Ghana</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Drives on Xpress</p>
+              <div className="grid grid-cols-2 gap-6 pt-4">
+                <div className="flex items-start gap-3">
+                  <ShieldCheck size={20} className="text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900">Verified Partners</h4>
+                    <p className="text-xs text-gray-500 mt-1">Every partner is vetted before going live.</p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-4xl font-black italic uppercase text-black">Verified</h4>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-yellow-600">Authentic Infrastructure</p>
+                <div className="flex items-start gap-3">
+                  <Truck size={20} className="text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900">Logistics Support</h4>
+                    <p className="text-xs text-gray-500 mt-1">Use our delivery network to reach customers.</p>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 gap-4">
-               <div className="border-l-4 border-yellow-500 bg-gray-50 p-10 hover:bg-white hover:border-black transition-all group">
-                  <ShieldCheck className="mb-4 text-black group-hover:text-yellow-600" size={28} />
-                  <h3 className="font-black uppercase tracking-tight text-sm text-black">Verified Partnerships</h3>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">Stringent vetting for every partner entity.</p>
-               </div>
-               <div className="border-l-4 border-yellow-500 bg-gray-50 p-10 hover:bg-white hover:border-black transition-all group">
-                  <Truck className="mb-4 text-black group-hover:text-yellow-600" size={28} />
-                  <h3 className="font-black uppercase tracking-tight text-sm text-black">Scale & Logistics</h3>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-2">Leverage our logistics network for efficiency.</p>
-               </div>
+            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+              <h3 className="text-sm font-semibold text-gray-900">How it works</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-yellow-500 text-black text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                  <p className="text-sm text-gray-600">Submit your application below</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-yellow-500 text-black text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                  <p className="text-sm text-gray-600">Our team reviews your business details</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-yellow-500 text-black text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                  <p className="text-sm text-gray-600">Get approved and start listing your products</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. PARTNERSHIP TRACKS */}
-      <section className="py-24 px-6 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">Choose Your Track</h2>
-            <div className="h-1.5 w-24 bg-yellow-500 mx-auto" />
-          </div>
+      {/* PARTNERSHIP OPTIONS */}
+      <section className="py-16 px-6 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Partnership options</h2>
+          <p className="text-sm text-gray-500 text-center mb-10">Choose the option that fits your business.</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Track 1: Sell */}
-            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Sell */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all flex flex-col justify-between">
               <div>
-                <Building2 size={32} className="mb-6 text-black group-hover:text-yellow-600" />
-                <h3 className="text-xl font-black uppercase italic mb-4">Sell on Xpress</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
-                  List your verified inventory and reach a national audience of car enthusiasts.
+                <Building2 size={24} className="mb-4 text-yellow-600" />
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Sell on Xpress</h3>
+                <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                  List your auto parts and accessories for customers across Ghana.
                 </p>
               </div>
-              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-3 text-xs font-semibold rounded hover:bg-yellow-500 hover:text-black transition-colors">
                 Apply Now
               </button>
             </div>
 
-            {/* Track 2: Affiliate */}
-            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+            {/* Affiliate */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all flex flex-col justify-between">
               <div>
-                <Users size={32} className="mb-6 text-black group-hover:text-yellow-600" />
-                <h3 className="text-xl font-black uppercase italic mb-4">Become an Affiliate</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
-                  Promote verified parts and earn competitive commissions on every sale.
+                <Users size={24} className="mb-4 text-yellow-600" />
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Become an Affiliate</h3>
+                <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                  Refer customers and earn a commission on every sale you drive.
                 </p>
               </div>
-              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-3 text-xs font-semibold rounded hover:bg-yellow-500 hover:text-black transition-colors">
                 Join Program
               </button>
             </div>
 
-            {/* Track 3: Supply */}
-            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+            {/* Supply */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all flex flex-col justify-between">
               <div>
-                <ShieldCheck size={32} className="mb-6 text-black group-hover:text-yellow-600" />
-                <h3 className="text-xl font-black uppercase italic mb-4">Supply to Xpress</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
-                  Become a bulk supplier for our curated collections and seasonal drops.
+                <ShieldCheck size={24} className="mb-4 text-yellow-600" />
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Supply to Xpress</h3>
+                <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                  Provide bulk inventory for our curated product collections.
                 </p>
               </div>
-              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
-                Get Verified
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-3 text-xs font-semibold rounded hover:bg-yellow-500 hover:text-black transition-colors">
+                Get Started
               </button>
             </div>
 
-            {/* Track 4: Deliver */}
-            <div className="bg-white border border-gray-100 p-8 hover:border-black transition-all group flex flex-col justify-between">
+            {/* Deliver */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all flex flex-col justify-between">
               <div>
-                <Truck size={32} className="mb-6 text-black group-hover:text-yellow-600" />
-                <h3 className="text-xl font-black uppercase italic mb-4">Deliver Packages</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">
-                  Join our last-mile logistics team and help us deliver excellence.
+                <Truck size={24} className="mb-4 text-yellow-600" />
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Deliver Packages</h3>
+                <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                  Join our delivery team and help get orders to customers on time.
                 </p>
               </div>
-              <button onClick={scrollToForm} className="w-full bg-black text-white py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-colors">
+              <button onClick={scrollToForm} className="w-full bg-black text-white py-3 text-xs font-semibold rounded hover:bg-yellow-500 hover:text-black transition-colors">
                 Start Driving
               </button>
             </div>
@@ -156,30 +159,29 @@ export default function PartnerPage() {
         </div>
       </section>
 
-
-      {/* 4. APPLICATION FORM ACCORDION */}
-      <section ref={formRef} className="max-w-4xl mx-auto px-6 py-24">
-        <div className="border-4 border-black">
+      {/* APPLICATION FORM */}
+      <section ref={formRef} className="max-w-3xl mx-auto px-6 py-16">
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
           <button 
             onClick={() => setIsFormOpen(!isFormOpen)}
-            className="w-full flex items-center justify-between p-10 bg-black text-white group"
+            className="w-full flex items-center justify-between p-6 bg-black text-white"
           >
-            <span className="text-2xl font-black uppercase italic tracking-widest group-hover:text-yellow-500 transition-colors">Connect with our team</span>
-            <ChevronDown className={`transition-transform duration-500 ${isFormOpen ? 'rotate-180' : ''}`} />
+            <span className="text-base font-semibold">Get in touch</span>
+            <ChevronDown className={`transition-transform duration-300 ${isFormOpen ? 'rotate-180' : ''}`} size={20} />
           </button>
           
-          <div className={`overflow-hidden transition-all duration-500 ${isFormOpen ? 'max-h-[1500px]' : 'max-h-0'}`}>
-            <form className="p-10 space-y-8 bg-white" action="mailto:partnerships@xpressautozone.com" method="post" encType="text/plain">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <InputGroup label="Full Name" placeholder="Contact Person" name="name" />
-                <InputGroup label="Business Name" placeholder="Registered Entity" name="business" />
-                <InputGroup label="Email" placeholder="business@example.com" type="email" name="email" />
+          <div className={`overflow-hidden transition-all duration-400 ${isFormOpen ? 'max-h-[1200px]' : 'max-h-0'}`}>
+            <form className="p-6 md:p-8 space-y-6 bg-white" action="mailto:partnerships@xpressautozone.com" method="post" encType="text/plain">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InputGroup label="Full Name" placeholder="Your name" name="name" />
+                <InputGroup label="Business Name" placeholder="Your business" name="business" />
+                <InputGroup label="Email" placeholder="you@example.com" type="email" name="email" />
                 <InputGroup label="Phone" placeholder="024 000 0000" name="phone" />
               </div>
               
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nature of Partnership</label>
-                <select name="type" className="w-full border-b-2 border-gray-200 p-4 outline-none focus:border-yellow-500 transition-colors font-black uppercase text-xs appearance-none bg-gray-50">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-500">Type of Partnership</label>
+                <select name="type" className="w-full border border-gray-200 rounded p-3 outline-none focus:border-yellow-500 transition-colors text-sm bg-gray-50">
                   <option>Parts Dealer / Seller</option>
                   <option>Affiliate Partner</option>
                   <option>Bulk Supplier</option>
@@ -187,18 +189,18 @@ export default function PartnerPage() {
                 </select>
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Business Summary</label>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-500">Tell us about your business</label>
                 <textarea 
                   name="summary"
-                  placeholder="Describe your current operations and goals..."
+                  placeholder="What do you sell or offer? How long have you been operating?"
                   rows="4"
-                  className="w-full border border-gray-100 p-4 outline-none focus:border-yellow-500 transition-colors font-bold uppercase text-xs leading-relaxed"
+                  className="w-full border border-gray-200 rounded p-3 outline-none focus:border-yellow-500 transition-colors text-sm leading-relaxed"
                 />
               </div>
 
-              <button type="submit" className="w-full bg-yellow-500 text-black py-6 font-black uppercase italic tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-black hover:text-white transition-all">
-                Submit Inquiry <Send size={18} />
+              <button type="submit" className="w-full bg-yellow-500 text-black py-4 font-semibold text-sm rounded flex items-center justify-center gap-2 hover:bg-black hover:text-white transition-all">
+                Submit Application <Send size={16} />
               </button>
             </form>
           </div>
@@ -209,13 +211,13 @@ export default function PartnerPage() {
 }
 
 const InputGroup = ({ label, placeholder, type = "text", name }) => (
-  <div className="space-y-3">
-    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}</label>
+  <div className="space-y-2">
+    <label className="text-xs font-medium text-gray-500">{label}</label>
     <input 
       type={type}
       name={name}
       placeholder={placeholder}
-      className="w-full border-b-2 border-gray-200 p-4 outline-none focus:border-yellow-500 transition-colors font-black uppercase text-xs bg-gray-50"
+      className="w-full border border-gray-200 rounded p-3 outline-none focus:border-yellow-500 transition-colors text-sm bg-gray-50"
     />
   </div>
 );

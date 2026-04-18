@@ -45,20 +45,59 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- 2. MAIN PAGE COMPONENT ---
-const FilterSection = ({ title, children }) => (
-  <div className="border-b border-gray-100 last:border-0 pb-6">
-    <div className="py-4">
-      <span className="text-xs font-black uppercase tracking-widest text-gray-900">
-        {title}
+// --- 2. REUSABLE COMPONENTS ---
+const FilterSection = ({ title, children, badge }) => {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <div className="border-b border-gray-100 last:border-0 pb-2">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center justify-between w-full py-4"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-black uppercase tracking-widest text-gray-900">
+            {title}
+          </span>
+          {badge > 0 && (
+            <span className="bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 min-w-[18px] text-center">
+              {badge}
+            </span>
+          )}
+        </div>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${expanded ? "max-h-[500px] pb-4" : "max-h-0"}`}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const CheckboxItem = ({ label, count, checked, onChange }) => (
+  <label className="flex items-center justify-between cursor-pointer group py-1" onClick={onChange}>
+    <div className="flex items-center space-x-3">
+      <div
+        className={`w-4 h-4 border-2 flex items-center justify-center transition-all ${
+          checked ? "bg-black border-black" : "border-gray-300 group-hover:border-black"
+        }`}
+      >
+        {checked && (
+          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L7 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        )}
+      </div>
+      <span className={`text-sm font-bold uppercase transition-colors ${checked ? "text-black" : "text-gray-500 group-hover:text-black"}`}>
+        {label}
       </span>
     </div>
-    <div>
-      {children}
-    </div>
-  </div>
+    {count !== undefined && (
+      <span className="text-[10px] font-bold text-gray-400">{count}</span>
+    )}
+  </label>
 );
 
+// --- 3. MAIN PAGE COMPONENT ---
 const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -67,19 +106,31 @@ const SearchResultsPage = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({});
   const [parsedEntities, setParsedEntities] = useState({});
-  const [filters, setFilters] = useState({
-    category: [],
-    priceMin: "",
-    priceMax: "",
-    condition: "",
-  });
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
-  // Local state for price inputs to prevent focus loss/flicker during typing
-  const [tempMin, setTempMin] = useState(filters.priceMin);
-  const [tempMax, setTempMax] = useState(filters.priceMax);
+  // Dynamic facets from search response
+  const [facets, setFacets] = useState({
+    brands: [],
+    conditions: [],
+    partTypes: [],
+    priceRange: { min: 0, max: 10000 },
+    stockStatus: { inStock: 0, outOfStock: 0 },
+  });
 
-  // Sync temp inputs when filters change (e.g. from presets or Clear All)
+  // Filter state
+  const [filters, setFilters] = useState({
+    category: [],
+    brand: [],
+    condition: "",
+    priceMin: "",
+    priceMax: "",
+    inStock: false,
+  });
+
+  // Local state for price inputs to prevent focus loss during typing
+  const [tempMin, setTempMin] = useState("");
+  const [tempMax, setTempMax] = useState("");
+
   useEffect(() => {
     setTempMin(filters.priceMin);
     setTempMax(filters.priceMax);
@@ -96,32 +147,33 @@ const SearchResultsPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([key, value]) => {
-          if (Array.isArray(value)) return value.length > 0;
-          return value !== "";
-        }).map(([key, value]) => {
-          if (key === 'category' && Array.isArray(value)) {
-            return [key, value.join(',')]; // Send as comma-separated string for compatibility
-          }
-          return [key, value];
-        })
-      );
+      // Build clean filters for the API
+      const apiFilters = {};
+      if (filters.category.length > 0) apiFilters.category = filters.category.join(",");
+      if (filters.brand.length > 0) apiFilters.brand = filters.brand[0]; // Backend supports single brand filter
+      if (filters.condition) apiFilters.condition = filters.condition;
+      if (filters.priceMin) apiFilters.priceMin = filters.priceMin;
+      if (filters.priceMax) apiFilters.priceMax = filters.priceMax;
+      if (filters.inStock) apiFilters.inStock = true;
 
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Search request timed out")), 10000)
       );
 
       const response = await Promise.race([
-        searchProducts(query, cleanFilters, page, 20),
+        searchProducts(query, apiFilters, page, 20),
         timeoutPromise,
       ]);
 
-      // DEFENSIVE FIX: Check for response existence and success before setting data
       if (response && response.success !== false) {
         setResults(Array.isArray(response.data) ? response.data : []);
         setPagination(response.pagination || {});
         setParsedEntities(response.parsedEntities || {});
+
+        // Update facets from response
+        if (response.facets) {
+          setFacets(response.facets);
+        }
       } else {
         setResults([]);
       }
@@ -136,7 +188,6 @@ const SearchResultsPage = () => {
   };
 
   const handleFilterChange = (filterName, value) => {
-    // For price fields, only allow numbers
     if (filterName === "priceMin" || filterName === "priceMax") {
       const numericValue = value.replace(/\D/g, "");
       setFilters((prev) => ({ ...prev, [filterName]: numericValue }));
@@ -146,16 +197,53 @@ const SearchResultsPage = () => {
   };
 
   const handleCategoryToggle = (cat) => {
-    setFilters((prev) => {
-      const currentCats = prev.category;
-      const newCats = currentCats.includes(cat)
-        ? currentCats.filter((c) => c !== cat)
-        : [...currentCats, cat];
-      return { ...prev, category: newCats };
+    setFilters((prev) => ({
+      ...prev,
+      category: prev.category.includes(cat)
+        ? prev.category.filter((c) => c !== cat)
+        : [...prev.category, cat],
+    }));
+  };
+
+  const handleBrandToggle = (brand) => {
+    setFilters((prev) => ({
+      ...prev,
+      brand: prev.brand.includes(brand)
+        ? prev.brand.filter((b) => b !== brand)
+        : [...prev.brand, brand],
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      category: [],
+      brand: [],
+      condition: "",
+      priceMin: "",
+      priceMax: "",
+      inStock: false,
     });
   };
 
+  // Count active filters
+  const activeFilterCount =
+    filters.category.length +
+    filters.brand.length +
+    (filters.condition ? 1 : 0) +
+    (filters.priceMin ? 1 : 0) +
+    (filters.priceMax ? 1 : 0) +
+    (filters.inStock ? 1 : 0);
 
+  const CATEGORIES = [
+    { id: "body-chassis", label: "Body & Parts" },
+    { id: "engine-performance", label: "Engine" },
+    { id: "wheels-tires", label: "Wheels & Tires" },
+    { id: "lighting-electronics", label: "Electronics" },
+    { id: "accessories", label: "Accessories" },
+    { id: "automotive-tools", label: "Tools" },
+    { id: "fluids-care", label: "Fluids" },
+    { id: "cooling-ac", label: "Cooling & AC" },
+  ];
 
   const renderPagination = () => {
     if (!pagination?.totalPages || pagination.totalPages <= 1) return null;
@@ -185,13 +273,10 @@ const SearchResultsPage = () => {
     );
   };
 
-
-
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* Top Search Header - Refined Height and Visibility */}
+      {/* Top Search Header */}
       <div className="relative bg-black py-8 px-6 border-b border-white/10 overflow-hidden min-h-[160px] flex items-center">
-        {/* Background Image - Descriptive & Visible */}
         <div
           className="absolute inset-0 transition-opacity duration-700"
           style={{
@@ -202,10 +287,7 @@ const SearchResultsPage = () => {
             opacity: '1'
           }}
         />
-
-        {/* Subtle overlay only if needed for text readability, but remarkably lighter */}
         <div className="absolute inset-0 bg-black/20" />
-
         <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-start justify-center">
           <div className="text-white space-y-1">
             <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] drop-shadow-md">Results for</span>
@@ -217,7 +299,7 @@ const SearchResultsPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
-        {/* DEFENSIVE: Only map entities if parsedEntities exists and has keys */}
+        {/* Parsed Entities */}
         {parsedEntities && Object.keys(parsedEntities).length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8 pb-8 border-b border-gray-100">
             {Object.entries(parsedEntities).map(([key, value]) => value && (
@@ -237,27 +319,26 @@ const SearchResultsPage = () => {
             </div>
 
             <div className="sticky top-28 space-y-2">
+              {/* Price Range */}
               <FilterSection title="Price Range">
                 <div className="space-y-6">
-                  {/* Dual Range Slider Component */}
                   <div className="px-2 pt-2">
                     <div className="relative h-1.5 w-full bg-gray-100 rounded-full">
-                      {/* Highlighted track between handles */}
                       <div
                         className="absolute h-full bg-yellow-500 rounded-full"
                         style={{
-                          left: `${Math.min((parseInt(filters.priceMin || 0) / 10000) * 100, 100)}%`,
-                          right: `${100 - Math.min((parseInt(filters.priceMax || 10000) / 10000) * 100, 100)}%`
+                          left: `${Math.min((parseInt(filters.priceMin || 0) / (facets.priceRange?.max || 10000)) * 100, 100)}%`,
+                          right: `${100 - Math.min((parseInt(filters.priceMax || facets.priceRange?.max || 10000) / (facets.priceRange?.max || 10000)) * 100, 100)}%`
                         }}
                       />
                       <input
                         type="range"
                         min="0"
-                        max="10000"
+                        max={facets.priceRange?.max || 10000}
                         step="100"
                         value={filters.priceMin || 0}
                         onChange={(e) => {
-                          const val = Math.min(parseInt(e.target.value), parseInt(filters.priceMax || 10000) - 100);
+                          const val = Math.min(parseInt(e.target.value), parseInt(filters.priceMax || facets.priceRange?.max || 10000) - 100);
                           handleFilterChange("priceMin", val.toString());
                         }}
                         className="absolute inset-0 w-full h-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
@@ -265,9 +346,9 @@ const SearchResultsPage = () => {
                       <input
                         type="range"
                         min="0"
-                        max="10000"
+                        max={facets.priceRange?.max || 10000}
                         step="100"
-                        value={filters.priceMax || 10000}
+                        value={filters.priceMax || facets.priceRange?.max || 10000}
                         onChange={(e) => {
                           const val = Math.max(parseInt(e.target.value), parseInt(filters.priceMin || 0) + 100);
                           handleFilterChange("priceMax", val.toString());
@@ -285,10 +366,7 @@ const SearchResultsPage = () => {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         value={tempMin}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          setTempMin(val);
-                        }}
+                        onChange={(e) => setTempMin(e.target.value.replace(/\D/g, ""))}
                         onBlur={() => handleFilterChange("priceMin", tempMin)}
                         className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="0"
@@ -302,10 +380,7 @@ const SearchResultsPage = () => {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         value={tempMax}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          setTempMax(val);
-                        }}
+                        onChange={(e) => setTempMax(e.target.value.replace(/\D/g, ""))}
                         onBlur={() => handleFilterChange("priceMax", tempMax)}
                         className="w-full bg-gray-50 border border-gray-100 p-3 pt-5 text-base md:text-[11px] font-black uppercase outline-none focus:border-black text-right"
                         placeholder="10K+"
@@ -338,18 +413,10 @@ const SearchResultsPage = () => {
                 </div>
               </FilterSection>
 
-              <FilterSection title="Categories">
+              {/* Categories - Hardcoded */}
+              <FilterSection title="Categories" badge={filters.category.length}>
                 <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: "body-chassis", label: "Body & Parts" },
-                    { id: "engine-performance", label: "Engine" },
-                    { id: "wheels-tires", label: "Wheels & Tires" },
-                    { id: "lighting-electronics", label: "Electronics" },
-                    { id: "accessories", label: "Accessories" },
-                    { id: "automotive-tools", label: "Tools" },
-                    { id: "fluids-care", label: "Fluids" },
-                    { id: "cooling-ac", label: "Cooling & AC" }
-                  ].map(cat => (
+                  {CATEGORIES.map(cat => (
                     <button
                       key={cat.id}
                       onClick={() => handleCategoryToggle(cat.id)}
@@ -362,23 +429,80 @@ const SearchResultsPage = () => {
                 </div>
               </FilterSection>
 
-              <FilterSection title="Item Condition">
+              {/* Brand Filter - Dynamic from facets */}
+              {facets.brands.length > 0 && (
+                <FilterSection title="Brand" badge={filters.brand.length}>
+                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
+                    {facets.brands.map((brand) => (
+                      <CheckboxItem
+                        key={brand.name}
+                        label={brand.name}
+                        count={brand.count}
+                        checked={filters.brand.includes(brand.name)}
+                        onChange={() => handleBrandToggle(brand.name)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+              )}
+
+              {/* Part Type Filter - Dynamic from facets */}
+              {facets.partTypes && facets.partTypes.length > 0 && (
+                <FilterSection title="Part Type">
+                  <div className="max-h-48 overflow-y-auto pr-1 space-y-0.5">
+                    {facets.partTypes.map((pt) => (
+                      <div key={pt.name} className="flex items-center justify-between py-1">
+                        <span className="text-sm font-bold text-gray-500 uppercase">{pt.name}</span>
+                        <span className="text-[10px] font-bold text-gray-400">{pt.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </FilterSection>
+              )}
+
+              {/* Condition Filter - Enhanced with facet counts */}
+              <FilterSection title="Condition">
                 <div className="grid grid-cols-3 gap-1">
-                  {["New", "Used", "Refurbished"].map(cond => (
-                    <button
-                      key={cond}
-                      onClick={() => handleFilterChange("condition", cond)}
-                      className={`block w-full text-center text-[8px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.condition === cond ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
-                        }`}
-                    >
-                      {cond}
-                    </button>
-                  ))}
+                  {(facets.conditions.length > 0
+                    ? facets.conditions.map(c => c.name)
+                    : ["new", "used", "refurbished"]
+                  ).map(cond => {
+                    const facetItem = facets.conditions.find(c => c.name === cond);
+                    return (
+                      <button
+                        key={cond}
+                        onClick={() => handleFilterChange("condition", filters.condition === cond ? "" : cond)}
+                        className={`block w-full text-center text-[8px] font-black uppercase tracking-tighter py-3 px-1 border transition-all ${filters.condition === cond ? "bg-black text-white border-black italic" : "border-gray-100 text-gray-400 hover:border-black hover:text-black"
+                          }`}
+                      >
+                        {cond}
+                        {facetItem && (
+                          <span className="block text-[7px] font-bold mt-0.5 opacity-60">
+                            ({facetItem.count})
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterSection>
+
+              {/* Stock Availability - New */}
+              <FilterSection title="Availability">
+                <CheckboxItem
+                  label="In Stock Only"
+                  count={facets.stockStatus?.inStock || 0}
+                  checked={filters.inStock}
+                  onChange={() => setFilters(prev => ({ ...prev, inStock: !prev.inStock }))}
+                />
+                <div className="flex justify-between text-[9px] font-bold text-gray-400 mt-2 pt-2 border-t border-gray-50">
+                  <span>In Stock: {facets.stockStatus?.inStock || 0}</span>
+                  <span>Out of Stock: {facets.stockStatus?.outOfStock || 0}</span>
                 </div>
               </FilterSection>
 
               <button
-                onClick={() => setFilters({ category: [], priceMin: "", priceMax: "", condition: "" })}
+                onClick={clearAllFilters}
                 className="w-full mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-red-600 hover:underline pt-4 border-t border-gray-50"
               >
                 Reset All Filters
@@ -392,27 +516,75 @@ const SearchResultsPage = () => {
               <div className="flex flex-wrap items-center gap-4">
                 <button onClick={() => setShowFiltersMobile(true)} className="lg:hidden flex items-center gap-2 bg-black text-white px-5 py-2.5 text-[10px] font-black uppercase italic">
                   <Filter size={14} /> Filters
+                  {activeFilterCount > 0 && (
+                    <span className="bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 ml-1">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </button>
                 <div className="flex items-center gap-3">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
                     {pagination?.totalItems || 0} Products Identified
                   </p>
-                  {Object.entries(filters).filter(([_, v]) => Array.isArray(v) ? v.length > 0 : v !== "").length > 0 && (
+                  {activeFilterCount > 0 && (
                     <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
                       <span className="bg-yellow-500 text-black text-[8px] font-black uppercase px-2 py-1 italic">
-                        {Object.entries(filters).reduce((acc, [_, v]) => acc + (Array.isArray(v) ? v.length : (v !== "" ? 1 : 0)), 0)} Filters Applied
+                        {activeFilterCount} Filters Applied
                       </span>
                       <button
-                        onClick={() => setFilters({ category: [], priceMin: "", priceMax: "", condition: "" })}
-                        className="text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 font-black flex items-center gap-1 transition-colors italic"
+                        onClick={clearAllFilters}
+                        className="text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 flex items-center gap-1 transition-colors italic"
                       >
-                        <X size={10} /> Clear All Filters
+                        <X size={10} /> Clear All
                       </button>
                     </div>
                   )}
                 </div>
               </div>
             </div>
+
+            {/* Active Filter Pills */}
+            {activeFilterCount > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mb-8">
+                {filters.category.map((cat) => {
+                  const catLabel = CATEGORIES.find(c => c.id === cat)?.label || cat;
+                  return (
+                    <button
+                      key={`cat-${cat}`}
+                      onClick={() => handleCategoryToggle(cat)}
+                      className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                    >
+                      {catLabel} <X size={10} />
+                    </button>
+                  );
+                })}
+                {filters.brand.map((b) => (
+                  <button
+                    key={`brand-${b}`}
+                    onClick={() => handleBrandToggle(b)}
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                  >
+                    {b} <X size={10} />
+                  </button>
+                ))}
+                {filters.condition && (
+                  <button
+                    onClick={() => handleFilterChange("condition", "")}
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                  >
+                    {filters.condition} <X size={10} />
+                  </button>
+                )}
+                {filters.inStock && (
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, inStock: false }))}
+                    className="flex items-center gap-1 bg-black text-white text-[8px] font-black uppercase italic px-3 py-1.5 hover:bg-red-600 transition-colors"
+                  >
+                    In Stock Only <X size={10} />
+                  </button>
+                )}
+              </div>
+            )}
 
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
@@ -464,7 +636,7 @@ const SearchResultsPage = () => {
   );
 };
 
-// --- 3. WRAPPED EXPORT ---
+// --- 4. WRAPPED EXPORT ---
 const SearchResultsWithBoundary = () => (
   <ErrorBoundary>
     <SearchResultsPage />
