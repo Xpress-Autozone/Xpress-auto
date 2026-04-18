@@ -316,7 +316,7 @@ export default function CategoryPage({
         <div className="flex flex-col lg:flex-row gap-10">
           <aside
             className={`
-            ${showFiltersMobile ? "block" : "hidden"} 
+            ${showFilters ? "block" : "hidden"} 
             lg:block lg:w-72 lg:shrink-0
             border-b lg:border-none border-gray-100 mb-8 lg:mb-0
           `}
