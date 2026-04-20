@@ -272,6 +272,22 @@ const ActiveProductPage = () => {
     : (product.compatibility ? [product.compatibility] : ["Universal Fit"]);
 
 
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Check out ${product.name} on Xpress Autozone! 🏎️💨`,
+          text: `Check out ${product.name} by ${product.brand || 'Xpress Autozone'}!`,
+          url: window.location.href,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error("Error sharing:", err);
+        }
+      }
+    }
+  };
+
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
@@ -342,7 +358,7 @@ const ActiveProductPage = () => {
   const TagPill = ({ label, color, onClick }) => (
     <button
       onClick={onClick}
-      className={`${color} text-[9px] font-black uppercase tracking-widest px-3 py-1.5 hover:opacity-80 transition-opacity flex items-center gap-1.5`}
+      className={`${color} text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 hover:shadow-md transition-all flex items-center gap-1.5 rounded-md`}
     >
       <div className="w-1 h-1 bg-current opacity-50 rounded-full" />
       {label}
@@ -364,7 +380,7 @@ const ActiveProductPage = () => {
         <div className="mb-10 flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-colors"
+            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Results
@@ -394,7 +410,7 @@ const ActiveProductPage = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`aspect-square border-2 transition-all p-2 bg-white ${selectedImage === idx ? "border-black" : "border-gray-100 hover:border-gray-300"
+                  className={`aspect-square border-2 transition-all p-2 bg-white rounded-md ${selectedImage === idx ? "border-gray-900 shadow-sm" : "border-gray-100 hover:border-gray-300"
                     }`}
                 >
                   <img src={img} alt="Thumb" className="w-full h-full object-contain" />
@@ -425,16 +441,28 @@ const ActiveProductPage = () => {
             </div>
 
             {/* CTA */}
-            <button
-              onClick={handleAddToCart}
-              className={`w-full font-black uppercase italic tracking-[0.2em] py-4 transition-all flex items-center justify-center gap-3 mb-4 ${addedToCart
-                ? "bg-green-500 text-white"
-                : "bg-yellow-500 hover:bg-black hover:text-white text-black"
-                }`}
-            >
-              <ShoppingCart size={18} />
-              {addedToCart ? "Added to Cart!" : "Add to Cart"}
-            </button>
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 font-bold uppercase tracking-widest py-4 rounded-lg transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${addedToCart
+                  ? "bg-green-500 text-white"
+                  : "bg-yellow-500 hover:bg-gray-900 hover:text-white text-gray-900"
+                  }`}
+              >
+                <ShoppingCart size={18} />
+                {addedToCart ? "Added to Cart!" : "Add to Cart"}
+              </button>
+
+              {navigator.share && (
+                <button
+                  onClick={handleNativeShare}
+                  className="md:hidden w-14 h-[58px] flex items-center justify-center bg-gray-50 text-gray-900 hover:bg-yellow-500 transition-all rounded-lg border border-gray-100 shadow-sm hover:shadow-md"
+                  title="Share Product"
+                >
+                  <Share2 size={20} />
+                </button>
+              )}
+            </div>
 
             {/* PRODUCT TAGS - Minimal Solid Pills */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -468,34 +496,36 @@ const ActiveProductPage = () => {
               )}
             </div>
 
-            <ShareActions product={product} />
+            <div className="hidden md:block">
+              <ShareActions product={product} />
+            </div>
 
             {/* PRODUCT DETAILS LIST */}
             <div className="border-t border-gray-100 mt-8 space-y-8 pt-8">
               <div className="space-y-3">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Description</h3>
-                <p className="text-sm font-medium text-gray-500 leading-relaxed uppercase tracking-tight">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Description</h3>
+                <p className="text-sm font-medium text-gray-700 leading-relaxed tracking-tight">
                   {product.description || "No manual description provided for this verified component."}
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Technical Specs</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Technical Specs</h3>
                 <div className="grid grid-cols-1 gap-4">
                   {specifications.map((spec, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{spec.label}</span>
-                      <span className="text-xs font-bold text-black uppercase">{spec.value}</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{spec.label}</span>
+                      <span className="text-xs font-semibold text-gray-900">{spec.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-black">Vehicle Compatibility</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Vehicle Compatibility</h3>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {compatibility.map((v, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs font-bold text-gray-600 uppercase">
+                    <li key={i} className="flex items-center gap-3 text-xs font-semibold text-gray-600">
                       <div className="w-1.5 h-1.5 bg-yellow-500 shrink-0" /> {v}
                     </li>
                   ))}
@@ -534,7 +564,7 @@ const ActiveProductPage = () => {
           <div className="mt-12 flex justify-center">
             <button
               onClick={() => navigate("/xplore")}
-              className="bg-yellow-500 hover:bg-black hover:text-white text-black font-black uppercase italic tracking-[0.2em] px-12 py-5 transition-all flex items-center gap-2 group"
+              className="bg-yellow-500 hover:bg-gray-900 hover:text-white text-gray-900 font-bold uppercase tracking-widest px-12 py-5 rounded-lg transition-all flex items-center gap-2 group shadow-md hover:shadow-lg hover:-translate-y-1"
             >
               Xplore autozone
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

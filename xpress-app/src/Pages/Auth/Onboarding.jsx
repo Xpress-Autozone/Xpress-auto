@@ -189,29 +189,29 @@ const Onboarding = () => {
       <div className="max-w-2xl mx-auto px-6">
         <div className="mb-12 flex justify-between items-start">
           <div>
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-2 block">
-              PHASE {step} OF 3
+            <span className="text-yellow-500 font-bold uppercase tracking-[0.2em] text-[10px] mb-2 block">
+              Phase {step} of 3
             </span>
-            <h1 className="text-4xl md:text-6xl font-black text-black uppercase italic tracking-tighter leading-none">
+            <h1 className="text-3xl md:text-5xl font-black text-gray-900 uppercase italic tracking-tighter leading-none">
               Account Set-up
             </h1>
-            <p className="mt-4 text-gray-500 font-bold uppercase tracking-tight text-xs max-w-md">
+            <p className="mt-4 text-gray-500 font-semibold tracking-tight text-sm max-w-md">
               Tailoring your online garage for the best experience and
               compatibility.
             </p>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 text-gray-400 hover:text-red-600 font-black uppercase tracking-widest text-[10px] transition-colors"
+            className="flex items-center gap-2 text-gray-400 hover:text-red-600 font-bold tracking-widest text-[10px] transition-colors"
           >
-            <LogOut size={14} /> Exit Session
+            <LogOut size={14} /> Exit session
           </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-gray-100 h-1 mb-12 flex">
+        <div className="w-full bg-gray-100 h-1.5 mb-12 rounded-full overflow-hidden">
           <div
-            className="bg-black h-full transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+            className="bg-gray-900 h-full transition-all duration-700 ease-out shadow-sm"
             style={{ width: `${(step / 3) * 100}%` }}
           ></div>
         </div>
@@ -219,26 +219,26 @@ const Onboarding = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center gap-3 mb-8 border-l-4 border-black pl-4">
-                <div className="bg-black text-white p-3 rounded-none italic">
+              <div className="flex items-center gap-4 mb-10 border-l-4 border-yellow-500 pl-6">
+                <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg shadow-black/10">
                   <User size={24} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black uppercase italic tracking-tight">
+                  <h2 className="text-xl font-black italic tracking-tight text-gray-900">
                     Identity Verification
                   </h2>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-gray-400 tracking-widest">
                     Connect your mobile for instant access
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-400">
                   Secure Direct Line
                 </label>
                 <div className="flex gap-2 items-center">
-                  <div className="relative w-32 shrink-0 border-2 border-black bg-white hover:bg-yellow-50 transition-colors">
+                  <div className="relative w-32 shrink-0 border-2 border-gray-900 bg-white hover:bg-yellow-50 transition-colors">
                     <select
                       name="countryCode"
                       value={formData.countryCode}
@@ -262,7 +262,7 @@ const Onboarding = () => {
                       placeholder="50 000 0000"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full border-2 border-black p-4 pl-12 focus:bg-yellow-50 transition-colors font-bold outline-none"
+                      className="w-full border-2 border-gray-900 p-4 pl-12 focus:bg-yellow-50 transition-colors font-bold outline-none"
                       required
                     />
                   </div>
@@ -272,9 +272,9 @@ const Onboarding = () => {
               <button
                 type="button"
                 onClick={nextStep}
-                className="w-full flex items-center justify-between bg-black text-white p-6 font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all group"
+                className="w-full flex items-center justify-between bg-gray-900 text-white py-4 px-6 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all group rounded-lg shadow-md hover:shadow-lg"
               >
-                Vehicle Profiling{" "}
+                Vehicle profiling{" "}
                 <ChevronRight className="group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
@@ -282,15 +282,15 @@ const Onboarding = () => {
 
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center gap-3 mb-8 border-l-4 border-black pl-4">
-                <div className="bg-black text-white p-3 rounded-none italic">
+              <div className="flex items-center gap-4 mb-10 border-l-4 border-yellow-500 pl-6">
+                <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg shadow-black/10">
                   <Car size={24} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black uppercase italic tracking-tight">
+                  <h2 className="text-xl font-black italic tracking-tight text-gray-900">
                     Vehicle Profiling
                   </h2>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-gray-400 tracking-widest">
                     Optimize compatibility filters
                   </p>
                 </div>
@@ -298,7 +298,7 @@ const Onboarding = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-400">
                     Manufacturer
                   </label>
                   <input
@@ -312,7 +312,7 @@ const Onboarding = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-400">
                     Model Specification
                   </label>
                   <input
@@ -326,10 +326,10 @@ const Onboarding = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-400">
                     Year of Engineering
                   </label>
-                  <div className="relative border-2 border-black bg-white hover:bg-yellow-50 transition-colors">
+                  <div className="relative border-2 border-gray-900 bg-white hover:bg-yellow-50 transition-colors">
                     <select
                       name="carYear"
                       value={formData.carYear}
@@ -347,7 +347,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-400">
                     Propulsion System
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -356,10 +356,10 @@ const Onboarding = () => {
                         key={type}
                         type="button"
                         onClick={() => handleFuelTypeToggle(type)}
-                        className={`px-4 py-3 border-2 font-black uppercase text-[10px] tracking-widest transition-all ${
+                        className={`px-4 py-3 border font-bold text-[10px] tracking-widest transition-all rounded-md ${
                           formData.fuelType === type
-                            ? "bg-black text-white border-black shadow-[4px_4px_0px_#EAB308]"
-                            : "bg-white text-black border-gray-200 hover:border-black"
+                            ? "bg-gray-900 text-white border-gray-900 shadow-md"
+                            : "bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-400"
                         }`}
                       >
                         {type}
@@ -370,7 +370,7 @@ const Onboarding = () => {
               </div>
 
               <div className="mt-8 p-6 bg-gray-50 border border-dashed border-gray-300 text-center">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">
+                <p className="text-[10px] font-bold tracking-widest text-gray-400 mb-4">
                   No vehicle to profile yet?
                 </p>
                 <button
@@ -386,14 +386,14 @@ const Onboarding = () => {
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="flex-1 border-2 border-black p-6 font-black uppercase tracking-widest italic hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 border border-gray-200 bg-white p-4 font-bold tracking-widest italic hover:bg-gray-50 transition-all flex items-center justify-center gap-2 rounded-lg"
                 >
                   <ArrowLeft size={18} /> Revert
                 </button>
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="flex-[2] bg-black text-white p-6 font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all flex items-center justify-between group shadow-[8px_8px_0px_rgba(0,0,0,0.1)]"
+                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all flex items-center justify-between group shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-lg"
                 >
                   Validate & Review{" "}
                   <ChevronRight className="group-hover:translate-x-2 transition-transform" />
@@ -404,41 +404,41 @@ const Onboarding = () => {
 
           {step === 3 && (
             <div className="space-y-6 text-center animate-in fade-in zoom-in duration-500">
-              <div className="inline-block bg-yellow-400 p-8 mb-4 shadow-[12px_12px_0px_rgba(0,0,0,1)]">
-                <CheckCircle size={64} className="text-black" />
+            <div className="inline-block bg-yellow-400 p-8 mb-4 rounded-2xl shadow-xl shadow-yellow-500/20">
+                <CheckCircle size={64} className="text-gray-900" />
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">
-                Configuration Complete
+              <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter text-gray-900">
+                Configuration complete
               </h2>
-              <p className="text-gray-500 font-bold uppercase tracking-tight text-xs max-w-sm mx-auto">
+              <p className="text-gray-500 font-semibold tracking-tight text-sm max-w-sm mx-auto">
                 Account settings saved. You can now access the full Xpress
                 AutoZone catalog.
               </p>
 
-              <div className="bg-gray-50 p-8 border-2 border-black text-left space-y-4 my-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[8px] font-black uppercase italic">
+              <div className="bg-gray-50 p-8 border border-gray-200 text-left space-y-4 my-8 relative overflow-hidden rounded-xl">
+                <div className="absolute top-0 right-0 bg-yellow-500 text-gray-900 px-3 py-1 text-[8px] font-bold uppercase italic rounded-bl-lg">
                   Saved
                 </div>
                 <div className="flex justify-between border-b border-gray-200 pb-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase">
+                  <span className="text-[10px] font-bold text-gray-400">
                     Name
                   </span>
-                  <span className="text-sm font-black uppercase tracking-tight">
+                  <span className="text-sm font-bold tracking-tight text-gray-900">
                     {user?.name}
                   </span>
                 </div>
                 <div className="flex justify-between border-b border-gray-200 pb-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase">
+                  <span className="text-[10px] font-bold text-gray-400">
                     Phone
                   </span>
-                  <span className="text-sm font-black uppercase tracking-tight">
+                  <span className="text-sm font-bold tracking-tight text-gray-900">
                     {formData.countryCode} {formData.phone}
                   </span>
                 </div>
                 {isSkipped ? (
                   <div className="flex justify-between">
-                    <span className="text-[10px] font-black text-gray-400 uppercase">
+                    <span className="text-[10px] font-bold text-gray-400">
                       Garage Status
                     </span>
                     <span className="text-sm font-black uppercase tracking-tight text-yellow-600">
@@ -448,19 +448,19 @@ const Onboarding = () => {
                 ) : (
                   <>
                     <div className="flex justify-between border-b border-gray-200 pb-2">
-                      <span className="text-[10px] font-black text-gray-400 uppercase">
+                      <span className="text-[10px] font-bold text-gray-400">
                         Machine
                       </span>
-                      <span className="text-sm font-black uppercase tracking-tight">
+                      <span className="text-sm font-bold tracking-tight text-gray-900">
                         {formData.carYear} {formData.carMake}{" "}
                         {formData.carModel}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[10px] font-black text-gray-400 uppercase">
+                      <span className="text-[10px] font-bold text-gray-400">
                         Fuel Type
                       </span>
-                      <span className="text-sm font-black uppercase tracking-tight">
+                      <span className="text-sm font-bold tracking-tight text-gray-900">
                         {formData.fuelType}
                       </span>
                     </div>
@@ -472,15 +472,15 @@ const Onboarding = () => {
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="flex-1 border-2 border-black p-6 font-black uppercase tracking-widest italic hover:bg-gray-100 transition-all font-black"
+                  className="flex-1 border border-gray-200 bg-white p-4 font-bold tracking-widest italic hover:bg-gray-50 transition-all rounded-lg"
                 >
-                  Adjust Settings
+                  Adjust settings
                 </button>
                 <button
                   type="submit"
-                  className="flex-[2] bg-black text-white p-6 font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-black transition-all shadow-[12px_12px_0px_#EAB308] active:translate-y-2 active:shadow-none"
+                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 rounded-lg"
                 >
-                  Proceed to Dashboard
+                  Proceed to dashboard
                 </button>
               </div>
             </div>
