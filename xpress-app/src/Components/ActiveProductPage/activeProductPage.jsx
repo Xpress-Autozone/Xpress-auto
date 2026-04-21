@@ -365,14 +365,44 @@ const ActiveProductPage = () => {
     </button>
   );
 
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": product.description || `Buy ${product.name} at Xpress Autozone.`,
+    "image": product.images?.length > 0 ? product.images : [product.image],
+    "brand": product.brand ? {
+      "@type": "Brand",
+      "name": product.brand
+    } : undefined,
+    "sku": product.partNumber || product.id,
+    "mpn": product.partNumber,
+    "offers": {
+      "@type": "Offer",
+      "url": window.location.href,
+      "priceCurrency": "GHS",
+      "price": (product.price || 0).toFixed(2),
+      "availability": product.status === "In Stock"
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Xpress Autozone"
+      }
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
       <SEO
         title={product.name}
-        description={product.description || `Buy ${product.name} at Xpress Autozone. Quality part for ${product.brand || 'your vehicle'}.`}
+        description={product.description || `Buy ${product.name} at Xpress Autozone. Quality auto part for ${product.brand || 'your vehicle'}. In stock and ready to ship in Ghana.`}
+        keywords={[product.name, product.brand, product.category, product.partNumber, 'auto parts Ghana', 'Xpress Autozone'].filter(Boolean).join(', ')}
         ogImage={product.image}
         ogUrl={window.location.href}
         ogType="product"
+        canonicalUrl={`/product/${product.id}`}
+        structuredData={productStructuredData}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-6">
 

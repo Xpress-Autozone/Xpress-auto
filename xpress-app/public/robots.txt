@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Private pages - not for indexing
+Disallow: /cart
+Disallow: /account
+Disallow: /onboarding
+Disallow: /login
+Disallow: /signup
+
+# Sitemap location
+Sitemap: https://xpressautozone.com/sitemap.xml

@@ -4,6 +4,7 @@ import { searchProducts } from "../../lib/api";
 import SearchBar from "../../Components/Search/searchBar";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import { ChevronDown, Filter, Check, X, AlertTriangle, RefreshCw, Home } from "lucide-react";
+import SEO from "../../lib/SEOHelper";
 
 import SearchResultHero from "../../assets/SearchResultMobile.webp";
 
@@ -275,6 +276,12 @@ const SearchResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      <SEO
+        title={query ? `Search: "${query}"` : 'Search Auto Parts'}
+        description={`Search results for "${query}" on Xpress Autozone — Ghana's premier auto parts marketplace. Find genuine auto parts, accessories, and more.`}
+        canonicalUrl={`/search?q=${encodeURIComponent(query)}`}
+        robots="noindex, follow"
+      />
       {/* Top Search Header */}
       <div className="relative bg-black py-8 px-6 border-b border-white/10 overflow-hidden min-h-[160px] flex items-center">
         <div

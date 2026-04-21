@@ -6,6 +6,7 @@ import EmptyState from "../../Components/EmptyState/EmptyState";
 import { getAllProducts, getProductFacets } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
+import SEO from "../../lib/SEOHelper";
 
 export default function CategoryPage({
   title = "Category",
@@ -222,8 +223,30 @@ export default function CategoryPage({
   const maxPrice = facets.priceRange?.max || 10000;
   const minPrice = facets.priceRange?.min || 0;
 
+  const categoryStructuredData = filteredProducts.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `${title} - Xpress Autozone`,
+    "description": heroDescription,
+    "url": `https://xpressautozone.com/${categoryQuery}`,
+    "numberOfItems": filteredProducts.length,
+    "itemListElement": filteredProducts.slice(0, 10).map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": p.name,
+      "url": `https://xpressautozone.com/product/${p.id}`,
+    }))
+  } : null;
+
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={title}
+        description={heroDescription || `Shop ${title} at Xpress Autozone — Ghana's premier auto parts marketplace. Browse verified ${title.toLowerCase()} parts and accessories.`}
+        keywords={`${title}, auto parts Ghana, ${title.toLowerCase()} parts, Xpress Autozone, car parts`}
+        canonicalUrl={`/${categoryQuery}`}
+        structuredData={categoryStructuredData}
+      />
       {/* Hero Section */}
       <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-black">
         <div

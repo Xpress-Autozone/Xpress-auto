@@ -9,6 +9,7 @@ import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import HeroMedia from "../../Components/HeroMedia/HeroMedia";
 import { getAllProducts } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
+import SEO from "../../lib/SEOHelper";
 
 // Programmatic Video component removed, replaced by HeroMedia
 
@@ -248,8 +249,29 @@ function Home() {
     return <SkeletonLoader />;
   }
 
+  const homeStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "AutoPartsStore",
+    "name": "Xpress Autozone",
+    "url": "https://xpressautozone.com",
+    "description": "Ghana's premier marketplace for authentic, admin-verified automotive components.",
+    "image": "https://xpressautozone.com/assets/og-image.jpg",
+    "areaServed": "Ghana",
+    "currenciesAccepted": "GHS",
+    "paymentAccepted": "Cash, Mobile Money",
+    "sameAs": []
+  };
+
   return (
     <div className="bg-white min-h-screen w-full">
+      <SEO
+        title="Ghana's #1 Auto Parts Marketplace"
+        description="Xpress Autozone — Ghana's premier marketplace for authentic, admin-verified automotive components. Shop engine parts, body parts, wheels, accessories and more."
+        keywords="auto parts Ghana, car parts Ghana, engine parts, body parts, wheels tires Ghana, Xpress Autozone, automotive accessories Ghana"
+        canonicalUrl="/"
+        ogImage="/assets/og-image.jpg"
+        structuredData={homeStructuredData}
+      />
       {/* HERO SECTION WITH DYNAMIC SEQUENCE */}
       <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">
         {/* MEDIA LAYERS: Render all so they preload, cross-fade with opacity */}
