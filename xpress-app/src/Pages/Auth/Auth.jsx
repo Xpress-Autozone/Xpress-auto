@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../../Redux/userSlice";
@@ -12,6 +12,7 @@ import {
   browserLocalPersistence,
 } from "firebase/auth";
 import { app } from "../../Firebase/firebase";
+import { Info, Loader2 } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Auth = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showGuestInfo, setShowGuestInfo] = useState(false);
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
 
@@ -124,8 +126,12 @@ const Auth = () => {
         </p>
 
         {error && (
-          <div className="w-full mb-6 p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg text-center">
-            {error}
+          <div className="w-full mb-6 p-4 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg text-center animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="font-bold">Authentication Failed</span>
+            </div>
+            <p className="text-red-500 font-normal">{error}</p>
+            <p className="text-red-400 text-[10px] mt-1">Please try again or contact support if the issue persists.</p>
           </div>
         )}
 
@@ -133,10 +139,13 @@ const Auth = () => {
             <button
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-200 text-black font-black uppercase italic tracking-widest text-xs py-4 px-4 rounded-xl transition-all transform hover:translate-y-[-2px] active:translate-y-[0] shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-200 text-black font-black uppercase italic tracking-widest text-xs py-4 px-4 rounded-xl transition-all transform hover:translate-y-[-2px] active:translate-y-[0] shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[52px]"
             >
             {loading ? (
-                "Processing..."
+                <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+                </>
             ) : (
                 <>
                 Continue with Google
@@ -153,12 +162,27 @@ const Auth = () => {
                 </div>
             </div>
 
-            <button
-            onClick={handleGuestSignIn}
-            className="w-full bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs py-4 px-4 rounded-xl transition-all border border-gray-200"
-            >
-            Continue as Guest
-            </button>
+            <div className="relative">
+              <button
+              onClick={handleGuestSignIn}
+              className="w-full bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs py-4 px-4 rounded-xl transition-all border border-gray-200 min-h-[52px]"
+              >
+              Continue as Guest
+              </button>
+              <button
+                onClick={() => setShowGuestInfo(!showGuestInfo)}
+                className="absolute -right-8 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="What is guest access?"
+              >
+                <Info className="w-4 h-4" />
+              </button>
+            </div>
+            {showGuestInfo && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[10px] text-blue-800 animate-in fade-in slide-in-from-top-2">
+                <p className="font-semibold mb-1">Guest Access:</p>
+                <p>Shop without creating an account. Your cart will be saved locally. Sign up anytime to sync across devices.</p>
+              </div>
+            )}
         </div>
 
         <p className="mt-8 text-xs text-gray-400 font-bold uppercase tracking-widest">

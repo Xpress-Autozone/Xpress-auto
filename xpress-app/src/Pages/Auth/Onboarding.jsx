@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { completeOnboarding, updateUser, signOut } from "../../Redux/userSlice";
@@ -14,6 +14,8 @@ import {
   Fuel,
   Globe,
   FastForward,
+  Info,
+  Edit,
 } from "lucide-react";
 import SEO from "../../lib/SEOHelper";
 import { getAuth } from "firebase/auth";
@@ -48,6 +50,8 @@ const Onboarding = () => {
   const auth = getAuth(app);
   const [step, setStep] = useState(1);
   const [isSkipped, setIsSkipped] = useState(false);
+  const [showVehicleInfo, setShowVehicleInfo] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const handleSignOut = () => {
     dispatch(signOut());
@@ -66,10 +70,38 @@ const Onboarding = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Phone validation
+    if (name === "phone") {
+      const phoneRegex = /^[0-9\s]*$/;
+      if (!phoneRegex.test(value)) {
+        setPhoneError("Please enter only numbers");
+      } else if (value.replace(/\s/g, "").length < 8) {
+        setPhoneError("Phone number must be at least 8 digits");
+      } else {
+        setPhoneError("");
+      }
+    }
   };
 
   const handleFuelTypeToggle = (type) => {
     setFormData((prev) => ({ ...prev, fuelType: type }));
+  };
+
+  const goToStep = (targetStep) => {
+    if (targetStep < step || (targetStep > step && canProceedToStep(targetStep))) {
+      setStep(targetStep);
+    }
+  };
+
+  const canProceedToStep = (targetStep) => {
+    if (targetStep === 2) {
+      return formData.phone.replace(/\s/g, "").length >= 8;
+    }
+    if (targetStep === 3) {
+      return isSkipped || (formData.carMake && formData.carModel);
+    }
+    return true;
   };
 
   const nextStep = () => {
@@ -208,12 +240,35 @@ const Onboarding = () => {
           </button>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-100 h-1.5 mb-12 rounded-full overflow-hidden">
-          <div
-            className="bg-gray-900 h-full transition-all duration-700 ease-out shadow-sm"
-            style={{ width: `${(step / 3) * 100}%` }}
-          ></div>
+        {/* Progress Bar with Clickable Steps */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            {[1, 2, 3].map((s) => (
+              <button
+                key={s}
+                onClick={() => goToStep(s)}
+                disabled={!canProceedToStep(s) && s > step}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  step === s
+                    ? "bg-gray-900 text-white"
+                    : step > s
+                    ? "bg-yellow-100 text-yellow-700 cursor-pointer hover:bg-yellow-200"
+                    : canProceedToStep(s)
+                    ? "bg-gray-100 text-gray-600 cursor-pointer hover:bg-gray-200"
+                    : "bg-gray-50 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                <span className="font-bold text-xs">Phase {s}</span>
+                {step > s && <CheckCircle className="w-3 h-3" />}
+              </button>
+            ))}
+          </div>
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div
+              className="bg-gray-900 h-full transition-all duration-700 ease-out shadow-sm"
+              style={{ width: `${(step / 3) * 100}%` }}
+            ></div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -234,9 +289,24 @@ const Onboarding = () => {
               </div>
 
               <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-widest text-gray-400">
-                  Secure Direct Line
-                </label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-400">
+                    Secure Direct Line
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowVehicleInfo(!showVehicleInfo)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <Info className="w-3 h-3" />
+                    </button>
+                  </div>
+                  {showVehicleInfo && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[10px] text-blue-800 animate-in fade-in slide-in-from-top-2">
+                      <p className="font-semibold mb-1">Why we need this:</p>
+                      <p>Your phone number enables order updates, delivery coordination, and account recovery. We never share it with third parties.</p>
+                    </div>
+                  )}
                 <div className="flex gap-2 items-center">
                   <div className="relative w-32 shrink-0 border-2 border-gray-900 bg-white hover:bg-yellow-50 transition-colors">
                     <select
@@ -262,9 +332,16 @@ const Onboarding = () => {
                       placeholder="50 000 0000"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full border-2 border-gray-900 p-4 pl-12 focus:bg-yellow-50 transition-colors font-bold outline-none"
+                      className={`w-full border-2 p-4 pl-12 focus:bg-yellow-50 transition-colors font-bold outline-none ${
+                        phoneError ? "border-red-500 focus:bg-red-50" : "border-gray-900"
+                      }`}
                       required
                     />
+                    {phoneError && (
+                      <p className="text-red-500 text-[10px] mt-1 animate-in fade-in slide-in-from-top-1">
+                        {phoneError}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -286,7 +363,7 @@ const Onboarding = () => {
                 <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg shadow-black/10">
                   <Car size={24} />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h2 className="text-xl font-black italic tracking-tight text-gray-900">
                     Vehicle Profiling
                   </h2>
@@ -294,7 +371,20 @@ const Onboarding = () => {
                     Optimize compatibility filters
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowVehicleInfo(!showVehicleInfo)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+                >
+                  <Info className="w-4 h-4" />
+                </button>
               </div>
+              {showVehicleInfo && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[10px] text-blue-800 mb-6 animate-in fade-in slide-in-from-top-2">
+                  <p className="font-semibold mb-1">Why we need this:</p>
+                  <p>Vehicle details help us show compatible parts and accessories for your specific make and model. Skip if you don't have a vehicle yet.</p>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -369,9 +459,12 @@ const Onboarding = () => {
                 </div>
               </div>
 
-              <div className="mt-8 p-6 bg-gray-50 border border-dashed border-gray-300 text-center">
-                <p className="text-[10px] font-bold tracking-widest text-gray-400 mb-4">
+              <div className="mt-8 p-6 bg-gray-50 border border-dashed border-gray-300 text-center rounded-lg">
+                <p className="text-[10px] font-bold tracking-widest text-gray-400 mb-2">
                   No vehicle to profile yet?
+                </p>
+                <p className="text-[10px] text-gray-500 mb-4">
+                  You can add vehicle details later in your account settings.
                 </p>
                 <button
                   type="button"
@@ -420,49 +513,94 @@ const Onboarding = () => {
                 <div className="absolute top-0 right-0 bg-yellow-500 text-gray-900 px-3 py-1 text-[8px] font-bold uppercase italic rounded-bl-lg">
                   Saved
                 </div>
-                <div className="flex justify-between border-b border-gray-200 pb-2">
+                <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                   <span className="text-[10px] font-bold text-gray-400">
                     Name
                   </span>
-                  <span className="text-sm font-bold tracking-tight text-gray-900">
-                    {user?.name}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold tracking-tight text-gray-900">
+                      {user?.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-gray-400 hover:text-yellow-600 transition-colors"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between border-b border-gray-200 pb-2">
+                <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                   <span className="text-[10px] font-bold text-gray-400">
                     Phone
                   </span>
-                  <span className="text-sm font-bold tracking-tight text-gray-900">
-                    {formData.countryCode} {formData.phone}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold tracking-tight text-gray-900">
+                      {formData.countryCode} {formData.phone}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-gray-400 hover:text-yellow-600 transition-colors"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
                 {isSkipped ? (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-gray-400">
                       Garage Status
                     </span>
-                    <span className="text-sm font-black uppercase tracking-tight text-yellow-600">
-                      Standby / Pending
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-black uppercase tracking-tight text-yellow-600">
+                        Standby / Pending
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setStep(2)}
+                        className="text-gray-400 hover:text-yellow-600 transition-colors"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <>
-                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                       <span className="text-[10px] font-bold text-gray-400">
                         Machine
                       </span>
-                      <span className="text-sm font-bold tracking-tight text-gray-900">
-                        {formData.carYear} {formData.carMake}{" "}
-                        {formData.carModel}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold tracking-tight text-gray-900">
+                          {formData.carYear} {formData.carMake}{" "}
+                          {formData.carModel}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setStep(2)}
+                          className="text-gray-400 hover:text-yellow-600 transition-colors"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-[10px] font-bold text-gray-400">
                         Fuel Type
                       </span>
-                      <span className="text-sm font-bold tracking-tight text-gray-900">
-                        {formData.fuelType}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold tracking-tight text-gray-900">
+                          {formData.fuelType}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setStep(2)}
+                          className="text-gray-400 hover:text-yellow-600 transition-colors"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
                   </>
                 )}

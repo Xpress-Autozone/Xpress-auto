@@ -2,6 +2,8 @@ import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { useSelector } from "react-redux";
+import { useState } from "react";
+import DeleteConfirmationModal from "../../Components/Modal/DeleteConfirmationModal";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -12,6 +14,21 @@ export default function CartPage() {
   const subtotal = getSubtotal();
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
+  const handleRemoveClick = (item) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      removeItem(itemToDelete.id);
+      setItemToDelete(null);
+    }
+  };
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -123,7 +140,7 @@ export default function CartPage() {
                         GH₵{(item.price * item.quantity).toFixed(2)}
                       </p>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => handleRemoveClick(item)}
                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -201,6 +218,14 @@ export default function CartPage() {
             </div>
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          product={itemToDelete}
+        />
       </div>
     </div>
   );

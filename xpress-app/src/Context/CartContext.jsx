@@ -36,18 +36,59 @@ export const CartProvider = ({ children }) => {
       setCartItems([...cartItems, { ...product, quantity: 1 }]);
     }
 
-    toast((t) => (
-      <div className="flex items-center justify-between gap-4 min-w-[300px]">
-        <span>Item has been added to cart</span>
-        <Link
-          to="/cart"
-          onClick={() => toast.dismiss(t.id)}
-          className="bg-yellow-500 text-black px-4 py-2 text-xs font-bold hover:bg-white transition-colors"
+    toast((t) => {
+      let startY = 0;
+      let currentY = 0;
+      let isDragging = false;
+      let toastElement = null;
+
+      const handleTouchStart = (e) => {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+        toastElement = e.currentTarget;
+      };
+
+      const handleTouchMove = (e) => {
+        if (!isDragging || !toastElement) return;
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+        
+        toastElement.style.transform = `translateY(${deltaY}px)`;
+        toastElement.style.opacity = `${1 - Math.abs(deltaY) / 100}`;
+      };
+
+      const handleTouchEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        const deltaY = currentY - startY;
+        
+        if (deltaY > 50) {
+          toast.dismiss(t.id);
+        } else if (toastElement) {
+          toastElement.style.transform = 'translateY(0)';
+          toastElement.style.opacity = '1';
+        }
+      };
+
+      return (
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="flex items-center justify-between gap-4 min-w-[300px] select-none transition-transform duration-75"
+          style={{ touchAction: 'none' }}
         >
-          View Cart
-        </Link>
-      </div>
-    ), {
+          <span>Item has been added to cart</span>
+          <Link
+            to="/cart"
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-yellow-500 text-black px-4 py-2 text-xs font-bold hover:bg-white transition-colors"
+          >
+            View Cart
+          </Link>
+        </div>
+      );
+    }, {
       duration: 4000,
       id: 'cart-toast', // Prevent duplicate toasts for multiple clicks
     });
