@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { signOut, updateUser } from '../../Redux/userSlice';
+import { signOut, updateUserProfile, fetchUserOrders } from '../../Redux/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Package,
@@ -12,7 +12,9 @@ import {
   ShieldCheck,
   Edit2,
   Save,
-  X
+  X,
+  MapPin,
+  Loader2
 } from 'lucide-react';
 
 const fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other', 'N/A'];
@@ -20,13 +22,16 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i);
 
 const MyAccount = () => {
-  const user = useSelector((state) => state.user.user);
+  const { user, orders, loading, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
   const [isEditing, setIsEditing] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+
   const [editFormData, setEditFormData] = useState({
     phone: '',
+    address: '',
     vehicle: {
       make: '',
       model: '',
@@ -36,9 +41,15 @@ const MyAccount = () => {
   });
 
   useEffect(() => {
+    // Fetch orders on mount
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (user) {
       setEditFormData({
         phone: user.phone || '',
+        address: user.address || '',
         vehicle: {
           make: user.vehicle?.make || '',
           model: user.vehicle?.model || '',
@@ -59,6 +70,7 @@ const MyAccount = () => {
       // Reset form if canceling
       setEditFormData({
         phone: user.phone || '',
+        address: user.address || '',
         vehicle: {
           make: user.vehicle?.make || '',
           model: user.vehicle?.model || '',
@@ -66,6 +78,7 @@ const MyAccount = () => {
           fuelType: user.vehicle?.fuelType || ''
         }
       });
+      setSaveStatus(null);
     }
     setIsEditing(!isEditing);
   };
@@ -83,16 +96,17 @@ const MyAccount = () => {
     }
   };
 
-  const handleSave = () => {
-    dispatch(updateUser(editFormData));
-    setIsEditing(false);
+  const handleSave = async () => {
+    setSaveStatus(null);
+    const result = await dispatch(updateUserProfile(editFormData));
+    if (updateUserProfile.fulfilled.match(result)) {
+      setSaveStatus('success');
+      setIsEditing(false);
+      setTimeout(() => setSaveStatus(null), 3000);
+    } else {
+      setSaveStatus('error');
+    }
   };
-
-  // Mock Purchase History
-  const purchaseHistory = [
-    { id: "ORD-7721", date: "Dec 12, 2025", total: 450.00, status: "Delivered" },
-    { id: "ORD-8902", date: "Nov 28, 2025", total: 125.50, status: "Processing" },
-  ];
 
   const handleDeleteAccount = () => {
     if (window.confirm("WARNING: This action is permanent. Delete your Xpress AutoZone account?")) {
@@ -103,7 +117,7 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-20">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6 text-left">
 
         {/* HEADER SECTION */}
         <div className="mb-12 border-b-2 border-black pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -117,7 +131,7 @@ const MyAccount = () => {
           </div>
           <Link
             to="/cart"
-            className="flex items-center gap-2  text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all"
+            className="flex items-center gap-2 text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all"
           >
             <Heart size={16} /> View Cart
           </Link>
@@ -140,37 +154,60 @@ const MyAccount = () => {
           </aside>
 
           {/* RIGHT: CONTENT AREA */}
-          <main className="lg:col-span-3 border border-gray-100 p-8 md:p-12">
+          <main className="lg:col-span-3 border border-gray-100 p-8 md:p-12 relative">
+            
+            {saveStatus === 'success' && (
+              <div className="absolute top-4 right-8 bg-green-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded animate-in fade-in slide-in-from-top-4">
+                Profile Updated Successfully
+              </div>
+            )}
+            
+            {saveStatus === 'error' && (
+              <div className="absolute top-4 right-8 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded animate-in fade-in slide-in-from-top-4">
+                Failed to update profile
+              </div>
+            )}
 
             {activeTab === 'history' && (
               <div className="space-y-8">
                 <h3 className="text-2xl font-black uppercase italic tracking-tighter">History</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-black">
-                        <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
-                        <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
-                        <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
-                        <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                      {purchaseHistory.map((order) => (
-                        <tr key={order.id} className="group hover:bg-gray-50 transition-colors">
-                          <td className="py-6 text-xs font-black uppercase tracking-tight">{order.id}</td>
-                          <td className="py-6 text-xs font-bold text-gray-500">{order.date}</td>
-                          <td className="py-6 text-sm font-black italic">GH₵{order.total.toFixed(2)}</td>
-                          <td className="py-6">
-                            <span className="text-[9px] font-black uppercase px-2 py-1 border border-black italic">
-                              {order.status}
-                            </span>
-                          </td>
+                {loading && orders.length === 0 ? (
+                  <div className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Loading orders...
+                  </div>
+                ) : orders.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-black">
+                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
+                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
+                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {orders.map((order) => (
+                          <tr key={order.id} className="group hover:bg-gray-50 transition-colors">
+                            <td className="py-6 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
+                            <td className="py-6 text-xs font-bold text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
+                            <td className="py-6 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
+                            <td className="py-6">
+                              <span className={`text-[9px] font-black uppercase px-2 py-1 border italic ${order.orderStatus === 'delivered' ? 'border-green-500 text-green-500' : 'border-black'}`}>
+                                {order.orderStatus}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-12 border-2 border-dashed border-gray-100 text-center">
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-xs">No orders found yet</p>
+                    <Link to="/" className="mt-4 inline-block text-black font-black uppercase tracking-widest text-[10px] underline hover:text-yellow-500">Start Shopping</Link>
+                  </div>
+                )}
               </div>
             )}
 
@@ -179,20 +216,24 @@ const MyAccount = () => {
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
                     <h3 className="text-2xl font-black uppercase italic tracking-tighter">Account Information</h3>
-                    <button
-                      onClick={isEditing ? handleSave : handleEditToggle}
-                      className={`flex items-center gap-2 px-2 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'}`}
-                    >
-                      {isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
-                    </button>
-                    {isEditing && (
+                    <div className="flex gap-2">
                       <button
-                        onClick={handleEditToggle}
-                        className="flex items-center gap-2 px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black ml-2"
+                        onClick={isEditing ? handleSave : handleEditToggle}
+                        disabled={loading}
+                        className={`flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'} disabled:opacity-50`}
                       >
-                        <X size={14} />
+                        {loading && isEditing ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
                       </button>
-                    )}
+                      {isEditing && (
+                        <button
+                          onClick={handleEditToggle}
+                          disabled={loading}
+                          className="flex items-center gap-2 px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -204,8 +245,21 @@ const MyAccount = () => {
                       isEditing={isEditing}
                       name="phone"
                       onChange={handleInputChange}
+                      placeholder="+233 XX XXX XXXX"
                     />
-                    <InfoGroup label="Member Status" value="Verified Member" isReadOnly={true} />
+                    <InfoGroup label="Member Status" value={user?.isOnboarded ? "Verified Member" : "Incomplete Profile"} isReadOnly={true} />
+                  </div>
+                  
+                  <div className="pt-6">
+                    <InfoGroup
+                      label="Shipping Address"
+                      value={editFormData.address}
+                      isEditing={isEditing}
+                      name="address"
+                      onChange={handleInputChange}
+                      placeholder="e.g. 123 Xpress Ave, Accra"
+                      icon={<MapPin size={14} className="text-gray-400" />}
+                    />
                   </div>
                 </div>
 
@@ -252,9 +306,9 @@ const MyAccount = () => {
 
                 {/* DANGER ZONE */}
                 <div className="pt-12 border-t border-gray-100">
-                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-red-600 mb-6">Security & Privacy</h4>
+                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-red-600 mb-6 text-left">Security & Privacy</h4>
                   <div className="bg-red-50 p-8 border border-red-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
+                    <div className="text-left">
                       <h5 className="font-black uppercase tracking-tight text-sm text-red-900">Delete Account</h5>
                       <p className="text-[10px] font-bold text-red-700 uppercase tracking-tight mt-1">
                         Permanently remove your data and order history from Xpress AutoZone.
@@ -289,8 +343,8 @@ const TabBtn = ({ active, onClick, label, icon }) => (
   </button>
 );
 
-const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [] }) => (
-  <div className="space-y-2 border-b border-gray-50 pb-4">
+const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [], icon = null }) => (
+  <div className="space-y-2 border-b border-gray-50 pb-4 text-left">
     <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 block">{label}</label>
     {isEditing && !isReadOnly ? (
       type === "select" ? (
@@ -300,6 +354,7 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
           onChange={onChange}
           className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
         >
+          <option value="">Select {label}</option>
           {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
       ) : (
@@ -313,9 +368,12 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
         />
       )
     ) : (
-      <p className={`text-sm font-bold uppercase tracking-tight ${isReadOnly && isEditing ? 'text-gray-400' : 'text-black'}`}>
-        {value || "Not Set"}
-      </p>
+      <div className="flex items-center gap-2">
+        {icon}
+        <p className={`text-sm font-bold uppercase tracking-tight ${isReadOnly && isEditing ? 'text-gray-400' : 'text-black'}`}>
+          {value || "Not Set"}
+        </p>
+      </div>
     )}
   </div>
 );
