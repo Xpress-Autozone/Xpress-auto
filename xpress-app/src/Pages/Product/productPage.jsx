@@ -27,12 +27,12 @@ export default function ProductsPage() {
 
   // Mock Products
   const products = [
-    { id: 1, name: "Monroe OESpectrum Front Strut Assembly", price: 189.99, image: "/api/placeholder/200/200", status: "In Stock", verified: true },
-    { id: 2, name: "KYB Excel-G Gas Strut - Rear Left - Toyota", price: 125.5, image: "/api/placeholder/200/200", status: "In Stock", verified: true },
-    { id: 3, name: "Moog K80673 Front Lower Control Arm", price: 245.0, image: "/api/placeholder/200/200", status: "In Stock", verified: true },
-    { id: 4, name: "ACDelco Gold 45G0400 Professional Front", price: 38.99, image: "/api/placeholder/200/200", status: "Low Stock", verified: true },
-    { id: 5, name: "Gabriel ReadyMount Loaded Strut Assembly", price: 175.75, image: "/api/placeholder/200/200", status: "In Stock", verified: true },
-    { id: 6, name: "Bilstein B4 OE Replacement Shock", price: 98.5, image: "/api/placeholder/200/200", status: "In Stock", verified: true },
+    { id: 1, name: "Monroe OESpectrum Front Strut Assembly", price: 189.99, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
+    { id: 2, name: "KYB Excel-G Gas Strut - Rear Left - Toyota", price: 125.5, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
+    { id: 3, name: "Moog K80673 Front Lower Control Arm", price: 245.0, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
+    { id: 4, name: "ACDelco Gold 45G0400 Professional Front", price: 38.99, image: "https://placehold.co/200x200", status: "Low Stock", verified: true },
+    { id: 5, name: "Gabriel ReadyMount Loaded Strut Assembly", price: 175.75, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
+    { id: 6, name: "Bilstein B4 OE Replacement Shock", price: 98.5, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
   ];
 
   const partTypes = ["Shock Absorbers", "Coil Springs", "Bushings", "Control Arms", "Ball Joints"];

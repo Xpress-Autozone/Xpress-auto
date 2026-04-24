@@ -132,7 +132,7 @@ function Home() {
               price: parseFloat(p.price) || 0,
               status: p.quantity > 0 ? "In Stock" : "Low Stock",
               verified: true,
-              image: p.mainImage?.url || p.imageUrl || "/api/placeholder/200/200",
+              image: p.mainImage?.url || p.imageUrl || "https://placehold.co/200x200",
               additionalImages: p.additionalImages || []
             })),
           );

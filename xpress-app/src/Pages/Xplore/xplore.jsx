@@ -87,7 +87,7 @@ export default function XplorePage() {
                     console.log(`[Xplore] ✅ Received ${data.data.length} products`);
                     setProducts(
                         data.data.map((p) => {
-                            let imageUrl = "/api/placeholder/400/320";
+                            let imageUrl = "https://placehold.co/400x320";
                             if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
                                 imageUrl = p.mainImage;
                             } else if (p.mainImage?.url) {

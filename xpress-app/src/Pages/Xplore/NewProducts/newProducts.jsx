@@ -27,7 +27,7 @@ export default function NewProducts() {
                             id: p.id,
                             name: p.itemName,
                             price: parseFloat(p.price) || 0,
-                            image: p.mainImage?.url || "/api/placeholder/200/200",
+                            image: p.mainImage?.url || "https://placehold.co/200x200",
                             additionalImages: p.additionalImages || [],
                             rating: 4.5,
                             reviews: 0,

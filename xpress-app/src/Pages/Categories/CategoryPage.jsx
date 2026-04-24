@@ -79,7 +79,7 @@ export default function CategoryPage({
 
           setProducts(
             matchedProducts.map((p) => {
-              let imageUrl = "/api/placeholder/400/320";
+              let imageUrl = "https://placehold.co/400x320";
               if (typeof p.mainImage === "string" && p.mainImage.startsWith("http")) {
                 imageUrl = p.mainImage;
               } else if (p.mainImage?.url) {

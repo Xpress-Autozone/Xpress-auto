@@ -161,7 +161,7 @@ const ActiveProductPage = () => {
             featured: data.featured === true || data.isFeatured === true,
             newProduct: data.newProduct === true || data.isNew === true,
             hotProduct: data.hotProduct === true || data.isTrending === true,
-            image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "/api/placeholder/200/200"),
+            image: data.mainImage?.url || (typeof data.mainImage === 'string' ? data.mainImage : "https://placehold.co/200x200"),
             images: [
               ...(data.mainImage?.url ? [data.mainImage.url] : (typeof data.mainImage === 'string' ? [data.mainImage] : [])),
               ...(data.additionalImages?.map(img => typeof img === 'object' ? img.url : img) || [])
@@ -214,7 +214,7 @@ const ActiveProductPage = () => {
               .slice(0, 6)
               .map(p => {
                 // Robust image handling consistent with CategoryPage.jsx
-                let imageUrl = "/api/placeholder/400/320";
+                let imageUrl = "https://placehold.co/400x320";
                 if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
                   imageUrl = p.mainImage;
                 } else if (p.mainImage?.url) {
@@ -250,7 +250,7 @@ const ActiveProductPage = () => {
   if (error) return <div className="pt-24 text-center font-black uppercase italic">{error}</div>;
   if (!product) return <div className="pt-24 text-center font-black uppercase italic">Product not found</div>;
 
-  const images = product.images || [product.image, "/api/placeholder/400/400"];
+  const images = product.images || [product.image, "https://placehold.co/400x400"];
 
   const specifications = [
     ...(Array.isArray(product.specifications) ? product.specifications : []),
