@@ -556,7 +556,14 @@ const ActiveProductPage = () => {
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {compatibility.map((v, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs font-semibold text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-yellow-500 shrink-0" /> {v}
+                      <div className="w-1.5 h-1.5 bg-yellow-500 shrink-0" /> 
+                      {typeof v === 'object' ? (
+                        <span>
+                          {v.make} {v.model} {v.yearStart && v.yearEnd ? `(${v.yearStart}-${v.yearEnd})` : v.yearStart || v.yearEnd || ""}
+                        </span>
+                      ) : (
+                        v
+                      )}
                     </li>
                   ))}
                 </ul>
