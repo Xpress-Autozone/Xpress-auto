@@ -53,6 +53,15 @@ export default function XplorePage() {
     const [products, setProducts] = useState([]);
     const [transitionToVideo, setTransitionToVideo] = useState(false);
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    useEffect(() => {
+        if (productsSrip) {
+            const img = new Image();
+            img.src = productsSrip;
+            img.onload = () => setImageLoaded(true);
+        }
+    }, []);
 
     const cinematicVideos = [
         {
@@ -178,11 +187,13 @@ export default function XplorePage() {
         <main className="min-h-screen bg-white pb-20">
 
             {/* HERO SECTION */}
-            <section className="relative h-[450px] w-full bg-black overflow-hidden group">
+            <section className="relative h-[450px] w-full bg-zinc-900 overflow-hidden group">
                 {/* Static Hero (Initial State) */}
                 <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-0" : "opacity-100"}`}>
                     <div
-                        className="absolute inset-0 bg-cover bg-center opacity-50"
+                        className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${
+                            imageLoaded ? "opacity-50 blur-0 scale-100" : "opacity-0 blur-xl scale-110"
+                        }`}
                         style={{ backgroundImage: `url(${productsSrip})` }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent font-medium" />
@@ -200,16 +211,23 @@ export default function XplorePage() {
 
                 {/* Cinematic Video Sequence (Passive State) */}
                 <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${transitionToVideo ? "opacity-100" : "opacity-0"}`}>
-                    {cinematicVideos.map((video, idx) => (
-                        <HeroMedia 
-                            key={idx}
-                            type="video"
-                            poster={video.poster}
-                            videoWebm={video.webm}
-                            videoMp4={video.mp4}
-                            isActive={idx === currentVideoIndex}
-                        />
-                    ))}
+                    {cinematicVideos.map((video, idx) => {
+                        const isActive = idx === currentVideoIndex;
+                        const isNext = idx === (currentVideoIndex + 1) % cinematicVideos.length;
+                        
+                        if (!isActive && !isNext) return null;
+
+                        return (
+                            <HeroMedia 
+                                key={idx}
+                                type="video"
+                                poster={video.poster}
+                                videoWebm={video.webm}
+                                videoMp4={video.mp4}
+                                isActive={isActive}
+                            />
+                        );
+                    })}
                 </div>
             </section>
 

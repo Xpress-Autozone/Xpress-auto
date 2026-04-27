@@ -6,6 +6,15 @@ import SearchBar from "../../Components/Search/searchBar";
 
 export default function CategoriesPage() {
   const navigate = useNavigate();
+  const [heroLoaded, setHeroLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (slideImage) {
+      const img = new Image();
+      img.src = slideImage;
+      img.onload = () => setHeroLoaded(true);
+    }
+  }, []);
 
   const searchPlaceholders = [
     "Search for auto parts…",
@@ -72,9 +81,11 @@ export default function CategoriesPage() {
   return (
     <div className="bg-white min-h-screen w-full">
       {/* Hero Section - Consistently Flat & Bold */}
-      <section className="relative h-[300px] md:h-[400px] w-full bg-black overflow-hidden">
+      <section className="relative h-[300px] md:h-[400px] w-full bg-zinc-900 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-40"
+          className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${
+            heroLoaded ? "opacity-40 blur-0 scale-100" : "opacity-0 blur-xl scale-110"
+          }`}
           style={{ backgroundImage: `url(${slideImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
