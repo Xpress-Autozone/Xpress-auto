@@ -45,12 +45,22 @@ const HeroMedia = ({
     setIsReady(true);
   };
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (type === "image" && src) {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => setImageLoaded(true);
+    }
+  }, [src, type]);
+
   if (type === "image") {
     return (
       <div
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+        className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
           isActive ? "opacity-60" : "opacity-0"
-        }`}
+        } ${imageLoaded ? "blur-0 scale-100" : "blur-xl scale-105"}`}
       >
         <div
           className="w-full h-full bg-cover bg-center"

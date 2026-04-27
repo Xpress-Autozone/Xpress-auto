@@ -36,7 +36,6 @@ export default function CategoryPage({
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
-  // Dynamic facets from the API
   const [facets, setFacets] = useState({
     brands: [],
     conditions: [],
@@ -46,15 +45,27 @@ export default function CategoryPage({
     totalProducts: 0,
   });
 
+  const [heroLoaded, setHeroLoaded] = useState(false);
+
   // Fetch facets + products in parallel on mount
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch facets and products in parallel
+        // Preload hero image to ensure smooth transition
+        if (heroImage) {
+          const img = new Image();
+          img.src = heroImage;
+          img.onload = () => setHeroLoaded(true);
+        } else {
+          setHeroLoaded(true);
+        }
+
+        // Fetch facets and category-specific products in parallel
+        // This is a MAJOR optimization: we no longer download 500 products and filter on client
         const [facetData, productData] = await Promise.all([
           getProductFacets(categoryQuery),
-          getAllProducts({ limit: 500, page: 1 }),
+          getProductsByCategory(categoryQuery, { limit: 100, page: 1 }),
         ]);
 
         // Set facets
@@ -67,18 +78,10 @@ export default function CategoryPage({
           ]);
         }
 
-        // Filter products by category
+        // Set products (already filtered by backend)
         if (productData.success && productData.data) {
-          const allProducts = productData.data;
-          const matchedProducts = allProducts.filter(
-            (p) =>
-              p.categoryId === categoryQuery ||
-              p.category === categoryQuery ||
-              p.category === title
-          );
-
           setProducts(
-            matchedProducts.map((p) => {
+            productData.data.map((p) => {
               let imageUrl = "https://placehold.co/400x320";
               if (typeof p.mainImage === "string" && p.mainImage.startsWith("http")) {
                 imageUrl = p.mainImage;
@@ -120,7 +123,7 @@ export default function CategoryPage({
       }
     };
     fetchData();
-  }, [categoryQuery, title]);
+  }, [categoryQuery, title, heroImage]);
 
   // Apply all filters to products
   const filteredProducts = products.filter((p) => {
@@ -248,11 +251,16 @@ export default function CategoryPage({
         structuredData={categoryStructuredData}
       />
       {/* Hero Section */}
-      <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-black">
+      <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-zinc-900 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-60"
+          className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
+            heroLoaded ? "opacity-60 scale-100 blur-0" : "opacity-0 scale-110 blur-xl"
+          }`}
           style={{ backgroundImage: `url(${heroImage})` }}
         />
+        {/* Subtle noise/texture overlay for premium feel */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
           <div className="flex items-center gap-4">
             <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-2">

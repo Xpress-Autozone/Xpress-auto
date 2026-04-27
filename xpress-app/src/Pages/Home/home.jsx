@@ -273,11 +273,14 @@ function Home() {
         structuredData={homeStructuredData}
       />
       {/* HERO SECTION WITH DYNAMIC SEQUENCE */}
-      <section className="relative h-[450px] md:h-[550px] w-full bg-black overflow-hidden">
-        {/* MEDIA LAYERS: Render all so they preload, cross-fade with opacity */}
+      <section className="relative h-[450px] md:h-[550px] w-full bg-zinc-900 overflow-hidden">
+        {/* MEDIA LAYERS: Only render Active and Next to save bandwidth while ensuring smooth transitions */}
         {heroSequence.map((phase, index) => {
           const isActive = index === currentPhaseIndex;
-          // Video / Image Component with preloading logic
+          const isNext = index === (currentPhaseIndex + 1) % heroSequence.length;
+          
+          if (!isActive && !isNext) return null;
+
           return (
             <HeroMedia 
               key={phase.id}
