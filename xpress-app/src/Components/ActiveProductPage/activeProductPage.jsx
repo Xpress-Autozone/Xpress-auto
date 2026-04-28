@@ -294,7 +294,9 @@ const ActiveProductPage = () => {
       name: product.name,
       price: product.price,
       image: product.image,
-      status: product.status
+      status: product.status,
+      brand: product.brand,
+      partNumber: product.partNumber,
     });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);

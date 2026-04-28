@@ -60,23 +60,24 @@ export async function requestParts({ cartItems, user, token }) {
     const orderNumber = order.orderNumber || order.id;
     const itemLines = cartItems
       .map(
-        (item) =>
-          `  • ${item.name} (x${item.quantity}) — GH₵${(
-            item.price * item.quantity
-          ).toFixed(2)}`
+        (item) => {
+          const brandStr = item.brand ? ` [${item.brand}]` : "";
+          const partNoStr = item.partNumber ? ` (P/N: ${item.partNumber})` : "";
+          return `  • *${item.name}*${brandStr}${partNoStr}\n    Qty: ${item.quantity} — GH₵${(item.price * item.quantity).toFixed(2)}`;
+        }
       )
-      .join("\n");
+      .join("\n\n");
 
     const message =
       `🛒 *New Parts Request — Xpress AutoZone*\n\n` +
-      `*Order Ref:* ${orderNumber}\n` +
+      `*Order Ref:* #${orderNumber}\n` +
       `*Customer:* ${user.name || user.displayName || user.email}\n` +
       (user.phone ? `*Phone:* ${user.phone}\n` : "") +
       `\n*Parts Requested:*\n${itemLines}\n\n` +
       `*Subtotal:* GH₵${subtotal.toFixed(2)}\n` +
       `*Tax (8%):* GH₵${tax.toFixed(2)}\n` +
       `*Total:* GH₵${total.toFixed(2)}\n\n` +
-      `Please confirm availability and contact the customer to arrange payment and delivery. Thank you! 🚗`;
+      `Please confirm availability and contact the customer to arrange delivery. Thank you! 🚗`;
 
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
       message

@@ -92,6 +92,8 @@ export default function ProductCard({ product, variant = "default", badge }) {
       price: product.price,
       image: product.image,
       status: product.status,
+      brand: product.brand,
+      partNumber: product.partNumber,
     });
   };
 
