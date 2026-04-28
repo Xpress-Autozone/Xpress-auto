@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../Firebase/firebase';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://xpress-backend-eeea.onrender.com";
 
@@ -10,7 +10,6 @@ export const updateUserProfile = createAsyncThunk(
       const { user } = getState().user;
       if (!user || !user.uid) throw new Error("No user logged in");
 
-      const auth = getAuth();
       const currentUser = auth.currentUser;
       if (!currentUser) throw new Error("Firebase user not found");
 
@@ -42,7 +41,6 @@ export const fetchUserOrders = createAsyncThunk(
       const { user } = getState().user;
       if (!user || !user.uid) throw new Error("No user logged in");
 
-      const auth = getAuth();
       const currentUser = auth.currentUser;
       if (!currentUser) throw new Error("Firebase user not found");
 

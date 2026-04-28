@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import DeleteConfirmationModal from "../../Components/Modal/DeleteConfirmationModal";
 import { requestParts } from "../../lib/orderService";
-import { getAuth } from "firebase/auth";
+import { auth } from "../../Firebase/firebase";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -48,7 +48,6 @@ export default function CartPage() {
     setRequestError("");
 
     try {
-      const auth = getAuth();
       const firebaseUser = auth.currentUser;
       if (!firebaseUser) throw new Error("Not authenticated");
       const token = await firebaseUser.getIdToken();

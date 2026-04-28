@@ -18,8 +18,7 @@ import {
   Edit,
 } from "lucide-react";
 import SEO from "../../lib/SEOHelper";
-import { getAuth } from "firebase/auth";
-import { app } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/firebase";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://xpress-backend-eeea.onrender.com";
 
 const countryCodes = [
@@ -47,7 +46,6 @@ const Onboarding = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const { cartItems } = useCart();
-  const auth = getAuth(app);
   const [step, setStep] = useState(1);
   const [isSkipped, setIsSkipped] = useState(false);
   const [showVehicleInfo, setShowVehicleInfo] = useState(false);

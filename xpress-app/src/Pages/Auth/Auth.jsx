@@ -11,7 +11,7 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
-import { app } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/firebase";
 import { Info, Loader2 } from "lucide-react";
 
 const Auth = () => {
@@ -27,7 +27,6 @@ const Auth = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showGuestInfo, setShowGuestInfo] = useState(false);
-  const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
 
   React.useEffect(() => {

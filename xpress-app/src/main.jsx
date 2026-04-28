@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./Firebase/firebase";
 import MainLayout from "./MainLayout/mainLayout";
 import { CartProvider } from "./Context/CartContext";
 import { Provider } from 'react-redux';
