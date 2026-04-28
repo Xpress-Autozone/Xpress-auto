@@ -1,9 +1,11 @@
-import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, MessageCircle, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import DeleteConfirmationModal from "../../Components/Modal/DeleteConfirmationModal";
+import { requestParts } from "../../lib/orderService";
+import { getAuth } from "firebase/auth";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ export default function CartPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [requestStatus, setRequestStatus] = useState(null); // null | 'loading' | 'success' | 'error'
+  const [requestError, setRequestError] = useState("");
 
   const handleRemoveClick = (item) => {
     setItemToDelete(item);
@@ -30,14 +34,40 @@ export default function CartPage() {
     }
   };
 
-  const handleCheckout = () => {
+  const handleRequestParts = async () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: location } });
-    } else if (isAuthenticated && !isOnboarded) {
+      return;
+    }
+    if (isAuthenticated && !isOnboarded) {
       navigate('/onboarding');
-    } else {
-      // Proceed to actual checkout logic
-      alert("Proceeding to checkout...");
+      return;
+    }
+
+    setRequestStatus('loading');
+    setRequestError("");
+
+    try {
+      const auth = getAuth();
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) throw new Error("Not authenticated");
+      const token = await firebaseUser.getIdToken();
+
+      const result = await requestParts({ cartItems, user, token });
+
+      if (result.success) {
+        setRequestStatus('success');
+        // Clear cart after a short delay so user sees the success message
+        setTimeout(() => {
+          cartItems.forEach(item => removeItem(item.id));
+        }, 4000);
+      } else {
+        setRequestStatus('error');
+        setRequestError(result.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setRequestStatus('error');
+      setRequestError(err.message || "Failed to submit request.");
     }
   };
 
@@ -189,15 +219,48 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                {/* Checkout Button */}
+                {/* WhatsApp status feedback */}
+                {requestStatus === 'success' && (
+                  <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-green-800">Request Sent! 🎉</p>
+                      <p className="text-xs text-green-700 mt-1">
+                        Your parts request has been submitted. A WhatsApp message has been sent to our team — we'll contact you shortly to confirm availability and arrange delivery.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {requestStatus === 'error' && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-red-800">Request Failed</p>
+                      <p className="text-xs text-red-700 mt-1">{requestError}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Request Parts Button */}
                 <button
-                  onClick={handleCheckout}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mb-2 text-sm"
+                  onClick={handleRequestParts}
+                  disabled={requestStatus === 'loading' || requestStatus === 'success'}
+                  className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold py-3 rounded-lg transition-colors mb-2 text-sm"
                 >
-                  Request Parts now
+                  {requestStatus === 'loading' ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Sending Request...</>
+                  ) : requestStatus === 'success' ? (
+                    <><CheckCircle2 className="w-4 h-4" /> Request Sent!</>
+                  ) : (
+                    <><MessageCircle className="w-4 h-4" /> Request Parts now</>
+                  )}
                 </button>
 
-                {/* Continue Shopping */}
+                {requestStatus !== 'success' && (
+                  <p className="text-[10px] text-center text-gray-400 font-medium mb-2">
+                    📲 A WhatsApp message will be sent to our team with your order details.
+                  </p>
+                )}
                 <button
                   onClick={() => navigate("/xplore")}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-black font-semibold py-2 rounded-lg transition-colors text-sm"
