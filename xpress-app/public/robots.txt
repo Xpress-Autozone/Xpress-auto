@@ -8,5 +8,6 @@ Disallow: /onboarding
 Disallow: /login
 Disallow: /signup
 
-# Sitemap location
+# Sitemap locations
 Sitemap: https://xpressautozone.com/sitemap.xml
+Sitemap: https://xpressautozone.com/video-sitemap.xml

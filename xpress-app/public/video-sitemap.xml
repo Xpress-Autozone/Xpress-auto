@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://xpressautozone.com/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://xpressautozone.com/assets/posters/wheels-tires.webp</video:thumbnail_loc>
+      <video:title>Elevate Performance | Xpress Autozone</video:title>
+      <video:description>High-octane upgrades and elite body parts designed for the modern driving experience in Ghana.</video:description>
+      <video:content_loc>https://xpressautozone.com/assets/videos/1.%203d-rendered-orange-colored-super-car-running-on-street-at_34634300.webm</video:content_loc>
+      <video:player_loc>https://xpressautozone.com/</video:player_loc>
+      <video:duration>6</video:duration>
+      <video:view_count>1200</video:view_count>
+      <video:publication_date>2026-04-17T00:00:00Z</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://xpressautozone.com/assets/posters/brakes.webp</video:thumbnail_loc>
+      <video:title>Precision Engineering | Xpress Autozone</video:title>
+      <video:description>Meticulously inspected engine components and professional tools for uncompromised reliability.</video:description>
+      <video:content_loc>https://xpressautozone.com/assets/videos/2.%20yellow%20car%20engine%20video%20upclose.webm</video:content_loc>
+      <video:player_loc>https://xpressautozone.com/</video:player_loc>
+      <video:duration>5</video:duration>
+      <video:view_count>850</video:view_count>
+      <video:publication_date>2026-04-17T00:00:00Z</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://xpressautozone.com/assets/posters/featured-hero.png</video:thumbnail_loc>
+      <video:title>Shop With Total Confidence | Xpress Autozone</video:title>
+      <video:description>Every part is rigorously reviewed by our experts to ensure the highest standards of quality.</video:description>
+      <video:content_loc>https://xpressautozone.com/assets/videos/3.%20OIG1.webm</video:content_loc>
+      <video:player_loc>https://xpressautozone.com/</video:player_loc>
+      <video:duration>5</video:duration>
+      <video:view_count>1500</video:view_count>
+      <video:publication_date>2026-04-17T00:00:00Z</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>
+  </url>
+</urlset>

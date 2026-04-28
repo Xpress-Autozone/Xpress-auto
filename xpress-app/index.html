@@ -82,7 +82,36 @@
     </script>
   </head>
   <body class="min-h-screen bg-gray-50">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static SEO content for crawlers before hydration -->
+      <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;">
+        <h1>Xpress Autozone | Ghana's #1 Marketplace for Authentic Auto Parts</h1>
+        <p>Welcome to Xpress Autozone, the premier destination in Ghana for admin-verified automotive components. We specialize in high-quality engine parts, body components, wheels, tires, and automotive tools.</p>
+        <ul>
+          <li><a href="/categories">Browse Categories</a></li>
+          <li><a href="/body-chassis">Body & Chassis Parts</a></li>
+          <li><a href="/engine-performance">Engine Performance Upgrades</a></li>
+          <li><a href="/wheels-tires">Wheels & Tires</a></li>
+          <li><a href="/xplore/featured">Featured Products</a></li>
+        </ul>
+      </div>
+      <!-- Loading State -->
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
+        <p style="font-weight: bold; color: #EAB308;">Loading Xpress Autozone...</p>
+      </div>
+    </div>
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>Xpress Autozone</h1>
+        <p>Ghana's premier marketplace for authentic auto parts.</p>
+        <p>Please enable JavaScript to browse our full catalog of engine parts, body components, and accessories.</p>
+        <nav>
+          <a href="/categories">Categories</a> | 
+          <a href="/body-chassis">Body Parts</a> | 
+          <a href="/engine-performance">Engine Parts</a>
+        </nav>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
     
     <!-- Google tag (gtag.js) - Add your Google Analytics ID here when available -->

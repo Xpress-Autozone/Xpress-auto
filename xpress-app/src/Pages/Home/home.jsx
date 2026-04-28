@@ -249,18 +249,68 @@ function Home() {
     return <SkeletonLoader />;
   }
 
-  const homeStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "AutoPartsStore",
-    "name": "Xpress Autozone",
-    "url": "https://xpressautozone.com",
-    "description": "Ghana's premier marketplace for authentic, admin-verified automotive components.",
-    "image": "https://xpressautozone.com/assets/og-image.jpg",
-    "areaServed": "Ghana",
-    "currenciesAccepted": "GHS",
-    "paymentAccepted": "Cash, Mobile Money",
-    "sameAs": []
-  };
+  const homeStructuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "AutoPartsStore",
+      "name": "Xpress Autozone",
+      "url": "https://xpressautozone.com",
+      "description": "Ghana's premier marketplace for authentic, admin-verified automotive components.",
+      "image": "https://xpressautozone.com/assets/og-image.jpg",
+      "areaServed": "Ghana",
+      "currenciesAccepted": "GHS",
+      "paymentAccepted": "Cash, Mobile Money",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Elevate Performance | Xpress Autozone",
+      "description": "High-octane upgrades and elite body parts designed for the modern driving experience in Ghana.",
+      "thumbnailUrl": "https://xpressautozone.com/assets/posters/wheels-tires.webp",
+      "uploadDate": "2026-04-17T00:00:00Z",
+      "duration": "PT6S",
+      "contentUrl": "https://xpressautozone.com/assets/videos/1.%203d-rendered-orange-colored-super-car-running-on-street-at_34634300.webm",
+      "embedUrl": "https://xpressautozone.com/",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": { "@type": "WatchAction" },
+        "userInteractionCount": 1200
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Precision Engineering | Xpress Autozone",
+      "description": "Meticulously inspected engine components and professional tools for uncompromised reliability.",
+      "thumbnailUrl": "https://xpressautozone.com/assets/posters/brakes.webp",
+      "uploadDate": "2026-04-17T00:00:00Z",
+      "duration": "PT5S",
+      "contentUrl": "https://xpressautozone.com/assets/videos/2.%20yellow%20car%20engine%20video%20upclose.webm",
+      "embedUrl": "https://xpressautozone.com/",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": { "@type": "WatchAction" },
+        "userInteractionCount": 850
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Shop With Total Confidence | Xpress Autozone",
+      "description": "Every part is rigorously reviewed by our experts to ensure the highest standards of quality.",
+      "thumbnailUrl": "https://xpressautozone.com/assets/posters/featured-hero.png",
+      "uploadDate": "2026-04-17T00:00:00Z",
+      "duration": "PT5S",
+      "contentUrl": "https://xpressautozone.com/assets/videos/3.%20OIG1.webm",
+      "embedUrl": "https://xpressautozone.com/",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": { "@type": "WatchAction" },
+        "userInteractionCount": 1500
+      }
+    }
+  ];
 
   return (
     <div className="bg-white min-h-screen w-full">
