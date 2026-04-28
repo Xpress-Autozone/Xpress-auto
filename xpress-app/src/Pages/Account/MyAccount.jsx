@@ -182,23 +182,43 @@ const MyAccount = () => {
                         <tr className="border-b border-black">
                           <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
                           <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Items</th>
                           <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
                           <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50">
-                        {orders.map((order) => (
-                          <tr key={order.id} className="group hover:bg-gray-50 transition-colors">
-                            <td className="py-6 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
-                            <td className="py-6 text-xs font-bold text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
-                            <td className="py-6 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
-                            <td className="py-6">
-                              <span className={`text-[9px] font-black uppercase px-2 py-1 border italic ${order.orderStatus === 'delivered' ? 'border-green-500 text-green-500' : 'border-black'}`}>
-                                {order.orderStatus}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                        {orders.map((order) => {
+                          const statusMap = {
+                            requested:    { label: '📋 Requested',    cls: 'border-blue-400 text-blue-600 bg-blue-50' },
+                            payment_made: { label: '💳 Payment Made', cls: 'border-purple-400 text-purple-600 bg-purple-50' },
+                            dispatched:   { label: '🚚 Dispatched',   cls: 'border-orange-400 text-orange-600 bg-orange-50' },
+                            received:     { label: '✅ Received',     cls: 'border-green-500 text-green-600 bg-green-50' },
+                            cancelled:    { label: '❌ Cancelled',    cls: 'border-red-400 text-red-600 bg-red-50' },
+                            delivered:    { label: '🏠 Delivered',    cls: 'border-green-500 text-green-600 bg-green-50' },
+                            pending:      { label: '⏳ Pending',      cls: 'border-gray-400 text-gray-600' },
+                            confirmed:    { label: '📌 Confirmed',    cls: 'border-yellow-400 text-yellow-600 bg-yellow-50' },
+                            shipped:      { label: '📦 Shipped',      cls: 'border-orange-400 text-orange-600 bg-orange-50' },
+                          };
+                          const s = statusMap[order.orderStatus] || { label: order.orderStatus || 'Pending', cls: 'border-black' };
+                          const itemSummary = (order.items || []).map(i => `${i.name || i.itemName} ×${i.quantity || 1}`).join(', ') || '—';
+                          const dateStr = order.createdAt?._seconds
+                            ? new Date(order.createdAt._seconds * 1000).toLocaleDateString()
+                            : order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—';
+                          return (
+                            <tr key={order.id} className="group hover:bg-gray-50 transition-colors">
+                              <td className="py-5 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
+                              <td className="py-5 text-xs font-bold text-gray-500">{dateStr}</td>
+                              <td className="py-5 text-xs text-gray-500 max-w-[160px] truncate">{itemSummary}</td>
+                              <td className="py-5 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
+                              <td className="py-5">
+                                <span className={`text-[9px] font-black uppercase px-2 py-1 border rounded-full italic ${s.cls}`}>
+                                  {s.label}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
