@@ -17,7 +17,9 @@ export async function requestParts({ cartItems, user, token }) {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-    const tax = subtotal * 0.08;
+    // Ghana Tax Structure (2026): 15% VAT + 5% Statutory Levies = 20%
+    const taxRate = 0.20;
+    const tax = subtotal * taxRate;
     const total = subtotal + tax;
 
     const orderPayload = {
@@ -77,7 +79,7 @@ export async function requestParts({ cartItems, user, token }) {
       (user.address ? `*Delivery to:* ${user.address}\n` : "") +
       `\n*Parts Requested:*\n${itemLines}\n\n` +
       `*Subtotal:* GH₵${subtotal.toFixed(2)}\n` +
-      `*Tax (8%):* GH₵${tax.toFixed(2)}\n` +
+      `*VAT & Levies (20%):* GH₵${tax.toFixed(2)}\n` +
       `*Total:* GH₵${total.toFixed(2)}\n\n` +
       `Please confirm availability and contact the customer to arrange delivery. Thank you! 🚗`;
 

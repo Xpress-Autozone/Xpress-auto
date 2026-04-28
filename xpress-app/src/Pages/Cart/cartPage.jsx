@@ -16,7 +16,9 @@ export default function CartPage() {
   const { cartItems, updateQuantity, removeItem, getTotalItems, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();
-  const tax = subtotal * 0.08;
+  // Ghana Tax Structure (2026): 15% VAT + 2.5% NHIL + 2.5% GETFund = 20% Effective Rate
+  const taxRate = 0.20;
+  const tax = subtotal * taxRate;
   const total = subtotal + tax;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -338,7 +340,10 @@ export default function CartPage() {
                     <span>GH₵{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-700">
-                    <span>Tax (8%)</span>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-black">VAT & Statutory Levies</span>
+                      <span className="text-[10px] text-gray-400">15% VAT + 5% NHIL/GETFund</span>
+                    </div>
                     <span>GH₵{tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
