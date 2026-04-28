@@ -10,7 +10,7 @@ import { auth } from "../../Firebase/firebase";
 export default function CartPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
+  const { isAuthenticated, isOnboarded, user } = useSelector((state) => state.user);
   const { cartItems, updateQuantity, removeItem, getTotalItems, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();
