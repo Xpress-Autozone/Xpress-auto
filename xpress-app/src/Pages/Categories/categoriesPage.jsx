@@ -142,7 +142,7 @@ export default function CategoriesPage() {
 
         {/* Xpress Search Integration */}
         <div className="max-w-4xl mx-auto bg-gray-50 border border-gray-100 p-10 md:p-16 text-center">
-          <span className="inline-block bg-black text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 mb-6">
+          <span className="inline-block bg-yellow-500 text-black text-[9px] font-bold uppercase italic tracking-[0.2em] px-3 py-1 mb-6">
             Smart Assistant
           </span>
           <h3 className="text-2xl md:text-4xl font-black text-black uppercase italic tracking-tighter mb-4">
