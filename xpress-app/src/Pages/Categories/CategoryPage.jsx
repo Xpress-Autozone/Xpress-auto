@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Filter, X } from "lucide-react";
 import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 import EmptyState from "../../Components/EmptyState/EmptyState";
-import { getAllProducts, getProductFacets } from "../../lib/productService";
+import { getAllProducts, getProductFacets, getProductsByCategory } from "../../lib/productService";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import CategoryDropdown from "../../Components/CategoryDropdown/CategoryDropdown";
 import SEO from "../../lib/SEOHelper";
@@ -251,13 +251,15 @@ export default function CategoryPage({
         structuredData={categoryStructuredData}
       />
       {/* Hero Section */}
-      <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-zinc-900 overflow-hidden">
-        <div
-          className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
-            heroLoaded ? "opacity-60 scale-100 blur-0" : "opacity-0 scale-110 blur-xl"
-          }`}
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+      <section className="relative h-[300px] md:h-[400px] w-full flex items-center bg-zinc-900 overflow-visible z-30">
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
+              heroLoaded ? "opacity-60 scale-100 blur-0" : "opacity-0 scale-110 blur-xl"
+            }`}
+            style={{ backgroundImage: `url(${heroImage})` }}
+          />
+        </div>
         {/* Subtle noise/texture overlay for premium feel */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
         
