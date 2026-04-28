@@ -194,7 +194,7 @@ export default function CartPage() {
                   onClick={handleCheckout}
                   className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mb-2 text-sm"
                 >
-                  Proceed to Checkout
+                  Request Parts now
                 </button>
 
                 {/* Continue Shopping */}
