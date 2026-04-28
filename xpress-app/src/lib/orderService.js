@@ -25,6 +25,7 @@ export async function requestParts({ cartItems, user, token }) {
       customerEmail: user.email || "",
       customerName: user.name || user.displayName || "",
       customerPhone: user.phone || "",
+      deliveryAddress: user.address || "",
       paymentMethod: "whatsapp_request",
       paymentStatus: "pending",
       taxAmount: parseFloat(tax.toFixed(2)),
@@ -73,6 +74,7 @@ export async function requestParts({ cartItems, user, token }) {
       `*Order Ref:* #${orderNumber}\n` +
       `*Customer:* ${user.name || user.displayName || user.email}\n` +
       (user.phone ? `*Phone:* ${user.phone}\n` : "") +
+      (user.address ? `*Delivery to:* ${user.address}\n` : "") +
       `\n*Parts Requested:*\n${itemLines}\n\n` +
       `*Subtotal:* GH₵${subtotal.toFixed(2)}\n` +
       `*Tax (8%):* GH₵${tax.toFixed(2)}\n` +

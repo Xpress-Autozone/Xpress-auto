@@ -14,7 +14,8 @@ import {
   Save,
   X,
   MapPin,
-  Loader2
+  Loader2,
+  Navigation
 } from 'lucide-react';
 
 const fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other', 'N/A'];
@@ -94,6 +95,50 @@ const MyAccount = () => {
     } else {
       setEditFormData(prev => ({ ...prev, [name]: value }));
     }
+  };
+
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'Accept-Language': 'en',
+                'User-Agent': 'Xpress-AutoZone-App'
+              }
+            }
+          );
+          const data = await response.json();
+          if (data && data.display_name) {
+            setEditFormData(prev => ({ ...prev, address: data.display_name }));
+          } else {
+            setEditFormData(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding:", error);
+          setEditFormData(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsLocating(false);
+        alert("Failed to get your location. Please check your browser permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   const handleSave = async () => {
@@ -279,6 +324,9 @@ const MyAccount = () => {
                       onChange={handleInputChange}
                       placeholder="e.g. 123 Xpress Ave, Accra"
                       icon={<MapPin size={14} className="text-gray-400" />}
+                      onAction={handleGetCurrentLocation}
+                      actionIcon={<Navigation size={12} />}
+                      isLoading={isLocating}
                     />
                   </div>
                 </div>
@@ -363,30 +411,43 @@ const TabBtn = ({ active, onClick, label, icon }) => (
   </button>
 );
 
-const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [], icon = null }) => (
+const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [], icon = null, onAction = null, actionIcon = null, isLoading = false }) => (
   <div className="space-y-2 border-b border-gray-50 pb-4 text-left">
     <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 block">{label}</label>
     {isEditing && !isReadOnly ? (
-      type === "select" ? (
-        <select
-          name={name}
-          value={value}
-          onChange={onChange}
-          className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
-        >
-          <option value="">Select {label}</option>
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
-        />
-      )
+      <div className="relative">
+        {type === "select" ? (
+          <select
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
+          >
+            <option value="">Select {label}</option>
+            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
+        ) : (
+          <input
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className={`w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors ${onAction ? 'pr-12' : ''}`}
+          />
+        )}
+        {onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            disabled={isLoading}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-gray-100 hover:bg-yellow-500 text-black rounded transition-all disabled:opacity-50"
+            title="Use current location"
+          >
+            {isLoading ? <Loader2 size={12} className="animate-spin" /> : actionIcon}
+          </button>
+        )}
+      </div>
     ) : (
       <div className="flex items-center gap-2">
         {icon}

@@ -1,14 +1,16 @@
-import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, MessageCircle, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, MessageCircle, Loader2, CheckCircle2, AlertCircle, MapPin, Navigation, Edit2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
-import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import DeleteConfirmationModal from "../../Components/Modal/DeleteConfirmationModal";
 import { requestParts } from "../../lib/orderService";
 import { auth } from "../../Firebase/firebase";
+import { updateUserProfile } from "../../Redux/userSlice";
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const { isAuthenticated, isOnboarded, user } = useSelector((state) => state.user);
   const { cartItems, updateQuantity, removeItem, getTotalItems, getSubtotal } =
@@ -22,6 +24,16 @@ export default function CartPage() {
   const [requestStatus, setRequestStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [requestError, setRequestError] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [address, setAddress] = useState(user?.address || "");
+  const [isLocating, setIsLocating] = useState(false);
+
+  useEffect(() => {
+    if (user?.address) {
+      setAddress(user.address);
+    }
+  }, [user]);
 
   const handleRemoveClick = (item) => {
     setItemToDelete(item);
@@ -35,6 +47,66 @@ export default function CartPage() {
     }
   };
 
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'Accept-Language': 'en',
+                'User-Agent': 'Xpress-AutoZone-App'
+              }
+            }
+          );
+          const data = await response.json();
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          } else {
+            setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding:", error);
+          setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsLocating(false);
+        alert("Failed to get your location. Please check your browser permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const handleSaveAddress = async () => {
+    if (!address || address.length < 5) {
+      alert("Please provide a valid address.");
+      return;
+    }
+    
+    try {
+      const result = await dispatch(updateUserProfile({ address }));
+      if (updateUserProfile.fulfilled.match(result)) {
+        setIsEditingAddress(false);
+      } else {
+        alert("Failed to update address. Please try again.");
+      }
+    } catch (err) {
+      alert("An error occurred while saving address.");
+    }
+  };
+
   const handleRequestParts = async () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: location } });
@@ -42,6 +114,12 @@ export default function CartPage() {
     }
     if (isAuthenticated && !isOnboarded) {
       navigate('/onboarding');
+      return;
+    }
+    
+    if (!address || address.length < 5) {
+      setIsEditingAddress(true);
+      alert("Please set a shipping address before requesting parts.");
       return;
     }
 
@@ -53,7 +131,7 @@ export default function CartPage() {
       if (!firebaseUser) throw new Error("Not authenticated");
       const token = await firebaseUser.getIdToken();
 
-      const result = await requestParts({ cartItems, user, token });
+      const result = await requestParts({ cartItems, user: { ...user, address }, token });
 
       if (result.success) {
         setRequestStatus('success');
@@ -84,7 +162,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 text-left">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-yellow-500 hover:text-yellow-600 font-semibold mb-3 transition-colors text-sm"
@@ -141,7 +219,7 @@ export default function CartPage() {
                     </div>
 
                     {/* Product Details */}
-                    <div className="flex-1">
+                    <div className="flex-1 text-left">
                       <h3 className="text-sm font-semibold text-gray-800 mb-1">
                         {item.name}
                       </h3>
@@ -192,10 +270,66 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl p-5 sticky top-24">
+              <div className="bg-white rounded-2xl p-5 sticky top-24 text-left">
                 <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">
                   Order Summary
                 </h2>
+
+                {/* Shipping Destination */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
+                      <MapPin size={12} /> Shipping To
+                    </span>
+                    {!isEditingAddress && (
+                      <button 
+                        onClick={() => setIsEditingAddress(true)}
+                        className="text-yellow-600 hover:text-yellow-700 font-bold text-[10px] uppercase tracking-tighter flex items-center gap-1"
+                      >
+                        <Edit2 size={10} /> {address ? "Edit" : "Set"}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {isEditingAddress ? (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <textarea
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          placeholder="Enter delivery address..."
+                          className="w-full border border-gray-200 rounded-lg p-2 pr-10 text-xs font-bold focus:ring-1 focus:ring-yellow-400 outline-none min-h-[60px]"
+                        />
+                        <button
+                          onClick={handleGetCurrentLocation}
+                          disabled={isLocating}
+                          className="absolute right-2 top-2 p-1.5 bg-white border border-gray-100 hover:bg-yellow-50 text-gray-600 rounded shadow-sm transition-all"
+                          title="Use current location"
+                        >
+                          {isLocating ? <Loader2 size={12} className="animate-spin text-yellow-600" /> : <Navigation size={12} />}
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleSaveAddress}
+                          className="flex-1 bg-gray-900 text-white py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition-all"
+                        >
+                          Confirm Destination
+                        </button>
+                        <button
+                          onClick={() => { setIsEditingAddress(false); setAddress(user?.address || ""); }}
+                          className="px-3 py-2 border border-gray-200 text-gray-400 hover:text-gray-600 rounded-lg text-[10px] font-black uppercase transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className={`text-xs font-bold leading-relaxed ${address ? 'text-gray-800' : 'text-gray-400 italic'}`}>
+                      {address || "No shipping address set yet."}
+                    </p>
+                  )}
+                </div>
 
                 {/* Summary Lines */}
                 <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
@@ -209,7 +343,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
                     <span>Shipping</span>
-                    <span>Calculated at checkout</span>
+                    <span className="font-bold text-yellow-600">Calculated on dispatch</span>
                   </div>
                 </div>
 
@@ -235,7 +369,7 @@ export default function CartPage() {
                     <div className="text-left w-full">
                       <p className="text-sm font-bold text-green-800">Request Sent! 🎉</p>
                       <p className="text-xs text-green-700 mt-1 mb-4">
-                        Your parts request has been submitted to our system. Please click the button below to send the details to our WhatsApp team.
+                        Your parts request has been submitted to our team. Please click the button below to finalize via WhatsApp.
                       </p>
                       <a 
                         href={whatsappUrl}
@@ -262,7 +396,7 @@ export default function CartPage() {
                 {/* Request Parts Button */}
                 <button
                   onClick={handleRequestParts}
-                  disabled={requestStatus === 'loading' || requestStatus === 'success'}
+                  disabled={requestStatus === 'loading' || requestStatus === 'success' || isEditingAddress}
                   className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold py-3 rounded-lg transition-colors mb-2 text-sm"
                 >
                   {requestStatus === 'loading' ? (
@@ -276,7 +410,7 @@ export default function CartPage() {
 
                 {requestStatus !== 'success' && (
                   <p className="text-[10px] text-center text-gray-400 font-medium mb-2">
-                    📲 A WhatsApp message will be sent to our team with your order details.
+                    📲 A WhatsApp message will be sent with your order and shipping details.
                   </p>
                 )}
                 <button

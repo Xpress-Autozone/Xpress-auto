@@ -16,6 +16,9 @@ import {
   FastForward,
   Info,
   Edit,
+  MapPin,
+  Loader2,
+  Navigation
 } from "lucide-react";
 import SEO from "../../lib/SEOHelper";
 import { auth } from "../../Firebase/firebase";
@@ -50,6 +53,7 @@ const Onboarding = () => {
   const [isSkipped, setIsSkipped] = useState(false);
   const [showVehicleInfo, setShowVehicleInfo] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
 
   const handleSignOut = () => {
     dispatch(signOut());
@@ -59,6 +63,7 @@ const Onboarding = () => {
   const [formData, setFormData] = useState({
     countryCode: "+233",
     phone: "",
+    address: "",
     carMake: "",
     carModel: "",
     carYear: currentYear.toString(),
@@ -82,6 +87,49 @@ const Onboarding = () => {
     }
   };
 
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Use Nominatim for reverse geocoding
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'Accept-Language': 'en',
+                'User-Agent': 'Xpress-AutoZone-App'
+              }
+            }
+          );
+          const data = await response.json();
+          if (data && data.display_name) {
+            setFormData(prev => ({ ...prev, address: data.display_name }));
+          } else {
+            setFormData(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding:", error);
+          setFormData(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsLocating(false);
+        alert("Failed to get your location. Please check your browser permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const handleFuelTypeToggle = (type) => {
     setFormData((prev) => ({ ...prev, fuelType: type }));
   };
@@ -97,6 +145,10 @@ const Onboarding = () => {
       return formData.phone.replace(/\s/g, "").length >= 8;
     }
     if (targetStep === 3) {
+      // Allow proceeding to vehicle profiling if address is provided
+      return formData.address.length > 5;
+    }
+    if (targetStep === 4) {
       return isSkipped || (formData.carMake && formData.carModel);
     }
     return true;
@@ -116,7 +168,7 @@ const Onboarding = () => {
       fuelType: "N/A",
     }));
     setIsSkipped(true);
-    setStep(3);
+    setStep(4);
   };
 
   const prevStep = () => setStep((prev) => prev - 1);
@@ -146,6 +198,7 @@ const Onboarding = () => {
           body: JSON.stringify({
             isOnboarded: true,
             phone: `${formData.countryCode}${formData.phone}`,
+            address: formData.address,
             vehicle: isSkipped
               ? null
               : {
@@ -184,6 +237,7 @@ const Onboarding = () => {
       const updatedUserData = {
         ...user,
         phone: `${formData.countryCode}${formData.phone}`,
+        address: formData.address,
         isOnboarded: updatedClaims.isOnboarded || true,
         vehicle: isSkipped
           ? null
@@ -220,7 +274,7 @@ const Onboarding = () => {
         <div className="mb-12 flex justify-between items-start">
           <div>
             <span className="text-yellow-500 font-bold uppercase tracking-[0.2em] text-[10px] mb-2 block">
-              Phase {step} of 3
+              Phase {step} of 4
             </span>
             <h1 className="text-3xl md:text-5xl font-black text-gray-900 uppercase italic tracking-tighter leading-none">
               Account Set-up
@@ -241,7 +295,7 @@ const Onboarding = () => {
         {/* Progress Bar with Clickable Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3].map((s) => (
+            {[1, 2, 3, 4].map((s) => (
               <button
                 key={s}
                 onClick={() => goToStep(s)}
@@ -264,7 +318,7 @@ const Onboarding = () => {
           <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
             <div
               className="bg-gray-900 h-full transition-all duration-700 ease-out shadow-sm"
-              style={{ width: `${(step / 3) * 100}%` }}
+              style={{ width: `${(step / 4) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -347,15 +401,92 @@ const Onboarding = () => {
               <button
                 type="button"
                 onClick={nextStep}
-                className="w-full flex items-center justify-between bg-gray-900 text-white py-4 px-6 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all group rounded-lg shadow-md hover:shadow-lg"
+                disabled={formData.phone.replace(/\s/g, "").length < 8}
+                className="w-full flex items-center justify-between bg-gray-900 text-white py-4 px-6 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all group rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Vehicle profiling{" "}
+                Logistics & Delivery{" "}
                 <ChevronRight className="group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
           )}
 
           {step === 2 && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-4 mb-10 border-l-4 border-yellow-500 pl-6">
+                <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg shadow-black/10">
+                  <MapPin size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black italic tracking-tight text-gray-900">
+                    Delivery Logistics
+                  </h2>
+                  <p className="text-[10px] font-bold text-gray-400 tracking-widest">
+                    Set your primary shipping destination
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold tracking-widest text-gray-400">
+                  Shipping Address
+                </label>
+                <div className="relative">
+                  <textarea
+                    name="address"
+                    placeholder="Enter your street address, city, and landmark..."
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    rows="3"
+                    className="w-full border-2 border-gray-900 p-4 pt-12 focus:bg-yellow-50 transition-colors font-bold outline-none rounded-lg"
+                    required
+                  />
+                  <div className="absolute left-4 top-4 text-gray-400">
+                    <MapPin size={18} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGetCurrentLocation}
+                    disabled={isLocating}
+                    className="absolute right-4 top-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-900 hover:text-yellow-600 transition-colors bg-gray-100 px-3 py-2 rounded-md shadow-sm border border-gray-200 hover:border-yellow-400 active:scale-95"
+                  >
+                    {isLocating ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin" /> Locating...
+                      </>
+                    ) : (
+                      <>
+                        <Navigation size={12} /> Use current location
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 font-medium">
+                  💡 Tip: Providing an accurate address helps us calculate delivery times more precisely.
+                </p>
+              </div>
+
+              <div className="flex gap-4 pt-6">
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  className="flex-1 border border-gray-200 bg-white p-4 font-bold tracking-widest italic hover:bg-gray-50 transition-all flex items-center justify-center gap-2 rounded-lg"
+                >
+                  <ArrowLeft size={18} /> Revert
+                </button>
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={formData.address.length < 5}
+                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all flex items-center justify-between group shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-lg disabled:opacity-50"
+                >
+                  Vehicle profiling{" "}
+                  <ChevronRight className="group-hover:translate-x-2 transition-transform" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-center gap-4 mb-10 border-l-4 border-yellow-500 pl-6">
                 <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg shadow-black/10">
@@ -395,7 +526,7 @@ const Onboarding = () => {
                     placeholder="e.g. Mercedes-Benz"
                     value={formData.carMake}
                     onChange={handleInputChange}
-                    className="w-full border-2 border-black p-4 focus:bg-yellow-50 transition-colors font-bold outline-none"
+                    className="w-full border-2 border-black p-4 focus:bg-yellow-50 transition-colors font-bold outline-none rounded-lg"
                     required={!isSkipped}
                   />
                 </div>
@@ -409,7 +540,7 @@ const Onboarding = () => {
                     placeholder="e.g. AMG GT"
                     value={formData.carModel}
                     onChange={handleInputChange}
-                    className="w-full border-2 border-black p-4 focus:bg-yellow-50 transition-colors font-bold outline-none"
+                    className="w-full border-2 border-black p-4 focus:bg-yellow-50 transition-colors font-bold outline-none rounded-lg"
                     required={!isSkipped}
                   />
                 </div>
@@ -417,7 +548,7 @@ const Onboarding = () => {
                     <label className="text-[10px] font-bold tracking-widest text-gray-400">
                     Year of Engineering
                   </label>
-                  <div className="relative border-2 border-gray-900 bg-white hover:bg-yellow-50 transition-colors">
+                  <div className="relative border-2 border-gray-900 bg-white hover:bg-yellow-50 transition-colors rounded-lg overflow-hidden">
                     <select
                       name="carYear"
                       value={formData.carYear}
@@ -493,7 +624,7 @@ const Onboarding = () => {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="space-y-6 text-center animate-in fade-in zoom-in duration-500">
             <div className="inline-block bg-yellow-400 p-8 mb-4 rounded-2xl shadow-xl shadow-yellow-500/20">
                 <CheckCircle size={64} className="text-gray-900" />
@@ -545,6 +676,23 @@ const Onboarding = () => {
                     </button>
                   </div>
                 </div>
+                <div className="flex justify-between items-start border-b border-gray-200 pb-2">
+                  <span className="text-[10px] font-bold text-gray-400 mt-1">
+                    Address
+                  </span>
+                  <div className="flex items-start gap-2 flex-1 ml-4 justify-end">
+                    <span className="text-[10px] font-bold tracking-tight text-gray-900 text-right line-clamp-2">
+                      {formData.address}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="text-gray-400 hover:text-yellow-600 transition-colors mt-1"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
                 {isSkipped ? (
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-gray-400">
@@ -556,7 +704,7 @@ const Onboarding = () => {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setStep(2)}
+                        onClick={() => setStep(3)}
                         className="text-gray-400 hover:text-yellow-600 transition-colors"
                       >
                         <Edit className="w-3 h-3" />
@@ -576,7 +724,7 @@ const Onboarding = () => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setStep(2)}
+                          onClick={() => setStep(3)}
                           className="text-gray-400 hover:text-yellow-600 transition-colors"
                         >
                           <Edit className="w-3 h-3" />
@@ -593,7 +741,7 @@ const Onboarding = () => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setStep(2)}
+                          onClick={() => setStep(3)}
                           className="text-gray-400 hover:text-yellow-600 transition-colors"
                         >
                           <Edit className="w-3 h-3" />
