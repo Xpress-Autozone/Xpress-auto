@@ -10,6 +10,7 @@ import {
   GoogleAuthProvider,
   setPersistence,
   browserLocalPersistence,
+  signInAnonymously,
 } from "firebase/auth";
 import { auth } from "../../Firebase/firebase";
 import { Info, Loader2 } from "lucide-react";
@@ -39,14 +40,31 @@ const Auth = () => {
     }
   }, [isAuthenticated, isOnboarded, navigate]);
 
-  const handleGuestSignIn = () => {
-    const userData = {
-      name: "Guest User",
-      email: "guest@example.com",
-      isOnboarded: false, 
-    };
-    dispatch(signIn(userData));
-    navigate("/onboarding");
+  const handleGuestSignIn = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      
+      // Sign in anonymously with Firebase
+      const result = await signInAnonymously(auth);
+      const user = result.user;
+
+      const userData = {
+        uid: user.uid,
+        name: "Guest User",
+        email: "guest@example.com",
+        isOnboarded: false,
+        isAnonymous: true,
+      };
+      
+      dispatch(signIn(userData));
+      navigate("/onboarding");
+    } catch (error) {
+      console.error("Guest Auth Error:", error);
+      setError("Guest sign-in failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {

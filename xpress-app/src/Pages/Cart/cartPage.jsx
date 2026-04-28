@@ -21,6 +21,7 @@ export default function CartPage() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [requestStatus, setRequestStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [requestError, setRequestError] = useState("");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
 
   const handleRemoveClick = (item) => {
     setItemToDelete(item);
@@ -56,10 +57,19 @@ export default function CartPage() {
 
       if (result.success) {
         setRequestStatus('success');
+        setWhatsappUrl(result.waUrl);
+        
+        // Try to open WhatsApp automatically (might be blocked, which is why we show the button)
+        try {
+          window.open(result.waUrl, "_blank");
+        } catch (e) {
+          console.warn("WhatsApp pop-up blocked by browser");
+        }
+
         // Clear cart after a short delay so user sees the success message
         setTimeout(() => {
           cartItems.forEach(item => removeItem(item.id));
-        }, 4000);
+        }, 8000);
       } else {
         setRequestStatus('error');
         setRequestError(result.error || "Something went wrong. Please try again.");
@@ -222,11 +232,20 @@ export default function CartPage() {
                 {requestStatus === 'success' && (
                   <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-left">
+                    <div className="text-left w-full">
                       <p className="text-sm font-bold text-green-800">Request Sent! 🎉</p>
-                      <p className="text-xs text-green-700 mt-1">
-                        Your parts request has been submitted. A WhatsApp message has been sent to our team — we'll contact you shortly to confirm availability and arrange delivery.
+                      <p className="text-xs text-green-700 mt-1 mb-4">
+                        Your parts request has been submitted to our system. Please click the button below to send the details to our WhatsApp team.
                       </p>
+                      <a 
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5c] text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md active:scale-95"
+                      >
+                        <MessageCircle size={16} fill="white" />
+                        Open WhatsApp Now
+                      </a>
                     </div>
                   </div>
                 )}

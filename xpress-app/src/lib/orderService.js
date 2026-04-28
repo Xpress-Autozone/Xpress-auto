@@ -83,9 +83,7 @@ export async function requestParts({ cartItems, user, token }) {
       message
     )}`;
 
-    window.open(waUrl, "_blank");
-
-    return { success: true, order, error: null };
+    return { success: true, order, waUrl, error: null };
   } catch (error) {
     console.error("❌ requestParts failed:", error.message);
     return { success: false, order: null, error: error.message };
