@@ -388,7 +388,7 @@ function Home() {
           
           <button
             onClick={handleNavigate}
-            className="w-fit bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-black font-black uppercase italic tracking-[0.2em] text-xs md:text-sm py-3 px-8 md:py-5 md:px-12 transition-all duration-500 shadow-[0_10px_30px_rgba(234,179,8,0.25)] hover:shadow-[0_15px_40px_rgba(234,179,8,0.4)] hover:scale-105 active:scale-95 border-2 border-black/10 group flex items-center gap-3"
+            className="btn-golden group"
           >
             Shop Verified Parts <ArrowRight className="group-hover:translate-x-1 transition-transform w-4 h-4 md:w-5 md:h-5" />
           </button>
@@ -487,9 +487,9 @@ function Home() {
           {products.length > 0 && (
             <button
               onClick={() => navigate("/xplore/featured")}
-              className="mt-12 flex items-center justify-center gap-3 bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-xs py-5 px-10 hover:bg-black hover:text-white transition-colors mx-auto"
+              className="btn-golden group mx-auto"
             >
-              View All Featured Products <ArrowRight size={16} />
+              View All Featured Products <ArrowRight className="group-hover:translate-x-1 transition-transform w-4 h-4" />
             </button>
           )}
         </div>
@@ -505,7 +505,7 @@ function Home() {
           </p>
           <button
             onClick={() => navigate("/xplore")}
-            className="bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] text-sm py-4 px-12 hover:bg-black hover:text-white transition-all"
+            className="btn-golden mx-auto"
           >
             Xplore Autozone
           </button>

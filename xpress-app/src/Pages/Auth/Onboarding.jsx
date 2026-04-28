@@ -402,7 +402,7 @@ const Onboarding = () => {
                 type="button"
                 onClick={nextStep}
                 disabled={formData.phone.replace(/\s/g, "").length < 8}
-                className="w-full flex items-center justify-between bg-gray-900 text-white py-4 px-6 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all group rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-golden group w-full justify-between"
               >
                 Logistics & Delivery{" "}
                 <ChevronRight className="group-hover:translate-x-2 transition-transform" />
@@ -477,7 +477,7 @@ const Onboarding = () => {
                   type="button"
                   onClick={nextStep}
                   disabled={formData.address.length < 5}
-                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all flex items-center justify-between group shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-lg disabled:opacity-50"
+                  className="btn-golden group flex-[2] justify-between"
                 >
                   Vehicle profiling{" "}
                   <ChevronRight className="group-hover:translate-x-2 transition-transform" />
@@ -615,7 +615,7 @@ const Onboarding = () => {
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all flex items-center justify-between group shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-lg"
+                  className="btn-golden group flex-[2] justify-between"
                 >
                   Validate & Review{" "}
                   <ChevronRight className="group-hover:translate-x-2 transition-transform" />
@@ -762,7 +762,7 @@ const Onboarding = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-[2] bg-gray-900 text-white p-4 font-bold tracking-widest italic hover:bg-yellow-500 hover:text-gray-900 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 rounded-lg"
+                  className="btn-golden flex-[2] justify-center"
                 >
                   Proceed to dashboard
                 </button>

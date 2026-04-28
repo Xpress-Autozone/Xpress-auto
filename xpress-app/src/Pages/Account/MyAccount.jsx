@@ -285,7 +285,7 @@ const MyAccount = () => {
                       <button
                         onClick={isEditing ? handleSave : handleEditToggle}
                         disabled={loading}
-                        className={`flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-black ${isEditing ? 'bg-yellow-500 text-black shadow-[4px_4px_0px_black]' : 'bg-black text-white'} disabled:opacity-50`}
+                        className="btn-golden disabled:opacity-50"
                       >
                         {loading && isEditing ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
                       </button>

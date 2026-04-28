@@ -42,3 +42,39 @@
   animation: kenBurns 4s ease-in-out infinite;
   transform-origin: center center;
 }
+
+/* Reusable Golden Button Component */
+.btn-golden {
+  width: fit-content;
+  background: linear-gradient(135deg, #facc15, #eab308, #ca8a04);
+  color: black;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem; /* text-xs */
+  padding: 0.75rem 2rem; /* py-3 px-8 */
+  transition: all 0.5s ease-in-out;
+  box-shadow: 0 10px 30px rgba(234, 179, 8, 0.25);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .btn-golden {
+    font-size: 0.875rem; /* text-sm */
+    padding: 1.25rem 3rem; /* py-5 px-12 */
+  }
+}
+
+.btn-golden:hover {
+  box-shadow: 0 15px 40px rgba(234, 179, 8, 0.4);
+  transform: scale(1.05);
+}
+
+.btn-golden:active {
+  transform: scale(0.95);
+}

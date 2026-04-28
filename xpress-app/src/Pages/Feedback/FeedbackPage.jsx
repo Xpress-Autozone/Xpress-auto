@@ -57,7 +57,7 @@ const FeedbackPage = () => {
           </div>
           <a 
             href="mailto:xpressautozone@gmail.com" 
-            className="flex items-center gap-4 bg-yellow-500 text-black px-8 py-4 font-black uppercase italic tracking-widest text-[10px] hover:bg-white transition-all transform hover:scale-105"
+            className="btn-golden"
           >
             <Mail size={16} /> Give Feedback
           </a>

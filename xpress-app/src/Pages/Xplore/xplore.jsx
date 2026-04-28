@@ -269,9 +269,12 @@ export default function XplorePage() {
                     <section className="animate-in fade-in slide-in-from-bottom-6 duration-700">
                         <div className="flex items-end justify-between mb-8 border-b-2 border-yellow-500 pb-4">
                             <div>
-                                <span className="text-yellow-500 font-black uppercase tracking-widest text-[10px]">Your Garage Matching</span>
-                                <h2 className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-2">
-                                    <Car size={24} className="text-black" /> Matches for your {vehicle.make} {vehicle.model}
+                                <span className="text-yellow-500 font-black uppercase tracking-widest text-[10px]">Recommended Based on Your Vehicle ✨</span>
+                                <h2 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter flex items-center flex-wrap gap-x-2 text-gray-900">
+                                    <Car size={24} className="text-gray-900" /> Matches for your 
+                                    <span className="bg-gradient-to-b from-[#BF953F] via-[#FCF6BA] via-50% to-[#B38728] bg-clip-text text-transparent drop-shadow-[0_2px_0px_rgba(139,115,0,1)] font-serif normal-case tracking-normal px-1">
+                                        {vehicle.make} {vehicle.model}
+                                    </span>
                                 </h2>
                             </div>
                         </div>
@@ -315,7 +318,7 @@ export default function XplorePage() {
                             <div className="shrink-0 w-full md:w-auto">
                                 <button 
                                     onClick={() => navigate("/signup")}
-                                    className="w-full md:w-auto bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-black px-10 py-5 font-black uppercase italic tracking-[0.2em] text-xs shadow-[0_10px_40px_rgba(234,179,8,0.2)] hover:shadow-[0_15px_50px_rgba(234,179,8,0.35)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group/btn"
+                                    className="btn-golden group/btn w-full md:w-auto"
                                 >
                                     Create Account <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                                 </button>

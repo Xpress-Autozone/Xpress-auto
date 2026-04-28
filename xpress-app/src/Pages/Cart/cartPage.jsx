@@ -187,7 +187,7 @@ export default function CartPage() {
             </p>
             <button
               onClick={() => navigate("/xplore")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-lg transition-colors text-sm"
+              className="btn-golden mx-auto"
             >
               Continue Shopping
             </button>
@@ -397,7 +397,7 @@ export default function CartPage() {
                 <button
                   onClick={handleRequestParts}
                   disabled={requestStatus === 'loading' || requestStatus === 'success' || isEditingAddress}
-                  className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold py-3 rounded-lg transition-colors mb-2 text-sm"
+                  className="btn-golden w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed mb-2"
                 >
                   {requestStatus === 'loading' ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Sending Request...</>
@@ -415,7 +415,7 @@ export default function CartPage() {
                 )}
                 <button
                   onClick={() => navigate("/xplore")}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-black font-semibold py-2 rounded-lg transition-colors text-sm"
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-black font-black uppercase italic tracking-widest py-3 rounded-lg transition-colors text-[10px]"
                 >
                   Continue Shopping
                 </button>
