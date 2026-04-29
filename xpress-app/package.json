@@ -7,7 +7,7 @@
     "dev": "vite",
     "predev": "node scripts/optimize-videos.js",
     "build": "vite build",
-    "postbuild": "node scripts/generate-static-routes.js",
+    "postbuild": "node scripts/update-sitemap.js && node scripts/generate-static-routes.js",
     "prebuild": "node scripts/optimize-videos.js",
     "lint": "eslint .",
     "preview": "vite preview",

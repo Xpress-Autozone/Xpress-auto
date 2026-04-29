@@ -397,9 +397,9 @@ const ActiveProductPage = () => {
   return (
     <div className="bg-white min-h-screen pt-24 pb-20">
       <SEO
-        title={product.name}
-        description={product.description || `Buy ${product.name} at Xpress Autozone. Quality auto part for ${product.brand || 'your vehicle'}. In stock and ready to ship in Ghana.`}
-        keywords={[product.name, product.brand, product.category, product.partNumber, 'auto parts Ghana', 'Xpress Autozone'].filter(Boolean).join(', ')}
+        title={`${product.name}${compatibility.length > 0 && typeof compatibility[0] === 'string' ? ` for ${compatibility[0]}` : ''}`}
+        description={product.description || `Buy ${product.name} at Xpress Autozone Ghana. Quality auto part for ${product.brand || 'your vehicle'}. ${compatibility.length > 0 ? `Compatible with ${compatibility.slice(0, 3).join(', ')}.` : ''} In stock and ready to ship.`}
+        keywords={[product.name, product.brand, product.category, product.partNumber, ...(Array.isArray(compatibility) ? compatibility : []), 'auto parts Ghana', 'Xpress Autozone'].filter(Boolean).join(', ')}
         ogImage={product.image}
         ogUrl={window.location.href}
         ogType="product"
