@@ -160,7 +160,8 @@ const SearchBar = ({
                 <button
                   key={p.id}
                   onClick={() => {
-                    navigate(`/product/${p.id}`, { state: { product: p } });
+                    saveToHistory(query.trim());
+                    navigate(`/product/${p.id}`, { state: { product: p, fromSearch: true, searchQuery: query } });
                     setShowDropdown(false);
                     if (onSearch) onSearch();
                   }}

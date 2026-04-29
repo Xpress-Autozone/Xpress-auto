@@ -424,7 +424,13 @@ const ActiveProductPage = () => {
         {/* BREADCRUMB & BACK */}
         <div className="mb-10 flex items-center justify-between">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (location.state?.fromSearch && location.state?.searchQuery) {
+                navigate(`/search?q=${encodeURIComponent(location.state.searchQuery)}`);
+              } else {
+                navigate(-1);
+              }
+            }}
             className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
