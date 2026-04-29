@@ -447,7 +447,7 @@ const Onboarding = () => {
                     type="button"
                     onClick={handleGetCurrentLocation}
                     disabled={isLocating}
-                    className="absolute right-4 top-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-900 hover:text-yellow-600 transition-colors bg-gray-100 px-3 py-2 rounded-md shadow-sm border border-gray-200 hover:border-yellow-400 active:scale-95"
+                    className="absolute right-4 top-4 flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-white transition-all bg-[#4285F4] hover:bg-[#357ae8] px-4 py-2.5 rounded-lg shadow-[0_4px_10px_rgba(66,133,244,0.3)] hover:shadow-[0_6px_15px_rgba(66,133,244,0.4)] active:scale-95 border border-white/20"
                   >
                     {isLocating ? (
                       <>
@@ -455,7 +455,7 @@ const Onboarding = () => {
                       </>
                     ) : (
                       <>
-                        <Navigation size={12} /> Use current location
+                        <Navigation size={12} className="fill-white" /> Use current location
                       </>
                     )}
                   </button>

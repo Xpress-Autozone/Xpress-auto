@@ -305,10 +305,10 @@ export default function CartPage() {
                         <button
                           onClick={handleGetCurrentLocation}
                           disabled={isLocating}
-                          className="absolute right-2 top-2 p-1.5 bg-white border border-gray-100 hover:bg-yellow-50 text-gray-600 rounded shadow-sm transition-all"
+                          className="absolute right-2 top-2 p-1.5 bg-[#4285F4] hover:bg-[#357ae8] text-white rounded-md shadow-sm transition-all active:scale-95"
                           title="Use current location"
                         >
-                          {isLocating ? <Loader2 size={12} className="animate-spin text-yellow-600" /> : <Navigation size={12} />}
+                          {isLocating ? <Loader2 size={12} className="animate-spin" /> : <Navigation size={12} className="fill-white" />}
                         </button>
                       </div>
                       <div className="flex gap-2">

@@ -441,10 +441,10 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
             type="button"
             onClick={onAction}
             disabled={isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-gray-100 hover:bg-yellow-500 text-black rounded transition-all disabled:opacity-50"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[#4285F4] hover:bg-[#357ae8] text-white rounded transition-all disabled:opacity-50 active:scale-95 shadow-sm"
             title="Use current location"
           >
-            {isLoading ? <Loader2 size={12} className="animate-spin" /> : actionIcon}
+            {isLoading ? <Loader2 size={12} className="animate-spin" /> : React.cloneElement(actionIcon, { className: 'fill-white' })}
           </button>
         )}
       </div>
