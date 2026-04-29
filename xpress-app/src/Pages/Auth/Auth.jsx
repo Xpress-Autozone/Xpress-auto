@@ -86,14 +86,13 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     try {
+      // CLEAR ERRORS AND SET LOADING IN THE BACKGROUND
       setError("");
       setLoading(true);
 
-      // Set persistence to LOCAL so user stays signed in
-      await setPersistence(auth, browserLocalPersistence);
-
-      // Always use popup. Direct user clicks will not trigger popup blockers on mobile,
-      // and it avoids Safari ITP / cross-site tracking issues that break signInWithRedirect.
+      // CRITICAL iOS FIX: signInWithPopup MUST be the very first asynchronous operation.
+      // If we await anything else before this (like setPersistence), iPhones will block the popup.
+      // Firebase automatically uses local persistence on the web by default anyway.
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
