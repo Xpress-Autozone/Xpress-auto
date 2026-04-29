@@ -94,7 +94,7 @@ const Footer = () => {
               <div className="flex gap-6 text-[9px] font-black uppercase tracking-widest">
                 <button onClick={() => navigate("/privacy-policy")} className="hover:text-white transition-colors">Privacy</button>
                 <button onClick={() => navigate("/terms-of-service")} className="hover:text-white transition-colors">Terms</button>
-                <button className="hover:text-white transition-colors">Cookies</button>
+                <button onClick={() => navigate("/cookie-policy")} className="hover:text-white transition-colors">Cookies</button>
               </div>
             </div>
 

@@ -27,6 +27,7 @@ const AutomotiveToolsPage = React.lazy(() => import("../Pages/Categories/Automot
 const CoolingACPage = React.lazy(() => import("../Pages/Categories/CoolingACPage"));
 const PrivacyPolicy = React.lazy(() => import("../Pages/PrivacyPolicy/privacyPolicy"));
 const TermsOfService = React.lazy(() => import("../Pages/TermsOfService/termsOfService"));
+const CookiePolicy = React.lazy(() => import("../Pages/CookiePolicy/cookiePolicy"));
 const XplorePage = React.lazy(() => import("../Pages/Xplore/xplore"));
 const FeaturedProducts = React.lazy(() => import("../Pages/Xplore/FeaturedProducts/featuredProducts"));
 const TrendingProducts = React.lazy(() => import("../Pages/Xplore/TrendingProducts/trendingProducts"));
@@ -106,6 +107,7 @@ function LayoutContent() {
           <Route path="/cooling-ac" element={<CoolingACPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/xplore" element={<XplorePage />} />
           <Route path="/xplore/featured" element={<FeaturedProducts />} />
           <Route path="/xplore/trending" element={<TrendingProducts />} />
