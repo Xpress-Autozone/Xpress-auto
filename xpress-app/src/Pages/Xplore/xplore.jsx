@@ -231,28 +231,53 @@ export default function XplorePage() {
                 </div>
             </section>
 
-            {/* CATEGORIES GRID */}
             <div className="max-w-5xl mx-auto px-6 -mt-10 relative z-10">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-200 bg-white shadow-xl">
-                    {categories.map((cat) => (
-                        <div
-                            key={cat.id}
-                            onClick={() => navigate(`/${cat.id}`)}
-                            className="p-5 border-r border-b md:border-b-0 last:border-r-0 border-gray-100 hover:bg-gray-50 cursor-pointer transition-all group text-center"
-                        >
-                            <div className="w-10 h-10 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                {cat.icon}
+                {/* SIGNUP CTA (Replacing Categories Grid) */}
+                {!user && (
+                    <section className="bg-black border-2 border-yellow-500/20 p-8 md:p-12 text-white overflow-hidden relative group animate-in fade-in slide-in-from-top-4 duration-700 rounded-3xl shadow-2xl mb-12">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-50" />
+                        
+                        <div className="relative z-10 flex flex-col items-center text-center gap-8">
+                            <div className="max-w-xl">
+                                <h2 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter leading-[0.9] mb-6">
+                                    BUILD YOUR <br />
+                                    <span className="text-yellow-500/50">DISCOVERY ENGINE</span>
+                                </h2>
+                                
+                                <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-8 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-300">
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Compatibility Verification
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Personalized Trending Alerts
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
+                                        Admin-Verified Parts Access
+                                    </li>
+                                </ul>
+
+                                <p className="text-xs md:text-sm font-medium text-gray-400 max-w-sm mx-auto leading-relaxed">
+                                    Create an account to unlock parts curated specifically for your machine.
+                                </p>
                             </div>
-                            <h3 className="font-black text-xs uppercase tracking-widest text-gray-900">{cat.name}</h3>
+
+                            <div className="flex flex-col items-center scale-95">
+                                <button 
+                                    onClick={() => navigate("/signup")}
+                                    className="btn-golden group/btn px-8 py-3"
+                                >
+                                    Create Account <ArrowRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
+                                </button>
+                                <p className="mt-4 text-[8px] font-black uppercase tracking-[0.3em] text-gray-600">
+                                    Setup takes 60 seconds
+                                </p>
+                            </div>
                         </div>
-                    ))}
-                </div>
-                <button
-                    onClick={() => navigate("/categories")}
-                    className="w-full flex items-center justify-center gap-3 bg-black text-white font-black uppercase italic tracking-[0.2em] text-xs py-5 hover:bg-yellow-500 hover:text-black transition-colors"
-                >
-                    View All Categories <ArrowRight size={16} />
-                </button>
+                    </section>
+                )}
 
                 <div className="text-center mt-8 md:mt-16 mb-12 md:mb-24">
                     <h2 className="text-3xl md:text-6xl font-black uppercase italic tracking-tighter text-gray-900">
@@ -282,50 +307,6 @@ export default function XplorePage() {
                             {matchedProducts.map(product => (
                                 <ProductCard key={product.id} product={product} navigate={navigate} badge="Matching" />
                             ))}
-                        </div>
-                    </section>
-                ) : !user ? (
-                    <section className="bg-black border-2 border-yellow-500/20 p-8 md:p-16 text-white overflow-hidden relative group animate-in fade-in slide-in-from-top-4 duration-700">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-50" />
-                        
-                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-                            <div className="max-w-xl text-center md:text-left">
-                                <h2 className="text-3xl md:text-6xl font-black uppercase italic tracking-tighter leading-[0.9] mb-6">
-                                    FUEL YOUR <br />
-                                    <span className="text-yellow-500/50">DISCOVERY ENGINE</span>
-                                </h2>
-                                
-                                <ul className="space-y-4 mb-8 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-300">
-                                    <li className="flex items-center gap-3 justify-center md:justify-start">
-                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
-                                        Compatibility Verification
-                                    </li>
-                                    <li className="flex items-center gap-3 justify-center md:justify-start">
-                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
-                                        Personalized Trending Alerts
-                                    </li>
-                                    <li className="flex items-center gap-3 justify-center md:justify-start">
-                                        <div className="w-1 h-1 bg-yellow-500 rounded-full shadow-[0_0_5px_#EAB308]" /> 
-                                        Admin-Verified Parts Access
-                                    </li>
-                                </ul>
-
-                                <p className="text-xs md:text-sm font-medium text-gray-400 max-w-sm mx-auto md:mx-0 leading-relaxed">
-                                    Create an account to unlock parts curated specifically for your machine.
-                                </p>
-                            </div>
-
-                            <div className="shrink-0 w-full md:w-auto">
-                                <button 
-                                    onClick={() => navigate("/signup")}
-                                    className="btn-golden group/btn w-full md:w-auto"
-                                >
-                                    Create Account <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
-                                </button>
-                                <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.3em] text-gray-600">
-                                    Setup takes 60 seconds
-                                </p>
-                            </div>
                         </div>
                     </section>
                 ) : null}
