@@ -97,7 +97,8 @@ const loadUserFromStorage = () => {
         user: null,
         orders: [],
         loading: false,
-        error: null
+        error: null,
+        isAuthInitialized: false
       };
     }
     const state = JSON.parse(serializedUser);
@@ -105,7 +106,8 @@ const loadUserFromStorage = () => {
       ...state,
       orders: state.orders || [],
       loading: false,
-      error: null
+      error: null,
+      isAuthInitialized: false
     };
   } catch (err) {
     return {
@@ -114,7 +116,8 @@ const loadUserFromStorage = () => {
       user: null,
       orders: [],
       loading: false,
-      error: null
+      error: null,
+      isAuthInitialized: false
     };
   }
 };
@@ -157,6 +160,9 @@ const userSlice = createSlice({
         isOnboarded: state.isOnboarded,
         user: state.user
       }));
+    },
+    authLoaded: (state) => {
+      state.isAuthInitialized = true;
     },
   },
   extraReducers: (builder) => {
@@ -214,5 +220,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { signIn, signOut, completeOnboarding, updateUser } = userSlice.actions;
+export const { signIn, signOut, completeOnboarding, updateUser, authLoaded } = userSlice.actions;
 export default userSlice.reducer;

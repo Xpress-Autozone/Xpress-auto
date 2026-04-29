@@ -1,5 +1,9 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../Firebase/firebase";
+import { signIn, authLoaded, fetchUserProfile } from "../Redux/userSlice";
 import Navbar from "../Components/Navbar/navBar";
 import Footer from "../Components/Footer/footer";
 import WhatsAppButton from "../Components/WhatsApp/WhatsAppButton";
@@ -44,7 +48,28 @@ const PageLoader = () => (
 );
 
 function LayoutContent() {
+  const dispatch = useDispatch();
   useScrollToTop();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Basic user data to start with
+        dispatch(signIn({
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL,
+        }));
+        // Fetch full profile from backend/firestore
+        dispatch(fetchUserProfile(user.uid));
+      }
+      // Signal that we've checked auth state (first time)
+      dispatch(authLoaded());
+    });
+
+    return () => unsubscribe();
+  }, [dispatch]);
 
   return (
     <>

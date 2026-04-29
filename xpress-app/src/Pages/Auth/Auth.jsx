@@ -21,7 +21,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
+  const { isAuthenticated, isOnboarded, isAuthInitialized } = useSelector((state) => state.user);
 
   // Determine if we are in login or signup mode based on the URL
   const isLoginPage = location.pathname === "/login";
@@ -58,11 +58,8 @@ const Auth = () => {
           // Hydrate full profile from Firestore
           await dispatch(fetchUserProfile(user.uid));
           
-          if (onboardedStatus === true) {
-            navigate("/account");
-          } else {
-            navigate("/onboarding");
-          }
+          const from = location.state?.from?.pathname || (onboardedStatus === true ? "/account" : "/onboarding");
+          navigate(from, { replace: true });
         }
       } catch (err) {
         console.error("Redirect Auth Error:", err);
@@ -76,14 +73,11 @@ const Auth = () => {
   }, [dispatch, navigate]);
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      if (isOnboarded) {
-        navigate("/");
-      } else {
-        navigate("/onboarding");
-      }
+    if (isAuthInitialized && isAuthenticated) {
+      const from = location.state?.from?.pathname || (isOnboarded ? "/" : "/onboarding");
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, isOnboarded, navigate]);
+  }, [isAuthenticated, isOnboarded, isAuthInitialized, navigate, location.state]);
 
   const handleGuestSignIn = async () => {
     try {
