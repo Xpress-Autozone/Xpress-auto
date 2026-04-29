@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { signOut, updateUserProfile, fetchUserOrders } from '../../Redux/userSlice';
+import { signOut, updateUserProfile, fetchUserOrders, markOrdersAsSeen } from '../../Redux/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Package,
@@ -25,7 +25,7 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i);
 
 const MyAccount = () => {
-  const { user, orders, loading, error } = useSelector((state) => state.user);
+  const { user, orders, loading, error, notificationDot } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
@@ -46,6 +46,15 @@ const MyAccount = () => {
   useEffect(() => {
     dispatch(fetchUserOrders());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (activeTab === 'history' && notificationDot) {
+      // Small delay to ensure they actually saw it
+      setTimeout(() => {
+        dispatch(markOrdersAsSeen());
+      }, 1000);
+    }
+  }, [activeTab, notificationDot, dispatch]);
 
   useEffect(() => {
     if (user) {
@@ -235,7 +244,14 @@ const MyAccount = () => {
 
           {/* LEFT: NAV TABS (Desktop Only) */}
           <aside className="hidden lg:block lg:col-span-1 space-y-1">
-            <TabBtn active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="Order History" icon={<Package size={18} />} />
+            <TabBtn 
+              active={activeTab === 'history'} 
+              onClick={() => setActiveTab('history')} 
+              label="Order History" 
+              icon={<Package size={18} />} 
+              hasNotification={!!notificationDot}
+              dotColor={notificationDot}
+            />
             <TabBtn active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile Details" icon={<User size={18} />} />
             <div className="pt-8 mt-8 border-t border-gray-100 space-y-1">
               <button
@@ -612,13 +628,19 @@ const getStatusStyles = (status) => {
   return statusMap[s] || { label: status || 'Pending', cls: 'border-black text-black' };
 };
 
-const TabBtn = ({ active, onClick, label, icon }) => (
+const TabBtn = ({ active, onClick, label, icon, hasNotification, dotColor }) => (
   <button
     onClick={onClick}
     className={`w-full flex items-center justify-between p-4 text-[10px] font-black uppercase tracking-widest italic transition-all border ${active ? 'bg-black text-white border-black' : 'text-gray-400 border-transparent hover:border-gray-100 hover:text-black'
       }`}
   >
-    <span className="flex items-center gap-3">{icon} {label}</span>
+    <span className="flex items-center gap-3 relative">
+      {icon} 
+      {label}
+      {hasNotification && (
+        <span className={`absolute -top-1 -right-2 w-2 h-2 rounded-full border border-white ${dotColor === 'red' ? 'bg-red-500' : dotColor === 'yellow' ? 'bg-yellow-500' : dotColor === 'green' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+      )}
+    </span>
     {active && <ChevronRight size={14} />}
   </button>
 );

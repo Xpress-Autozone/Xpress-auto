@@ -98,7 +98,8 @@ const loadUserFromStorage = () => {
         orders: [],
         loading: false,
         error: null,
-        isAuthInitialized: false
+        isAuthInitialized: false,
+        notificationDot: null // null | 'red' | 'yellow' | 'green' | 'blue'
       };
     }
     const state = JSON.parse(serializedUser);
@@ -117,7 +118,8 @@ const loadUserFromStorage = () => {
       orders: [],
       loading: false,
       error: null,
-      isAuthInitialized: false
+      isAuthInitialized: false,
+      notificationDot: null
     };
   }
 };
@@ -163,6 +165,16 @@ const userSlice = createSlice({
     },
     authLoaded: (state) => {
       state.isAuthInitialized = true;
+    },
+    markOrdersAsSeen: (state) => {
+      state.notificationDot = null;
+      if (state.orders.length > 0) {
+        const orderStatuses = state.orders.reduce((acc, order) => {
+          acc[order.id] = order.orderStatus || order.status;
+          return acc;
+        }, {});
+        localStorage.setItem('last_seen_statuses', JSON.stringify(orderStatuses));
+      }
     },
   },
   extraReducers: (builder) => {
@@ -211,7 +223,50 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        const oldOrders = state.orders;
+        const newOrders = action.payload;
+        state.orders = newOrders;
+
+        // Calculate notification dot
+        const lastSeenStatuses = JSON.parse(localStorage.getItem('last_seen_statuses') || '{}');
+        let highestPriorityColor = null;
+
+        const priority = {
+          'red': 4,
+          'yellow': 3,
+          'blue': 2,
+          'green': 1
+        };
+
+        const statusColors = {
+          'requested': 'red',
+          'pending': 'red',
+          'payment_made': 'yellow',
+          'confirmed': 'yellow',
+          'dispatched': 'blue',
+          'shipped': 'blue',
+          'received': 'green',
+          'delivered': 'green',
+          'completed': 'green'
+        };
+
+        newOrders.forEach(order => {
+          const currentStatus = (order.orderStatus || order.status || 'pending').toLowerCase();
+          const lastStatus = lastSeenStatuses[order.id];
+
+          if (currentStatus !== lastStatus) {
+            const color = statusColors[currentStatus] || 'red';
+            if (!highestPriorityColor || priority[color] > priority[highestPriorityColor]) {
+              highestPriorityColor = color;
+            }
+          }
+        });
+
+        if (highestPriorityColor) {
+          state.notificationDot = highestPriorityColor;
+          // TODO: Implement email notifications here later
+          // sendEmailNotification(state.user.email, highestPriorityColor);
+        }
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
@@ -220,5 +275,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { signIn, signOut, completeOnboarding, updateUser, authLoaded } = userSlice.actions;
+export const { signIn, signOut, completeOnboarding, updateUser, authLoaded, markOrdersAsSeen } = userSlice.actions;
 export default userSlice.reducer;

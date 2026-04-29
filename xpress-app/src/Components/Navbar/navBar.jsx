@@ -8,7 +8,7 @@ import SearchBar from "../Search/searchBar";
 const Navbar = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
-  const { isAuthenticated, isOnboarded } = useSelector((state) => state.user);
+  const { isAuthenticated, isOnboarded, notificationDot } = useSelector((state) => state.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -66,9 +66,12 @@ const Navbar = () => {
             {/* Auth: Login/Signup Desktop */}
             <div className="hidden md:flex items-center gap-4 text-[11px] font-black uppercase tracking-widest italic">
               {isAuthenticated && isOnboarded ? (
-                <Link to="/account" className="hover:text-white flex items-center gap-2">
+                <Link to="/account" className="hover:text-white flex items-center gap-2 relative">
                   <User size={16} />
                   My Account
+                  {notificationDot && (
+                    <span className={`absolute -top-1 -right-2 w-2 h-2 rounded-full border border-yellow-500 shadow-sm animate-pulse ${notificationDot === 'red' ? 'bg-red-500' : notificationDot === 'yellow' ? 'bg-yellow-500' : notificationDot === 'green' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+                  )}
                 </Link>
               ) : (
                 <Link to="/login" className="hover:text-white">Sign In</Link>
@@ -91,9 +94,12 @@ const Navbar = () => {
             {/* Mobile Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-black"
+              className="md:hidden p-2 text-black relative"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {!isMobileMenuOpen && notificationDot && (
+                <span className={`absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-yellow-500 shadow-sm animate-bounce ${notificationDot === 'red' ? 'bg-red-500' : notificationDot === 'yellow' ? 'bg-yellow-500' : notificationDot === 'green' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+              )}
             </button>
           </div>
         </div>
@@ -127,7 +133,12 @@ const Navbar = () => {
             <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)}>Sell on Xpress</Link>
             <div className="h-px bg-black/10 w-full" />
             {isAuthenticated && isOnboarded ? (
-              <Link to="/account" onClick={() => setIsMobileMenuOpen(false)}>My Account</Link>
+              <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between">
+                My Account
+                {notificationDot && (
+                  <span className={`w-3 h-3 rounded-full border border-black/10 shadow-sm ${notificationDot === 'red' ? 'bg-red-500' : notificationDot === 'yellow' ? 'bg-yellow-500' : notificationDot === 'green' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+                )}
+              </Link>
             ) : (
               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
             )}

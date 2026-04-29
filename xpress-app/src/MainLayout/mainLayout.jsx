@@ -61,14 +61,25 @@ function LayoutContent() {
           name: user.displayName,
           photoURL: user.photoURL,
         }));
-        // Fetch full profile from backend/firestore
+        // Fetch full profile and orders
         dispatch(fetchUserProfile(user.uid));
+        dispatch(fetchUserOrders());
       }
       // Signal that we've checked auth state (first time)
       dispatch(authLoaded());
     });
 
-    return () => unsubscribe();
+    // Poll for order updates every 2 minutes
+    const pollInterval = setInterval(() => {
+      if (auth.currentUser) {
+        dispatch(fetchUserOrders());
+      }
+    }, 120000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
   }, [dispatch]);
 
   return (
