@@ -200,37 +200,50 @@ const ActiveProductPage = () => {
         try {
           console.log(`[ActiveProductPage] 🔍 Fetching recommendations for category: ${product.category}`);
           // Use getAllProducts with a larger limit to ensure we find matches if the specific category endpoint is flaky
-          const data = await getAllProducts({ limit: 100, page: 1 });
+          const data = await getAllProducts({ limit: 150, page: 1 });
 
           if (data.success && data.data) {
             const currentCat = product.category || product.categoryId;
+            const currentBrand = product.brand;
+            const currentComp = Array.isArray(product.compatibility) ? product.compatibility : [];
 
-            // Filter products by category and exclude current product
-            const filtered = data.data
-              .filter(p =>
-                (p.category === currentCat || p.categoryId === currentCat) &&
-                p.id !== product.id
-              )
-              .slice(0, 6)
+            // Intelligent Scoring Algorithm
+            const scored = data.data
+              .filter(p => p.id !== product.id)
               .map(p => {
-                // Robust image handling consistent with CategoryPage.jsx
+                let score = 0;
+                const pComp = Array.isArray(p.compatibility) ? p.compatibility : [];
+                const hasSharedVehicle = currentComp.some(v1 => 
+                  pComp.some(v2 => {
+                    const s1 = (typeof v1 === 'string' ? v1 : `${v1.make} ${v1.model}`).toLowerCase();
+                    const s2 = (typeof v2 === 'string' ? v2 : `${v2.make} ${v2.model}`).toLowerCase();
+                    return s1.includes(s2) || s2.includes(s1);
+                  })
+                );
+                if (hasSharedVehicle) score += 12;
+                if (p.category === currentCat || p.categoryId === currentCat) score += 5;
+                if (p.brand === currentBrand && currentBrand) score += 3;
+                score += Math.random() * 3;
+
+                return { ...p, _score: score, _isMatch: hasSharedVehicle };
+              });
+
+            const filtered = scored
+              .sort((a, b) => b._score - a._score)
+              .slice(0, 8)
+              .map(p => {
                 let imageUrl = "https://placehold.co/400x320";
-                if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) {
-                  imageUrl = p.mainImage;
-                } else if (p.mainImage?.url) {
-                  imageUrl = p.mainImage.url;
-                } else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) {
-                  imageUrl = p.image;
-                } else if (p.mainImage?.imageUrl) {
-                  imageUrl = p.mainImage.imageUrl;
-                }
+                if (p.mainImage?.url) imageUrl = p.mainImage.url;
+                else if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) imageUrl = p.mainImage;
+                else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) imageUrl = p.image;
 
                 return {
                   id: p.id,
                   name: p.itemName || p.name || "Unnamed Product",
                   price: `GH₵${parseFloat(p.price || 0).toFixed(2)}`,
                   image: imageUrl,
-                  badge: p.brand || "Verified",
+                  badge: p._isMatch ? "COMPATIBLE FIT" : (p.brand || "Verified"),
+                  isMatch: p._isMatch,
                   fullProduct: p
                 };
               });
@@ -244,7 +257,7 @@ const ActiveProductPage = () => {
       }
     };
     fetchRelated();
-  }, [product?.id, product?.category, product?.categoryId]);
+  }, [product?.id, product?.category, product?.brand]);
 
   if (isLoading) return <SkeletonLoader type="product" />;
   if (error) return <div className="pt-24 text-center font-black uppercase italic">{error}</div>;
@@ -581,20 +594,32 @@ const ActiveProductPage = () => {
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recommended Extras</span>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {relatedProducts.map((p, idx) => (
               <div
                 key={p.id || idx}
-                onClick={() => navigate(`/product/${p.id}`, { state: { product: p.fullProduct } })}
-                className="group border border-gray-100 hover:border-black transition-all cursor-pointer"
+                onClick={() => {
+                  window.scrollTo(0, 0);
+                  navigate(`/product/${p.id}`, { state: { product: p.fullProduct } });
+                }}
+                className="group border border-gray-100 hover:border-black transition-all cursor-pointer flex flex-col bg-white"
               >
-                <div className="aspect-square bg-gray-50 p-6">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-contain mix-blend-multiply" />
+                <div className="aspect-square bg-gray-50 p-6 relative overflow-hidden">
+                  <img src={p.image} alt={p.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                  {p.isMatch && (
+                    <div className="absolute top-2 left-2 bg-green-600 text-white text-[7px] font-black uppercase px-2 py-1 flex items-center gap-1 shadow-sm">
+                      <CheckCircle className="w-2 h-2" />
+                      Guaranteed Fit
+                    </div>
+                  )}
                 </div>
-                <div className="p-4 bg-white">
-                  <span className="text-[9px] font-black text-yellow-600 uppercase tracking-widest mb-1 block">{p.badge}</span>
-                  <h3 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-1">{p.name}</h3>
-                  <p className="text-sm font-black italic">{p.price}</p>
+                <div className="p-4 flex-1 flex flex-col">
+                  <span className={`text-[9px] font-black uppercase tracking-widest mb-1 block ${p.isMatch ? 'text-green-600' : 'text-yellow-600'}`}>{p.badge}</span>
+                  <h3 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-2 leading-tight">{p.name}</h3>
+                  <div className="mt-auto flex items-center justify-between">
+                    <p className="text-sm font-black italic">{p.price}</p>
+                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  </div>
                 </div>
               </div>
             ))}

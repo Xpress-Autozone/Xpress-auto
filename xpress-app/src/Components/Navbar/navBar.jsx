@@ -116,6 +116,7 @@ const Navbar = () => {
                 className="bg-white text-black text-sm outline-none w-full"
                 placeholders={searchPlaceholders}
                 onSearch={() => setIsSearchOpen(false)}
+                isOpen={isSearchOpen}
               />
               <p className="mt-2 text-[10px] text-black/50 font-medium italic tracking-wider text-center">
                 Add all relevant details to your search, we'll find what you need
