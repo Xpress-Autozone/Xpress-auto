@@ -151,9 +151,49 @@ const MyAccount = () => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    if (window.confirm("WARNING: This action is permanent. Delete your Xpress AutoZone account?")) {
-      console.log("Account deleted");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+  const [pendingOrders, setPendingOrders] = useState([]);
+
+  const handleDeleteAccount = async (force = false) => {
+    try {
+      setIsDeleting(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+
+      const token = await currentUser.getIdToken();
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://xpress-backend-eeea.onrender.com"}/users/${user.uid}/account`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ force })
+      });
+
+      const data = await response.json();
+
+      if (response.status === 409) {
+        // Has pending orders
+        setPendingOrders(data.pendingOrders);
+        setShowDeleteWarning(true);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || "Deletion failed");
+      }
+
+      // Success
+      alert("Your account and data have been permanently deleted.");
+      dispatch(signOut());
+      await auth.signOut();
+      navigate('/');
+    } catch (err) {
+      console.error("Delete Account Error:", err);
+      alert("Failed to delete account: " + err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -335,24 +375,65 @@ const MyAccount = () => {
                   </div>
                 </div>
 
-                {/* DANGER ZONE */}
-                <div className="pt-8 md:pt-12 border-t border-gray-100">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600 mb-6 text-left">Security & Privacy</h4>
-                  <div className="bg-red-50/50 p-6 md:p-8 border border-red-100 rounded-2xl flex flex-col md:flex-row items-center md:items-center justify-between gap-6 text-center md:text-left">
-                    <div className="flex-1">
-                      <h5 className="font-black uppercase tracking-tight text-sm text-red-900">Delete Account</h5>
-                      <p className="text-[9px] md:text-[10px] font-bold text-red-700 uppercase tracking-tight mt-1">
-                        Permanently remove your data and order history.
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleDeleteAccount}
-                      className="w-full md:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all rounded-full md:rounded-none"
-                    >
-                      <Trash2 size={14} /> Delete Forever
-                    </button>
+                {/* DANGER ZONE - MINIMAL */}
+                <div className="pt-12 border-t border-gray-100 flex flex-col items-center">
+                  <button
+                    onClick={() => handleDeleteAccount(false)}
+                    disabled={isDeleting}
+                    className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors flex items-center gap-2"
+                  >
+                    {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 size={12} />}
+                    Permanently Delete Account
+                  </button>
+                  <p className="text-[9px] text-gray-300 mt-2 uppercase tracking-tighter">
+                    This action is final and removes all history.
+                  </p>
                 </div>
               </div>
+
+              {/* PENDING ORDERS WARNING MODAL */}
+              {showDeleteWarning && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                  <div className="bg-white max-w-md w-full rounded-2xl p-8 border border-red-100 shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                      <ShieldCheck className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h3 className="text-xl font-black italic uppercase tracking-tight text-gray-900 text-center mb-2">
+                      Active Orders Found
+                    </h3>
+                    <p className="text-sm text-gray-500 font-medium text-center mb-6">
+                      You have <span className="text-red-600 font-bold">{pendingOrders.length}</span> active order(s) in progress. Deleting your account now will remove your access to track these orders.
+                    </p>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4 mb-8 max-h-32 overflow-y-auto">
+                      <p className="text-[10px] font-black uppercase text-gray-400 mb-2">Orders affected:</p>
+                      {pendingOrders.map(order => (
+                        <div key={order.id} className="text-xs font-bold text-gray-700 py-1">
+                          #{order.orderNumber}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => handleDeleteAccount(true)}
+                        className="w-full bg-red-600 hover:bg-black text-white font-black uppercase italic tracking-widest text-xs py-4 rounded-xl transition-all shadow-lg shadow-red-600/20"
+                      >
+                        I understand, delete everything
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteWarning(false)}
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl transition-all"
+                      >
+                        Wait, take me back
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
                 {/* MOBILE SIGN OUT */}
                 <div className="md:hidden pt-8 pb-12">

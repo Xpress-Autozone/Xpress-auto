@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { signIn } from "../../Redux/userSlice";
+import { signIn, fetchUserProfile } from "../../Redux/userSlice";
 import SEO from "../../lib/SEOHelper";
 import { getPageMetadata } from "../../data/pageMetadata";
 import {
@@ -11,6 +11,8 @@ import {
   setPersistence,
   browserLocalPersistence,
   signInAnonymously,
+  signInWithRedirect,
+  getRedirectResult,
 } from "firebase/auth";
 import { auth } from "../../Firebase/firebase";
 import { Info, Loader2 } from "lucide-react";
@@ -29,6 +31,49 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [showGuestInfo, setShowGuestInfo] = useState(false);
   const googleProvider = new GoogleAuthProvider();
+
+  // Handle Redirect Result on Mount
+  useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setLoading(true);
+          const user = result.user;
+          
+          let onboardedStatus = false;
+          const tokenResult = await user.getIdTokenResult(true);
+          onboardedStatus = tokenResult.claims.isOnboarded || false;
+
+          const userData = {
+            uid: user.uid,
+            name: user.displayName || "User",
+            email: user.email,
+            photoURL: user.photoURL,
+            isOnboarded: onboardedStatus,
+          };
+
+          dispatch(signIn(userData));
+          
+          // Hydrate full profile from Firestore
+          await dispatch(fetchUserProfile(user.uid));
+          
+          if (onboardedStatus === true) {
+            navigate("/account");
+          } else {
+            navigate("/onboarding");
+          }
+        }
+      } catch (err) {
+        console.error("Redirect Auth Error:", err);
+        setError("Redirect authentication failed: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleRedirect();
+  }, [dispatch, navigate]);
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -75,41 +120,56 @@ const Auth = () => {
       // Set persistence to LOCAL so user stays signed in
       await setPersistence(auth, browserLocalPersistence);
 
-      // Sign in with Google popup
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      // Detect mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-      let onboardedStatus = false;
-
-      if (user) {
-        // Force refresh token to get latest claims
-        const tokenResult = await user.getIdTokenResult(true);
-        console.log("✓ Google login successful!");
-        
-        // Get isOnboarded status from custom claims
-        onboardedStatus = tokenResult.claims.isOnboarded || false;
-      }
-
-      const userData = {
-        uid: user.uid,
-        name: user.displayName || "User",
-        email: user.email,
-        photoURL: user.photoURL,
-        isOnboarded: onboardedStatus,
-      };
-
-      dispatch(signIn(userData));
-
-      if (onboardedStatus === true) {
-        navigate("/account");
+      if (isMobile) {
+        // Use redirect for mobile to avoid popup blockers
+        await signInWithRedirect(auth, googleProvider);
       } else {
-        navigate("/onboarding");
+        // Sign in with Google popup for desktop
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        let onboardedStatus = false;
+
+        if (user) {
+          // Force refresh token to get latest claims
+          const tokenResult = await user.getIdTokenResult(true);
+          console.log("✓ Google login successful!");
+          
+          // Get isOnboarded status from custom claims
+          onboardedStatus = tokenResult.claims.isOnboarded || false;
+        }
+
+        const userData = {
+          uid: user.uid,
+          name: user.displayName || "User",
+          email: user.email,
+          photoURL: user.photoURL,
+          isOnboarded: onboardedStatus,
+        };
+
+        dispatch(signIn(userData));
+
+        // Hydrate full profile from Firestore
+        await dispatch(fetchUserProfile(user.uid));
+
+        if (onboardedStatus === true) {
+          navigate("/account");
+        } else {
+          navigate("/onboarding");
+        }
       }
     } catch (error) {
       console.error("Auth Error:", error);
       setError("Authentication failed: " + error.message);
     } finally {
-      setLoading(false);
+      // Don't set loading to false here if we are redirecting
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      if (!isMobile) {
+        setLoading(false);
+      }
     }
   };
 

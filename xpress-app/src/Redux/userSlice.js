@@ -34,6 +34,31 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+export const fetchUserProfile = createAsyncThunk(
+  'user/fetchProfile',
+  async (uid, { rejectWithValue }) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error("Firebase user not found");
+
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch(`${API_BASE_URL}/users/${uid}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(data.message || "Failed to fetch profile");
+
+      return data.data; // This contains the merged Firestore + Auth data
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const fetchUserOrders = createAsyncThunk(
   'user/fetchOrders',
   async (_, { getState, rejectWithValue }) => {
@@ -151,6 +176,25 @@ const userSlice = createSlice({
         }));
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch Profile
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = { ...state.user, ...action.payload };
+        state.isOnboarded = action.payload.isOnboarded || false;
+        localStorage.setItem('user_state', JSON.stringify({
+          isAuthenticated: state.isAuthenticated,
+          isOnboarded: state.isOnboarded,
+          user: state.user
+        }));
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
