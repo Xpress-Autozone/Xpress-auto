@@ -301,139 +301,137 @@ const MyAccount = () => {
             )}
 
             {activeTab === 'profile' && (
-              <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
-                <div className="space-y-6 md:space-y-8">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Account Details</h3>
-                    <div className="hidden md:flex gap-2">
-                      <button
-                        onClick={isEditing ? handleSave : handleEditToggle}
-                        disabled={loading}
-                        className="btn-golden disabled:opacity-50"
-                      >
-                        {loading && isEditing ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
-                      </button>
-                      {isEditing && (
+              <>
+                <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
+                  <div className="space-y-6 md:space-y-8">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Account Details</h3>
+                      <div className="hidden md:flex gap-2">
                         <button
-                          onClick={handleEditToggle}
+                          onClick={isEditing ? handleSave : handleEditToggle}
                           disabled={loading}
-                          className="flex items-center gap-2 px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black"
+                          className="btn-golden disabled:opacity-50"
                         >
-                          <X size={14} />
+                          {loading && isEditing ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : isEditing ? <><Save size={14} /> Save Changes</> : <><Edit2 size={14} /> Edit Profile</>}
                         </button>
+                        {isEditing && (
+                          <button
+                            onClick={handleEditToggle}
+                            disabled={loading}
+                            className="flex items-center gap-2 px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all italic border-2 border-gray-200 text-gray-400 hover:border-black hover:text-black"
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
+                      {/* Mobile Edit Trigger */}
+                      {!isEditing && (
+                         <button
+                         onClick={handleEditToggle}
+                         className="md:hidden w-full py-3 bg-black text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-lg"
+                       >
+                         Edit Profile
+                       </button>
                       )}
                     </div>
-                    {/* Mobile Edit Trigger */}
-                    {!isEditing && (
-                       <button
-                       onClick={handleEditToggle}
-                       className="md:hidden w-full py-3 bg-black text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-lg"
-                     >
-                       Edit Profile
-                     </button>
-                    )}
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <InfoGroup label="Full Name" value={user?.name || "Member Name"} isReadOnly={true} />
-                    <InfoGroup label="Email Address" value={user?.email || "member@example.com"} isReadOnly={true} />
-                    <InfoGroup
-                      label="Phone Number"
-                      value={editFormData.phone}
-                      isEditing={isEditing}
-                      name="phone"
-                      onChange={handleInputChange}
-                      placeholder="+233 XX XXX XXXX"
-                    />
-                    <InfoGroup label="Member Status" value={user?.isOnboarded ? "Verified Member" : "Incomplete Profile"} isReadOnly={true} />
-                  </div>
-                  
-                  <div className="pt-4 md:pt-6">
-                    <InfoGroup
-                      label="Shipping Address"
-                      value={editFormData.address}
-                      isEditing={isEditing}
-                      name="address"
-                      onChange={handleInputChange}
-                      placeholder="e.g. 123 Xpress Ave, Accra"
-                      icon={<MapPin size={14} className="text-gray-400" />}
-                      onAction={handleGetCurrentLocation}
-                      actionIcon={<Navigation size={12} />}
-                      isLoading={isLocating}
-                    />
-                  </div>
-                </div>
-
-                {/* VEHICLE DETAILS */}
-                <div className="pt-8 md:pt-12 border-t border-gray-100 space-y-6 md:space-y-8">
-                  <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Vehicle Details</h3>
-                  <div className="bg-gray-50/50 md:bg-gray-50 p-4 md:p-8 border border-gray-100 rounded-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                    <InfoGroup label="Make" value={editFormData.vehicle.make} isEditing={isEditing} name="vehicle.make" onChange={handleInputChange} placeholder="e.g. Toyota" />
-                    <InfoGroup label="Model" value={editFormData.vehicle.model} isEditing={isEditing} name="vehicle.model" onChange={handleInputChange} placeholder="e.g. Camry" />
-                    <InfoGroup label="Year" value={editFormData.vehicle.year} isEditing={isEditing} name="vehicle.year" onChange={handleInputChange} type="select" options={years} />
-                    <InfoGroup label="Fuel" value={editFormData.vehicle.fuelType} isEditing={isEditing} name="vehicle.fuelType" onChange={handleInputChange} type="select" options={fuelTypes} />
-                  </div>
-                </div>
-
-                {/* DANGER ZONE - MINIMAL */}
-                <div className="pt-12 border-t border-gray-100 flex flex-col items-center">
-                  <button
-                    onClick={() => handleDeleteAccount(false)}
-                    disabled={isDeleting}
-                    className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors flex items-center gap-2"
-                  >
-                    {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 size={12} />}
-                    Permanently Delete Account
-                  </button>
-                  <p className="text-[9px] text-gray-300 mt-2 uppercase tracking-tighter">
-                    This action is final and removes all history.
-                  </p>
-                </div>
-              </div>
-
-              {/* PENDING ORDERS WARNING MODAL */}
-              {showDeleteWarning && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-                  <div className="bg-white max-w-md w-full rounded-2xl p-8 border border-red-100 shadow-2xl animate-in zoom-in-95 duration-300">
-                    <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
-                      <ShieldCheck className="w-8 h-8 text-red-600" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                      <InfoGroup label="Full Name" value={user?.name || "Member Name"} isReadOnly={true} />
+                      <InfoGroup label="Email Address" value={user?.email || "member@example.com"} isReadOnly={true} />
+                      <InfoGroup
+                        label="Phone Number"
+                        value={editFormData.phone}
+                        isEditing={isEditing}
+                        name="phone"
+                        onChange={handleInputChange}
+                        placeholder="+233 XX XXX XXXX"
+                      />
+                      <InfoGroup label="Member Status" value={user?.isOnboarded ? "Verified Member" : "Incomplete Profile"} isReadOnly={true} />
                     </div>
-                    <h3 className="text-xl font-black italic uppercase tracking-tight text-gray-900 text-center mb-2">
-                      Active Orders Found
-                    </h3>
-                    <p className="text-sm text-gray-500 font-medium text-center mb-6">
-                      You have <span className="text-red-600 font-bold">{pendingOrders.length}</span> active order(s) in progress. Deleting your account now will remove your access to track these orders.
-                    </p>
                     
-                    <div className="bg-gray-50 rounded-xl p-4 mb-8 max-h-32 overflow-y-auto">
-                      <p className="text-[10px] font-black uppercase text-gray-400 mb-2">Orders affected:</p>
-                      {pendingOrders.map(order => (
-                        <div key={order.id} className="text-xs font-bold text-gray-700 py-1">
-                          #{order.orderNumber}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="space-y-3">
-                      <button
-                        onClick={() => handleDeleteAccount(true)}
-                        className="w-full bg-red-600 hover:bg-black text-white font-black uppercase italic tracking-widest text-xs py-4 rounded-xl transition-all shadow-lg shadow-red-600/20"
-                      >
-                        I understand, delete everything
-                      </button>
-                      <button
-                        onClick={() => setShowDeleteWarning(false)}
-                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl transition-all"
-                      >
-                        Wait, take me back
-                      </button>
+                    <div className="pt-4 md:pt-6">
+                      <InfoGroup
+                        label="Shipping Address"
+                        value={editFormData.address}
+                        isEditing={isEditing}
+                        name="address"
+                        onChange={handleInputChange}
+                        placeholder="e.g. 123 Xpress Ave, Accra"
+                        icon={<MapPin size={14} className="text-gray-400" />}
+                        onAction={handleGetCurrentLocation}
+                        actionIcon={<Navigation size={12} />}
+                        isLoading={isLocating}
+                      />
                     </div>
                   </div>
+
+                  {/* VEHICLE DETAILS */}
+                  <div className="pt-8 md:pt-12 border-t border-gray-100 space-y-6 md:space-y-8">
+                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Vehicle Details</h3>
+                    <div className="bg-gray-50/50 md:bg-gray-50 p-4 md:p-8 border border-gray-100 rounded-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                      <InfoGroup label="Make" value={editFormData.vehicle.make} isEditing={isEditing} name="vehicle.make" onChange={handleInputChange} placeholder="e.g. Toyota" />
+                      <InfoGroup label="Model" value={editFormData.vehicle.model} isEditing={isEditing} name="vehicle.model" onChange={handleInputChange} placeholder="e.g. Camry" />
+                      <InfoGroup label="Year" value={editFormData.vehicle.year} isEditing={isEditing} name="vehicle.year" onChange={handleInputChange} type="select" options={years} />
+                      <InfoGroup label="Fuel" value={editFormData.vehicle.fuelType} isEditing={isEditing} name="vehicle.fuelType" onChange={handleInputChange} type="select" options={fuelTypes} />
+                    </div>
+                  </div>
+
+                  {/* DANGER ZONE - MINIMAL */}
+                  <div className="pt-12 border-t border-gray-100 flex flex-col items-center">
+                    <button
+                      onClick={() => handleDeleteAccount(false)}
+                      disabled={isDeleting}
+                      className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors flex items-center gap-2"
+                    >
+                      {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 size={12} />}
+                      Permanently Delete Account
+                    </button>
+                    <p className="text-[9px] text-gray-300 mt-2 uppercase tracking-tighter">
+                      This action is final and removes all history.
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+
+                {/* PENDING ORDERS WARNING MODAL */}
+                {showDeleteWarning && (
+                  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white max-w-md w-full rounded-2xl p-8 border border-red-100 shadow-2xl animate-in zoom-in-95 duration-300">
+                      <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <ShieldCheck className="w-8 h-8 text-red-600" />
+                      </div>
+                      <h3 className="text-xl font-black italic uppercase tracking-tight text-gray-900 text-center mb-2">
+                        Active Orders Found
+                      </h3>
+                      <p className="text-sm text-gray-500 font-medium text-center mb-6">
+                        You have <span className="text-red-600 font-bold">{pendingOrders.length}</span> active order(s) in progress. Deleting your account now will remove your access to track these orders.
+                      </p>
+                      
+                      <div className="bg-gray-50 rounded-xl p-4 mb-8 max-h-32 overflow-y-auto">
+                        <p className="text-[10px] font-black uppercase text-gray-400 mb-2">Orders affected:</p>
+                        {pendingOrders.map(order => (
+                          <div key={order.id} className="text-xs font-bold text-gray-700 py-1">
+                            #{order.orderNumber}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => handleDeleteAccount(true)}
+                          className="w-full bg-red-600 hover:bg-black text-white font-black uppercase italic tracking-widest text-xs py-4 rounded-xl transition-all shadow-lg shadow-red-600/20"
+                        >
+                          I understand, delete everything
+                        </button>
+                        <button
+                          onClick={() => setShowDeleteWarning(false)}
+                          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl transition-all"
+                        >
+                          Wait, take me back
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* MOBILE SIGN OUT */}
                 <div className="md:hidden pt-8 pb-12">
@@ -463,7 +461,7 @@ const MyAccount = () => {
                       </button>
                   </div>
                 )}
-              </div>
+              </>
             )}
           </main>
         </div>
@@ -505,7 +503,7 @@ const OrderCard = ({ order }) => {
         <div className="flex-1 pr-4">
           <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Items</p>
           <p className="text-xs font-bold text-gray-600 line-clamp-1">
-            {(order.items || []).map(i => `${i.name || i.itemName}`).join(', ') || '—'}
+            {(order.items || []).map(i => `${i.productName || i.name || i.itemName || 'Part'}`).join(', ') || '—'}
           </p>
         </div>
         <p className="text-lg font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</p>
@@ -515,8 +513,8 @@ const OrderCard = ({ order }) => {
 };
 
 const OrderRow = ({ order }) => {
-  const statusInfo = getStatusStyles(order.orderStatus);
-  const itemSummary = (order.items || []).map(i => `${i.name || i.itemName} ×${i.quantity || 1}`).join(', ') || '—';
+  const statusInfo = getStatusStyles(order.orderStatus || order.status);
+  const itemSummary = (order.items || []).map(i => `${i.productName || i.name || i.itemName || 'Part'} ×${i.quantity || 1}`).join(', ') || '—';
   const dateStr = order.createdAt?._seconds
     ? new Date(order.createdAt._seconds * 1000).toLocaleDateString()
     : order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—';
@@ -544,11 +542,13 @@ const getStatusStyles = (status) => {
     received:     { label: '✅ Received',     cls: 'border-green-500 text-green-600 bg-green-50' },
     cancelled:    { label: '❌ Cancelled',    cls: 'border-red-400 text-red-600 bg-red-50' },
     delivered:    { label: '🏠 Delivered',    cls: 'border-green-500 text-green-600 bg-green-50' },
-    pending:      { label: '⏳ Pending',      cls: 'border-gray-400 text-gray-600' },
+    pending:      { label: '⏳ Pending',      cls: 'border-gray-400 text-gray-600 bg-gray-50' },
     confirmed:    { label: '📌 Confirmed',    cls: 'border-yellow-400 text-yellow-600 bg-yellow-50' },
     shipped:      { label: '📦 Shipped',      cls: 'border-orange-400 text-orange-600 bg-orange-50' },
+    completed:    { label: '✅ Completed',    cls: 'border-green-500 text-green-600 bg-green-50' },
   };
-  return statusMap[status] || { label: status || 'Pending', cls: 'border-black text-black' };
+  const s = status?.toLowerCase();
+  return statusMap[s] || { label: status || 'Pending', cls: 'border-black text-black' };
 };
 
 const TabBtn = ({ active, onClick, label, icon }) => (

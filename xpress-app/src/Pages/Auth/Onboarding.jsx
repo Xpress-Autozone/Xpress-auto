@@ -70,6 +70,21 @@ const Onboarding = () => {
     fuelType: "Petrol",
   });
 
+  // Pre-fill data if user already has some info (e.g. returning from a previous session)
+  useEffect(() => {
+    if (user && user.isOnboarded === false) {
+      setFormData(prev => ({
+        ...prev,
+        phone: user.phone?.replace(prev.countryCode, "") || user.phoneNumber?.replace(prev.countryCode, "") || prev.phone,
+        address: user.address || prev.address,
+        carMake: user.vehicle?.make || prev.carMake,
+        carModel: user.vehicle?.model || prev.carModel,
+        carYear: user.vehicle?.year || prev.carYear,
+        fuelType: user.vehicle?.fuelType || prev.fuelType,
+      }));
+    }
+  }, [user]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
