@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { signIn, fetchUserProfile } from "../../Redux/userSlice";
+import { signIn, fetchUserProfile, authLoaded } from "../../Redux/userSlice";
 import SEO from "../../lib/SEOHelper";
 import { getPageMetadata } from "../../data/pageMetadata";
 import {
@@ -54,6 +54,7 @@ const Auth = () => {
           };
 
           dispatch(signIn(userData));
+          dispatch(authLoaded());
           
           // Hydrate full profile from Firestore
           await dispatch(fetchUserProfile(user.uid));
@@ -97,6 +98,7 @@ const Auth = () => {
       };
       
       dispatch(signIn(userData));
+      dispatch(authLoaded());
       navigate("/onboarding");
     } catch (error) {
       console.error("Guest Auth Error:", error);
@@ -145,6 +147,7 @@ const Auth = () => {
         };
 
         dispatch(signIn(userData));
+        dispatch(authLoaded());
 
         // Hydrate full profile from Firestore
         await dispatch(fetchUserProfile(user.uid));

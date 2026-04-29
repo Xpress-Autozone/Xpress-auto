@@ -15,7 +15,8 @@ import {
   X,
   MapPin,
   Loader2,
-  Navigation
+  Navigation,
+  ShoppingCart
 } from 'lucide-react';
 import { auth } from '../../Firebase/firebase';
 
@@ -220,7 +221,7 @@ const MyAccount = () => {
             to="/cart"
             className="hidden md:flex items-center gap-2 text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all border border-black md:border-none"
           >
-            <Heart size={16} /> View Cart
+            <ShoppingCart size={16} /> View Cart
           </Link>
         </div>
 
