@@ -121,7 +121,7 @@ export default function CartPage() {
     
     if (!address || address.length < 5) {
       setIsEditingAddress(true);
-      alert("Please set a shipping address before requesting parts.");
+      alert("Please set a Delivery address before requesting parts.");
       return;
     }
 
@@ -277,11 +277,11 @@ export default function CartPage() {
                   Order Summary
                 </h2>
 
-                {/* Shipping Destination */}
+                {/* Delivery Destination */}
                 <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
-                      <MapPin size={12} /> Shipping To
+                      <MapPin size={12} /> Delivering To
                     </span>
                     {!isEditingAddress && (
                       <button 
@@ -328,7 +328,7 @@ export default function CartPage() {
                     </div>
                   ) : (
                     <p className={`text-xs font-bold leading-relaxed ${address ? 'text-gray-800' : 'text-gray-400 italic'}`}>
-                      {address || "No shipping address set yet."}
+                      {address || "No Delivery address set yet."}
                     </p>
                   )}
                 </div>
@@ -347,7 +347,7 @@ export default function CartPage() {
                     <span>GH₵{tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
-                    <span>Shipping</span>
+                    <span>Delivery</span>
                     <span className="font-bold text-yellow-600">Calculated on dispatch</span>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ export default function CartPage() {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">
-                    Excluding shipping and handling
+                    Excluding delivery and handling
                   </p>
                 </div>
 
@@ -415,7 +415,7 @@ export default function CartPage() {
 
                 {requestStatus !== 'success' && (
                   <p className="text-[10px] text-center text-gray-400 font-medium mb-2">
-                    📲 A WhatsApp message will be sent with your order and shipping details.
+                    📲 A WhatsApp message will be sent with your order and delivery details.
                   </p>
                 )}
                 <button

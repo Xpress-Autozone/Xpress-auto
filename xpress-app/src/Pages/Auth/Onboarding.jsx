@@ -55,8 +55,9 @@ const Onboarding = () => {
   const [phoneError, setPhoneError] = useState("");
   const [isLocating, setIsLocating] = useState(false);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     dispatch(signOut());
+    await auth.signOut();
     navigate("/");
   };
 
@@ -436,14 +437,14 @@ const Onboarding = () => {
                     Delivery Logistics
                   </h2>
                   <p className="text-[10px] font-bold text-gray-400 tracking-widest">
-                    Set your primary shipping destination
+                    Set your primary delivery destination
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <label className="text-[10px] font-bold tracking-widest text-gray-400">
-                  Shipping Address
+                  Delivery Address
                 </label>
                 <div className="relative">
                   <textarea

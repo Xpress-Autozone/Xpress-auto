@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../Firebase/firebase";
-import { signIn, authLoaded, fetchUserProfile } from "../Redux/userSlice";
+import { signIn, signOut, authLoaded, fetchUserProfile, fetchUserOrders } from "../Redux/userSlice";
 import Navbar from "../Components/Navbar/navBar";
 import Footer from "../Components/Footer/footer";
 import WhatsAppButton from "../Components/WhatsApp/WhatsAppButton";
@@ -64,6 +64,9 @@ function LayoutContent() {
         // Fetch full profile and orders
         dispatch(fetchUserProfile(user.uid));
         dispatch(fetchUserOrders());
+      } else {
+        // Firebase signed the user out (token revocation, session expiry, etc.)
+        dispatch(signOut());
       }
       // Signal that we've checked auth state (first time)
       dispatch(authLoaded());

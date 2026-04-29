@@ -145,7 +145,10 @@ const userSlice = createSlice({
       state.isOnboarded = false;
       state.user = null;
       state.orders = [];
+      state.notificationDot = null;
+      state.isAuthInitialized = false;
       localStorage.removeItem('user_state');
+      localStorage.removeItem('last_seen_statuses');
     },
     completeOnboarding: (state) => {
       state.isOnboarded = true;

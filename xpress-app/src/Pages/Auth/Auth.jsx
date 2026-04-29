@@ -5,7 +5,6 @@ import { signIn, fetchUserProfile, authLoaded } from "../../Redux/userSlice";
 import SEO from "../../lib/SEOHelper";
 import { getPageMetadata } from "../../data/pageMetadata";
 import {
-  getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   setPersistence,
@@ -92,7 +91,7 @@ const Auth = () => {
       const userData = {
         uid: user.uid,
         name: "Guest User",
-        email: "guest@example.com",
+        email: null,
         isOnboarded: false,
         isAnonymous: true,
       };

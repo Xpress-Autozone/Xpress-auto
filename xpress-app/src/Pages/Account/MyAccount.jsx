@@ -381,7 +381,7 @@ const MyAccount = () => {
                     
                     <div className="pt-4 md:pt-6">
                       <InfoGroup
-                        label="Shipping Address"
+                        label="Delivery Address"
                         value={editFormData.address}
                         isEditing={isEditing}
                         name="address"
