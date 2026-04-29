@@ -17,6 +17,7 @@ import {
   Loader2,
   Navigation
 } from 'lucide-react';
+import { auth } from '../../Firebase/firebase';
 
 const fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other', 'N/A'];
 const currentYear = new Date().getFullYear();
@@ -60,8 +61,12 @@ const MyAccount = () => {
     }
   }, [user]);
 
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleSignOut = () => {
     dispatch(signOut());
+    auth.signOut();
     navigate('/');
   };
 
@@ -231,12 +236,20 @@ const MyAccount = () => {
           <aside className="hidden lg:block lg:col-span-1 space-y-1">
             <TabBtn active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="Order History" icon={<Package size={18} />} />
             <TabBtn active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile Details" icon={<User size={18} />} />
-            <div className="pt-8 mt-8 border-t border-gray-100">
+            <div className="pt-8 mt-8 border-t border-gray-100 space-y-1">
               <button
-                onClick={handleSignOut}
+                onClick={() => setShowSignOutConfirm(true)}
                 className="w-full flex items-center gap-3 p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
               >
                 <LogOut size={18} /> Sign Out
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={isDeleting}
+                className="w-full flex items-center gap-3 p-4 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-red-600 transition-colors"
+              >
+                {isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                Delete Account
               </button>
             </div>
           </aside>
@@ -376,20 +389,7 @@ const MyAccount = () => {
                     </div>
                   </div>
 
-                  {/* DANGER ZONE - MINIMAL */}
-                  <div className="pt-12 border-t border-gray-100 flex flex-col items-center">
-                    <button
-                      onClick={() => handleDeleteAccount(false)}
-                      disabled={isDeleting}
-                      className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors flex items-center gap-2"
-                    >
-                      {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 size={12} />}
-                      Permanently Delete Account
-                    </button>
-                    <p className="text-[9px] text-gray-300 mt-2 uppercase tracking-tighter">
-                      This action is final and removes all history.
-                    </p>
-                  </div>
+                  {/* DANGER ZONE - MOVED TO SIDEBAR/BOTTOM */}
                 </div>
 
                 {/* PENDING ORDERS WARNING MODAL */}
@@ -433,13 +433,21 @@ const MyAccount = () => {
                   </div>
                 )}
 
-                {/* MOBILE SIGN OUT */}
-                <div className="md:hidden pt-8 pb-12">
+                {/* MOBILE SESSION ACTIONS */}
+                <div className="md:hidden pt-8 pb-12 space-y-4">
                   <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center justify-center gap-3 p-6 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 border-2 border-gray-100 rounded-2xl transition-all active:scale-95 bg-gray-50/50"
+                    onClick={() => setShowSignOutConfirm(true)}
+                    className="w-full flex items-center justify-center gap-3 p-6 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-black border-2 border-gray-100 rounded-2xl transition-all active:scale-95 bg-gray-50/50"
                   >
                     <LogOut size={18} /> Sign Out
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isDeleting}
+                    className="w-full flex items-center justify-center gap-3 p-6 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 border-2 border-red-50 rounded-2xl transition-all active:scale-95 bg-red-50/30"
+                  >
+                    {isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />} 
+                    Delete Account
                   </button>
                 </div>
 
@@ -466,9 +474,61 @@ const MyAccount = () => {
           </main>
         </div>
       </div>
+
+      {/* CONFIRMATION MODALS */}
+      {showSignOutConfirm && (
+        <ActionConfirmModal
+          title="Sign Out"
+          message="Are you sure you want to end your current session?"
+          confirmLabel="Sign Out"
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutConfirm(false)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ActionConfirmModal
+          title="Delete Account"
+          message="This will permanently delete your profile, vehicle data, and order history. This action cannot be undone."
+          confirmLabel="Delete Everything"
+          onConfirm={() => {
+            setShowDeleteConfirm(false);
+            handleDeleteAccount(false);
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+          isDanger={true}
+        />
+      )}
     </div>
   );
 };
+
+const ActionConfirmModal = ({ title, message, confirmLabel, onConfirm, onCancel, isDanger }) => (
+  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="bg-white max-w-sm w-full rounded-2xl p-8 border border-gray-100 shadow-2xl animate-in zoom-in-95 duration-300">
+      <h3 className="text-xl font-black italic uppercase tracking-tight text-gray-900 text-center mb-2">
+        {title}
+      </h3>
+      <p className="text-sm text-gray-500 font-medium text-center mb-8">
+        {message}
+      </p>
+      <div className="space-y-3">
+        <button
+          onClick={onConfirm}
+          className={`w-full ${isDanger ? 'bg-red-600 shadow-red-600/20' : 'bg-black shadow-black/20'} text-white font-black uppercase italic tracking-widest text-xs py-4 rounded-xl transition-all shadow-lg hover:scale-[1.02] active:scale-95`}
+        >
+          {confirmLabel}
+        </button>
+        <button
+          onClick={onCancel}
+          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 // Sub-components
 const MobileTab = ({ active, onClick, label }) => (
