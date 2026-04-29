@@ -24,11 +24,12 @@ const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear -
 
 const MyAccount = () => {
   const { user, orders, loading, error } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.auth); // Assuming token is in auth slice
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
   const [isEditing, setIsEditing] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+  const [saveStatus, setSaveStatus] = useState(null);
 
   const [editFormData, setEditFormData] = useState({
     phone: '',
@@ -42,7 +43,6 @@ const MyAccount = () => {
   });
 
   useEffect(() => {
-    // Fetch orders on mount
     dispatch(fetchUserOrders());
   }, [dispatch]);
 
@@ -68,7 +68,6 @@ const MyAccount = () => {
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Reset form if canceling
       setEditFormData({
         phone: user.phone || '',
         address: user.address || '',
@@ -155,37 +154,43 @@ const MyAccount = () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm("WARNING: This action is permanent. Delete your Xpress AutoZone account?")) {
-      // Logic for deletion goes here
       console.log("Account deleted");
     }
   };
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-20">
-      <div className="max-w-7xl mx-auto px-6 text-left">
+    <div className="min-h-screen bg-white pt-20 md:pt-32 pb-20">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 text-left">
 
         {/* HEADER SECTION */}
-        <div className="mb-12 border-b-2 border-black pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[10px] mb-2 block">
+        <div className="mb-8 md:mb-12 border-b-2 border-black pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="animate-in slide-in-from-left duration-500">
+            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] text-[8px] md:text-[10px] mb-2 block">
               Member Dashboard
             </span>
-            <h1 className="text-3xl md:text-6xl font-black text-black uppercase italic tracking-tighter leading-none">
+            <h1 className="text-3xl md:text-6xl font-black text-black uppercase italic tracking-tighter leading-tight md:leading-none">
               My Account
             </h1>
           </div>
           <Link
             to="/cart"
-            className="flex items-center gap-2 text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all"
+            className="hidden md:flex items-center gap-2 text-black px-6 py-4 text-[10px] font-black uppercase tracking-widest italic hover:bg-yellow-500 hover:text-white transition-all border border-black md:border-none"
           >
             <Heart size={16} /> View Cart
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        {/* MOBILE STICKY NAV */}
+        <div className="md:hidden sticky top-[70px] z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 flex overflow-x-auto scrollbar-hide mb-6 -mx-4 px-4">
+          <MobileTab active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="History" />
+          <MobileTab active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile" />
+          <button onClick={handleSignOut} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 flex-shrink-0">Exit</button>
+        </div>
 
-          {/* LEFT: NAV TABS */}
-          <aside className="lg:col-span-1 space-y-1">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12">
+
+          {/* LEFT: NAV TABS (Desktop Only) */}
+          <aside className="hidden lg:block lg:col-span-1 space-y-1">
             <TabBtn active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="Order History" icon={<Package size={18} />} />
             <TabBtn active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile Details" icon={<User size={18} />} />
             <div className="pt-8 mt-8 border-t border-gray-100">
@@ -199,77 +204,58 @@ const MyAccount = () => {
           </aside>
 
           {/* RIGHT: CONTENT AREA */}
-          <main className="lg:col-span-3 border border-gray-100 p-8 md:p-12 relative">
+          <main className="lg:col-span-3 border-none md:border md:border-gray-100 p-0 md:p-12 relative">
             
             {saveStatus === 'success' && (
-              <div className="absolute top-4 right-8 bg-green-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded animate-in fade-in slide-in-from-top-4">
+              <div className="fixed bottom-24 md:absolute md:top-4 md:right-8 left-4 right-4 md:left-auto md:w-auto bg-green-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-3 md:py-2 rounded shadow-xl md:shadow-none z-50 text-center animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-top-4">
                 Profile Updated Successfully
               </div>
             )}
             
             {saveStatus === 'error' && (
-              <div className="absolute top-4 right-8 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded animate-in fade-in slide-in-from-top-4">
+              <div className="fixed bottom-24 md:absolute md:top-4 md:right-8 left-4 right-4 md:left-auto md:w-auto bg-red-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-3 md:py-2 rounded shadow-xl md:shadow-none z-50 text-center animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-top-4">
                 Failed to update profile
               </div>
             )}
 
             {activeTab === 'history' && (
-              <div className="space-y-8">
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter">History</h3>
+              <div className="space-y-6 md:space-y-8 animate-in fade-in duration-500">
+                <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">History</h3>
                 {loading && orders.length === 0 ? (
-                  <div className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Loading orders...
+                  <div className="flex items-center gap-2 text-gray-400 font-bold uppercase text-[10px]">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Loading orders...
                   </div>
                 ) : orders.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-black">
-                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
-                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
-                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Items</th>
-                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
-                          <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-50">
-                        {orders.map((order) => {
-                          const statusMap = {
-                            requested:    { label: '📋 Requested',    cls: 'border-blue-400 text-blue-600 bg-blue-50' },
-                            payment_made: { label: '💳 Payment Made', cls: 'border-purple-400 text-purple-600 bg-purple-50' },
-                            dispatched:   { label: '🚚 Dispatched',   cls: 'border-orange-400 text-orange-600 bg-orange-50' },
-                            received:     { label: '✅ Received',     cls: 'border-green-500 text-green-600 bg-green-50' },
-                            cancelled:    { label: '❌ Cancelled',    cls: 'border-red-400 text-red-600 bg-red-50' },
-                            delivered:    { label: '🏠 Delivered',    cls: 'border-green-500 text-green-600 bg-green-50' },
-                            pending:      { label: '⏳ Pending',      cls: 'border-gray-400 text-gray-600' },
-                            confirmed:    { label: '📌 Confirmed',    cls: 'border-yellow-400 text-yellow-600 bg-yellow-50' },
-                            shipped:      { label: '📦 Shipped',      cls: 'border-orange-400 text-orange-600 bg-orange-50' },
-                          };
-                          const s = statusMap[order.orderStatus] || { label: order.orderStatus || 'Pending', cls: 'border-black' };
-                          const itemSummary = (order.items || []).map(i => `${i.name || i.itemName} ×${i.quantity || 1}`).join(', ') || '—';
-                          const dateStr = order.createdAt?._seconds
-                            ? new Date(order.createdAt._seconds * 1000).toLocaleDateString()
-                            : order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—';
-                          return (
-                            <tr key={order.id} className="group hover:bg-gray-50 transition-colors">
-                              <td className="py-5 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
-                              <td className="py-5 text-xs font-bold text-gray-500">{dateStr}</td>
-                              <td className="py-5 text-xs text-gray-500 max-w-[160px] truncate">{itemSummary}</td>
-                              <td className="py-5 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
-                              <td className="py-5">
-                                <span className={`text-[9px] font-black uppercase px-2 py-1 border rounded-full italic ${s.cls}`}>
-                                  {s.label}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                  <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-black">
+                            <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
+                            <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                            <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Items</th>
+                            <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
+                            <th className="py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                          {orders.map((order) => (
+                            <OrderRow key={order.id} order={order} />
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
+                      {orders.map((order) => (
+                        <OrderCard key={order.id} order={order} />
+                      ))}
+                    </div>
+                  </>
                 ) : (
-                  <div className="p-12 border-2 border-dashed border-gray-100 text-center">
-                    <p className="text-gray-400 font-black uppercase tracking-widest text-xs">No orders found yet</p>
+                  <div className="p-8 md:p-12 border-2 border-dashed border-gray-100 text-center rounded-2xl">
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">No orders found yet</p>
                     <Link to="/" className="mt-4 inline-block text-black font-black uppercase tracking-widest text-[10px] underline hover:text-yellow-500">Start Shopping</Link>
                   </div>
                 )}
@@ -277,11 +263,11 @@ const MyAccount = () => {
             )}
 
             {activeTab === 'profile' && (
-              <div className="space-y-12">
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter">Account Information</h3>
-                    <div className="flex gap-2">
+              <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
+                <div className="space-y-6 md:space-y-8">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Account Details</h3>
+                    <div className="hidden md:flex gap-2">
                       <button
                         onClick={isEditing ? handleSave : handleEditToggle}
                         disabled={loading}
@@ -299,9 +285,18 @@ const MyAccount = () => {
                         </button>
                       )}
                     </div>
+                    {/* Mobile Edit Trigger */}
+                    {!isEditing && (
+                       <button
+                       onClick={handleEditToggle}
+                       className="md:hidden w-full py-3 bg-black text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-lg"
+                     >
+                       Edit Profile
+                     </button>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <InfoGroup label="Full Name" value={user?.name || "Member Name"} isReadOnly={true} />
                     <InfoGroup label="Email Address" value={user?.email || "member@example.com"} isReadOnly={true} />
                     <InfoGroup
@@ -315,7 +310,7 @@ const MyAccount = () => {
                     <InfoGroup label="Member Status" value={user?.isOnboarded ? "Verified Member" : "Incomplete Profile"} isReadOnly={true} />
                   </div>
                   
-                  <div className="pt-6">
+                  <div className="pt-4 md:pt-6">
                     <InfoGroup
                       label="Shipping Address"
                       value={editFormData.address}
@@ -332,64 +327,53 @@ const MyAccount = () => {
                 </div>
 
                 {/* VEHICLE DETAILS */}
-                <div className="pt-12 border-t border-gray-100 space-y-6">
-                  <h3 className="text-2xl font-black uppercase italic tracking-tighter">Vehicle Details</h3>
-                  <div className="bg-gray-50 p-8 border border-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <InfoGroup
-                      label="Make"
-                      value={editFormData.vehicle.make}
-                      isEditing={isEditing}
-                      name="vehicle.make"
-                      onChange={handleInputChange}
-                      placeholder="e.g. Toyota"
-                    />
-                    <InfoGroup
-                      label="Model"
-                      value={editFormData.vehicle.model}
-                      isEditing={isEditing}
-                      name="vehicle.model"
-                      onChange={handleInputChange}
-                      placeholder="e.g. Camry"
-                    />
-                    <InfoGroup
-                      label="Year"
-                      value={editFormData.vehicle.year}
-                      isEditing={isEditing}
-                      name="vehicle.year"
-                      onChange={handleInputChange}
-                      type="select"
-                      options={years}
-                    />
-                    <InfoGroup
-                      label="Fuel Type"
-                      value={editFormData.vehicle.fuelType}
-                      isEditing={isEditing}
-                      name="vehicle.fuelType"
-                      onChange={handleInputChange}
-                      type="select"
-                      options={fuelTypes}
-                    />
+                <div className="pt-8 md:pt-12 border-t border-gray-100 space-y-6 md:space-y-8">
+                  <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter">Vehicle Details</h3>
+                  <div className="bg-gray-50/50 md:bg-gray-50 p-4 md:p-8 border border-gray-100 rounded-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                    <InfoGroup label="Make" value={editFormData.vehicle.make} isEditing={isEditing} name="vehicle.make" onChange={handleInputChange} placeholder="e.g. Toyota" />
+                    <InfoGroup label="Model" value={editFormData.vehicle.model} isEditing={isEditing} name="vehicle.model" onChange={handleInputChange} placeholder="e.g. Camry" />
+                    <InfoGroup label="Year" value={editFormData.vehicle.year} isEditing={isEditing} name="vehicle.year" onChange={handleInputChange} type="select" options={years} />
+                    <InfoGroup label="Fuel" value={editFormData.vehicle.fuelType} isEditing={isEditing} name="vehicle.fuelType" onChange={handleInputChange} type="select" options={fuelTypes} />
                   </div>
                 </div>
 
                 {/* DANGER ZONE */}
-                <div className="pt-12 border-t border-gray-100">
-                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-red-600 mb-6 text-left">Security & Privacy</h4>
-                  <div className="bg-red-50 p-8 border border-red-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-left">
+                <div className="pt-8 md:pt-12 border-t border-gray-100">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600 mb-6 text-left">Security & Privacy</h4>
+                  <div className="bg-red-50/50 p-6 md:p-8 border border-red-100 rounded-2xl flex flex-col md:flex-row items-center md:items-center justify-between gap-6 text-center md:text-left">
+                    <div className="flex-1">
                       <h5 className="font-black uppercase tracking-tight text-sm text-red-900">Delete Account</h5>
-                      <p className="text-[10px] font-bold text-red-700 uppercase tracking-tight mt-1">
-                        Permanently remove your data and order history from Xpress AutoZone.
+                      <p className="text-[9px] md:text-[10px] font-bold text-red-700 uppercase tracking-tight mt-1">
+                        Permanently remove your data and order history.
                       </p>
                     </div>
                     <button
                       onClick={handleDeleteAccount}
-                      className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                      className="w-full md:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all rounded-full md:rounded-none"
                     >
                       <Trash2 size={14} /> Delete Forever
                     </button>
                   </div>
                 </div>
+
+                {/* MOBILE STICKY ACTION BAR */}
+                {isEditing && (
+                  <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex gap-3 z-40 animate-in slide-in-from-bottom-full">
+                     <button
+                        onClick={handleEditToggle}
+                        className="flex-1 py-4 bg-white border-2 border-gray-200 text-gray-400 text-[10px] font-black uppercase tracking-widest italic rounded-full"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="flex-[2] py-4 bg-yellow-400 text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-lg shadow-yellow-200"
+                      >
+                        {loading ? <Loader2 size={14} className="animate-spin mx-auto" /> : 'Save Changes'}
+                      </button>
+                  </div>
+                )}
               </div>
             )}
           </main>
@@ -399,7 +383,85 @@ const MyAccount = () => {
   );
 };
 
-// Helper Components
+// Sub-components
+const MobileTab = ({ active, onClick, label }) => (
+  <button
+    onClick={onClick}
+    className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest flex-shrink-0 border-b-2 transition-all ${
+      active ? 'border-yellow-500 text-black' : 'border-transparent text-gray-400'
+    }`}
+  >
+    {label}
+  </button>
+);
+
+const OrderCard = ({ order }) => {
+  const statusInfo = getStatusStyles(order.orderStatus);
+  const dateStr = order.createdAt?._seconds
+    ? new Date(order.createdAt._seconds * 1000).toLocaleDateString()
+    : order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—';
+  
+  return (
+    <div className="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm space-y-4">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-[10px] font-black uppercase text-gray-400">Order #{order.orderNumber || order.id?.substring(0,8)}</p>
+          <p className="text-[10px] font-bold text-gray-500">{dateStr}</p>
+        </div>
+        <span className={`text-[8px] font-black uppercase px-2 py-1 border rounded-full italic ${statusInfo.cls}`}>
+          {statusInfo.label}
+        </span>
+      </div>
+      <div className="border-t border-dashed border-gray-100 pt-3 flex justify-between items-end">
+        <div className="flex-1 pr-4">
+          <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Items</p>
+          <p className="text-xs font-bold text-gray-600 line-clamp-1">
+            {(order.items || []).map(i => `${i.name || i.itemName}`).join(', ') || '—'}
+          </p>
+        </div>
+        <p className="text-lg font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</p>
+      </div>
+    </div>
+  );
+};
+
+const OrderRow = ({ order }) => {
+  const statusInfo = getStatusStyles(order.orderStatus);
+  const itemSummary = (order.items || []).map(i => `${i.name || i.itemName} ×${i.quantity || 1}`).join(', ') || '—';
+  const dateStr = order.createdAt?._seconds
+    ? new Date(order.createdAt._seconds * 1000).toLocaleDateString()
+    : order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—';
+    
+  return (
+    <tr className="group hover:bg-gray-50 transition-colors">
+      <td className="py-5 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
+      <td className="py-5 text-xs font-bold text-gray-500">{dateStr}</td>
+      <td className="py-5 text-xs text-gray-500 max-w-[160px] truncate">{itemSummary}</td>
+      <td className="py-5 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
+      <td className="py-5">
+        <span className={`text-[9px] font-black uppercase px-2 py-1 border rounded-full italic ${statusInfo.cls}`}>
+          {statusInfo.label}
+        </span>
+      </td>
+    </tr>
+  );
+};
+
+const getStatusStyles = (status) => {
+  const statusMap = {
+    requested:    { label: '📋 Requested',    cls: 'border-blue-400 text-blue-600 bg-blue-50' },
+    payment_made: { label: '💳 Payment Made', cls: 'border-purple-400 text-purple-600 bg-purple-50' },
+    dispatched:   { label: '🚚 Dispatched',   cls: 'border-orange-400 text-orange-600 bg-orange-50' },
+    received:     { label: '✅ Received',     cls: 'border-green-500 text-green-600 bg-green-50' },
+    cancelled:    { label: '❌ Cancelled',    cls: 'border-red-400 text-red-600 bg-red-50' },
+    delivered:    { label: '🏠 Delivered',    cls: 'border-green-500 text-green-600 bg-green-50' },
+    pending:      { label: '⏳ Pending',      cls: 'border-gray-400 text-gray-600' },
+    confirmed:    { label: '📌 Confirmed',    cls: 'border-yellow-400 text-yellow-600 bg-yellow-50' },
+    shipped:      { label: '📦 Shipped',      cls: 'border-orange-400 text-orange-600 bg-orange-50' },
+  };
+  return statusMap[status] || { label: status || 'Pending', cls: 'border-black text-black' };
+};
+
 const TabBtn = ({ active, onClick, label, icon }) => (
   <button
     onClick={onClick}
@@ -413,7 +475,7 @@ const TabBtn = ({ active, onClick, label, icon }) => (
 
 const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeholder, type = "text", options = [], icon = null, onAction = null, actionIcon = null, isLoading = false }) => (
   <div className="space-y-2 border-b border-gray-50 pb-4 text-left">
-    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 block">{label}</label>
+    <label className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 block">{label}</label>
     {isEditing && !isReadOnly ? (
       <div className="relative">
         {type === "select" ? (
@@ -421,7 +483,7 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
             name={name}
             value={value}
             onChange={onChange}
-            className="w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors"
+            className="w-full border-2 border-black p-3 md:p-2 text-xs md:text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors rounded-xl md:rounded-none"
           >
             <option value="">Select {label}</option>
             {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -433,7 +495,7 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className={`w-full border-2 border-black p-2 text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors ${onAction ? 'pr-12' : ''}`}
+            className={`w-full border-2 border-black p-3 md:p-2 text-xs md:text-sm font-bold uppercase outline-none focus:bg-yellow-50 transition-colors rounded-xl md:rounded-none ${onAction ? 'pr-12' : ''}`}
           />
         )}
         {onAction && (
@@ -441,8 +503,7 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
             type="button"
             onClick={onAction}
             disabled={isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[#4285F4] hover:bg-[#357ae8] text-white rounded transition-all disabled:opacity-50 active:scale-95 shadow-sm"
-            title="Use current location"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#4285F4] hover:bg-[#357ae8] text-white rounded-lg transition-all disabled:opacity-50 active:scale-95 shadow-md"
           >
             {isLoading ? <Loader2 size={12} className="animate-spin" /> : React.cloneElement(actionIcon, { className: 'fill-white' })}
           </button>
@@ -451,7 +512,7 @@ const InfoGroup = ({ label, value, isEditing, name, onChange, isReadOnly, placeh
     ) : (
       <div className="flex items-center gap-2">
         {icon}
-        <p className={`text-sm font-bold uppercase tracking-tight ${isReadOnly && isEditing ? 'text-gray-400' : 'text-black'}`}>
+        <p className={`text-xs md:text-sm font-bold uppercase tracking-tight ${isReadOnly && isEditing ? 'text-gray-400' : 'text-black'}`}>
           {value || "Not Set"}
         </p>
       </div>
