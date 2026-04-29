@@ -101,7 +101,7 @@ const Auth = () => {
       dispatch(signIn(userData));
 
       if (onboardedStatus === true) {
-        navigate("/");
+        navigate("/account");
       } else {
         navigate("/onboarding");
       }

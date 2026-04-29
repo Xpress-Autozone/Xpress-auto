@@ -24,7 +24,6 @@ const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear -
 
 const MyAccount = () => {
   const { user, orders, loading, error } = useSelector((state) => state.user);
-  const { token } = useSelector((state) => state.auth); // Assuming token is in auth slice
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
@@ -184,7 +183,6 @@ const MyAccount = () => {
         <div className="md:hidden sticky top-[70px] z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 flex overflow-x-auto scrollbar-hide mb-6 -mx-4 px-4">
           <MobileTab active={activeTab === 'history'} onClick={() => setActiveTab('history')} label="History" />
           <MobileTab active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); setIsEditing(false); }} label="Profile" />
-          <button onClick={handleSignOut} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 flex-shrink-0">Exit</button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12">
@@ -256,7 +254,7 @@ const MyAccount = () => {
                 ) : (
                   <div className="p-8 md:p-12 border-2 border-dashed border-gray-100 text-center rounded-2xl">
                     <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">No orders found yet</p>
-                    <Link to="/" className="mt-4 inline-block text-black font-black uppercase tracking-widest text-[10px] underline hover:text-yellow-500">Start Shopping</Link>
+                    <Link to="/xplore" className="mt-4 inline-block text-black font-black uppercase tracking-widest text-[10px] underline hover:text-yellow-500">Start Shopping</Link>
                   </div>
                 )}
               </div>
@@ -353,7 +351,17 @@ const MyAccount = () => {
                     >
                       <Trash2 size={14} /> Delete Forever
                     </button>
-                  </div>
+                </div>
+              </div>
+
+                {/* MOBILE SIGN OUT */}
+                <div className="md:hidden pt-8 pb-12">
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center justify-center gap-3 p-6 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 border-2 border-gray-100 rounded-2xl transition-all active:scale-95 bg-gray-50/50"
+                  >
+                    <LogOut size={18} /> Sign Out
+                  </button>
                 </div>
 
                 {/* MOBILE STICKY ACTION BAR */}
