@@ -47,46 +47,7 @@ const Auth = () => {
     displayName: "",
   });
 
-  // Handle Redirect Result on Mount
-  useEffect(() => {
-    const handleRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          setLoading(true);
-          const user = result.user;
-          
-          let onboardedStatus = false;
-          const tokenResult = await user.getIdTokenResult(true);
-          onboardedStatus = tokenResult.claims.isOnboarded || false;
-
-          const userData = {
-            uid: user.uid,
-            name: user.displayName || "User",
-            email: user.email,
-            photoURL: user.photoURL,
-            isOnboarded: onboardedStatus,
-          };
-
-          dispatch(signIn(userData));
-          dispatch(authLoaded());
-          
-          // Hydrate full profile from Firestore
-          await dispatch(fetchUserProfile(user.uid));
-          
-          const from = location.state?.from?.pathname || (onboardedStatus === true ? "/account" : "/onboarding");
-          navigate(from, { replace: true });
-        }
-      } catch (err) {
-        console.error("Redirect Auth Error:", err);
-        setError("Redirect authentication failed: " + err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    handleRedirect();
-  }, [dispatch, navigate]);
+  // Removed getRedirectResult listener as we now use signInWithPopup universally
 
   React.useEffect(() => {
     if (isAuthInitialized && isAuthenticated) {
@@ -131,57 +92,46 @@ const Auth = () => {
       // Set persistence to LOCAL so user stays signed in
       await setPersistence(auth, browserLocalPersistence);
 
-      // Detect mobile device
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      // Always use popup. Direct user clicks will not trigger popup blockers on mobile,
+      // and it avoids Safari ITP / cross-site tracking issues that break signInWithRedirect.
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-      if (isMobile) {
-        // Use redirect for mobile to avoid popup blockers
-        await signInWithRedirect(auth, googleProvider);
+      let onboardedStatus = false;
+
+      if (user) {
+        // Force refresh token to get latest claims
+        const tokenResult = await user.getIdTokenResult(true);
+        console.log("✓ Google login successful!");
+        
+        // Get isOnboarded status from custom claims
+        onboardedStatus = tokenResult.claims.isOnboarded || false;
+      }
+
+      const userData = {
+        uid: user.uid,
+        name: user.displayName || "User",
+        email: user.email,
+        photoURL: user.photoURL,
+        isOnboarded: onboardedStatus,
+      };
+
+      dispatch(signIn(userData));
+      dispatch(authLoaded());
+
+      // Hydrate full profile from Firestore
+      await dispatch(fetchUserProfile(user.uid));
+
+      if (onboardedStatus === true) {
+        navigate("/account");
       } else {
-        // Sign in with Google popup for desktop
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        let onboardedStatus = false;
-
-        if (user) {
-          // Force refresh token to get latest claims
-          const tokenResult = await user.getIdTokenResult(true);
-          console.log("✓ Google login successful!");
-          
-          // Get isOnboarded status from custom claims
-          onboardedStatus = tokenResult.claims.isOnboarded || false;
-        }
-
-        const userData = {
-          uid: user.uid,
-          name: user.displayName || "User",
-          email: user.email,
-          photoURL: user.photoURL,
-          isOnboarded: onboardedStatus,
-        };
-
-        dispatch(signIn(userData));
-        dispatch(authLoaded());
-
-        // Hydrate full profile from Firestore
-        await dispatch(fetchUserProfile(user.uid));
-
-        if (onboardedStatus === true) {
-          navigate("/account");
-        } else {
-          navigate("/onboarding");
-        }
+        navigate("/onboarding");
       }
     } catch (error) {
       console.error("Auth Error:", error);
       setError("Authentication failed: " + error.message);
     } finally {
-      // Don't set loading to false here if we are redirecting
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-      if (!isMobile) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
