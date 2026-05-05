@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import DeleteConfirmationModal from "../../Components/Modal/DeleteConfirmationModal";
 import { requestParts } from "../../lib/orderService";
 import { auth } from "../../Firebase/firebase";
-import { updateUserProfile } from "../../Redux/userSlice";
+import { updateUserProfile, updateUser } from "../../Redux/userSlice";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -96,13 +96,32 @@ export default function CartPage() {
       alert("Please provide a valid address.");
       return;
     }
+
+    if (!isAuthenticated) {
+      // Guest user: update local state only
+      dispatch(updateUser({ address }));
+      setIsEditingAddress(false);
+      
+      // Prompt them to create an account
+      if (window.confirm("Address set for this session! To save your address permanently and track your orders, would you like to create an account?")) {
+        navigate('/login', { state: { from: location } });
+      }
+      return;
+    }
     
     try {
       const result = await dispatch(updateUserProfile({ address }));
       if (updateUserProfile.fulfilled.match(result)) {
         setIsEditingAddress(false);
       } else {
-        alert("Failed to update address. Please try again.");
+        // Handle specific error case where user session might have expired
+        if (result.payload === "No user logged in" || result.payload === "Firebase user not found") {
+          if (window.confirm("Your session has expired. Would you like to sign in again to save your address?")) {
+            navigate('/login', { state: { from: location } });
+          }
+        } else {
+          alert("Failed to update address. Please try again later.");
+        }
       }
     } catch (err) {
       alert("An error occurred while saving address.");

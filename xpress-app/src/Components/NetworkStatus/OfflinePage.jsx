@@ -57,11 +57,11 @@ const OfflinePage = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="text-4xl md:text-5xl font-black text-black mb-6 uppercase italic tracking-tighter leading-none">
+        <h1 className="text-3xl md:text-4xl font-black text-black mb-6 uppercase italic tracking-tighter leading-none">
           {isDeviceOffline ? (
             <>Pardon the <span className="text-yellow-500 underline decoration-black decoration-4 underline-offset-4">Pit Stop</span></>
           ) : (
-            <>Engine <span className="text-yellow-500 underline decoration-black decoration-4 underline-offset-4">Stalled</span></>
+            <>Network <span className="text-yellow-500 underline decoration-black decoration-4 underline-offset-4">Stalled</span></>
           )}
         </h1>
 
@@ -70,7 +70,7 @@ const OfflinePage = () => {
           {isDeviceOffline ? (
             "We can't find your internet connection. Please check your data or Wi-Fi settings to continue shopping for genuine parts."
           ) : (
-            "Our servers are taking a breather. We're working to get the inventory back online. Hang tight, we'll be back in the race shortly."
+            "Our servers are currently offline. We're working to get the inventory back online. Hang tight, we'll be back in the race shortly."
           )}
         </p>
 
@@ -108,7 +108,7 @@ const OfflinePage = () => {
                 </div>
             </div>
             <p className="text-[8px] font-black uppercase tracking-[0.4em] text-gray-300">
-                Official Xpress Marketplace
+                 Xpress Autozone Dev Team
             </p>
         </div>
       </div>

@@ -452,7 +452,7 @@ const ActiveProductPage = () => {
                 className="w-full h-auto max-h-[500px] object-contain mix-blend-multiply"
               />
               <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-black uppercase tracking-widest px-4 py-2">
-                High Resolution
+                HD
               </div>
             </div>
 

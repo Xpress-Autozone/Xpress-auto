@@ -25,12 +25,18 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i);
 
 const MyAccount = () => {
-  const { user, orders, loading, error, notificationDot } = useSelector((state) => state.user);
+  const { isAuthenticated, user, orders, loading, error, notificationDot } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
   const [isEditing, setIsEditing] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
+
+  useEffect(() => {
+    if (!isAuthenticated && !loading) {
+      navigate('/login', { state: { from: '/account' } });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const [editFormData, setEditFormData] = useState({
     phone: '',
