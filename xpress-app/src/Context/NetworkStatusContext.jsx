@@ -16,9 +16,11 @@ export function useNetworkStatus() {
 export function NetworkStatusProvider({ children }) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isApiReachable, setIsApiReachable] = useState(true);
+  const [isWakingUp, setIsWakingUp] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
   const [showReconnected, setShowReconnected] = useState(false);
   const checkIntervalRef = useRef(null);
+  const failureCountRef = useRef(0);
 
   // Lightweight ping to verify API reachability
   const checkApiHealth = useCallback(async (retryCount = 3) => {
@@ -30,8 +32,8 @@ export function NetworkStatusProvider({ children }) {
     const attempt = async (count) => {
       try {
         const controller = new AbortController();
-        // Increase timeout to 15s for Render cold starts
-        const timeout = setTimeout(() => controller.abort(), 15000);
+        // Increase timeout to 30s for Render cold starts
+        const timeout = setTimeout(() => controller.abort(), 30000);
         
         const response = await fetch(`${API_BASE_URL}/health`, {
           method: 'GET',
@@ -43,16 +45,29 @@ export function NetworkStatusProvider({ children }) {
         const reachable = response.status >= 200 && response.status < 500;
         if (reachable) {
           setIsApiReachable(true);
+          setIsWakingUp(false);
+          failureCountRef.current = 0;
           return true;
         }
         throw new Error("Unreachable");
       } catch (err) {
+        if (err.name === 'AbortError') {
+          setIsWakingUp(true); // Server might be starting
+        }
+
         if (count > 1) {
-          // Wait 2s before retrying
-          await new Promise(r => setTimeout(r, 2000));
+          // Wait 3s before retrying
+          await new Promise(r => setTimeout(r, 3000));
           return attempt(count - 1);
         }
-        setIsApiReachable(false);
+
+        failureCountRef.current += 1;
+        
+        // Only block UI if we've failed multiple full retry cycles in background
+        if (failureCountRef.current > 2) {
+          setIsApiReachable(false);
+          setIsWakingUp(false);
+        }
         return false;
       }
     };
@@ -130,7 +145,8 @@ export function NetworkStatusProvider({ children }) {
   const value = {
     isOnline,
     isApiReachable,
-    isFullyConnected: isOnline && isApiReachable,
+    isWakingUp,
+    isFullyConnected: isOnline && (isApiReachable || isWakingUp),
     showReconnected,
     dismissReconnected,
     retryConnection,

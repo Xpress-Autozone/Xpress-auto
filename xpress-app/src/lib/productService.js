@@ -10,6 +10,37 @@ const log = (level, message, data = null) => {
   }
 };
 
+/**
+ * Enhanced fetch with timeout and automatic retry logic
+ */
+async function fetchWithRetry(url, options = {}, retries = 3, backoff = 2000) {
+  const { timeout = 30000, ...fetchOptions } = options;
+  
+  for (let i = 0; i < retries; i++) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: controller.signal
+      });
+      clearTimeout(id);
+      return response;
+    } catch (err) {
+      clearTimeout(id);
+      const isLastAttempt = i === retries - 1;
+      const isTimeout = err.name === 'AbortError';
+      
+      if (isLastAttempt) throw err;
+      
+      const delay = isTimeout ? backoff * 2 : backoff; // Double delay on timeout
+      log("WARNING", `🔁 Fetch attempt ${i + 1} failed. Retrying in ${delay}ms...`, { url, error: err.message });
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
 export async function getProductsByCategory(category, options = {}) {
   const {
     limit = 20,
@@ -37,7 +68,7 @@ export async function getProductsByCategory(category, options = {}) {
     const url = `${API_BASE_URL}/products/category/${encodeURIComponent(category)}?${params}`;
     log("DEBUG", `📡 Request URL: ${url}`);
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     log("DEBUG", `📊 Response status: ${response.status} ${response.statusText}`);
 
@@ -67,7 +98,7 @@ export async function getProductById(productId) {
     const url = `${API_BASE_URL}/products/${productId}`;
     log("DEBUG", `📡 Request URL: ${url}`);
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     log("DEBUG", `📊 Response status: ${response.status} ${response.statusText}`);
 
@@ -109,7 +140,7 @@ export async function searchProducts(query, filters = {}, page = 1, pageSize = 2
 
     log("DEBUG", `📡 Request URL: ${url}`, payload);
 
-    const response = await fetch(url, {
+    const response = await fetchWithRetry(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -173,7 +204,7 @@ export async function getAllProducts(options = {}) {
     const url = `${API_BASE_URL}/products?${params}`;
     log("DEBUG", `📡 Request URL: ${url}`);
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     log("DEBUG", `📊 Response status FOR GETTING AL PRODUCTS: ${response.status} ${response.statusText}`);
 
@@ -208,7 +239,7 @@ export async function getProductFacets(category = null) {
     const url = `${API_BASE_URL}/products/facets?${params}`;
     log("DEBUG", `📡 Request URL: ${url}`);
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     if (!response.ok) {
       const errorText = await response.text();
