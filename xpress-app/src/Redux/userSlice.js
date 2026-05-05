@@ -95,6 +95,7 @@ const loadUserFromStorage = () => {
         isAuthenticated: false,
         isOnboarded: false,
         user: null,
+        isAnonymous: false,
         orders: [],
         loading: false,
         error: null,
@@ -115,6 +116,7 @@ const loadUserFromStorage = () => {
       isAuthenticated: false,
       isOnboarded: false,
       user: null,
+      isAnonymous: false,
       orders: [],
       loading: false,
       error: null,
@@ -137,6 +139,7 @@ const userSlice = createSlice({
       localStorage.setItem('user_state', JSON.stringify({
         isAuthenticated: state.isAuthenticated,
         isOnboarded: state.isOnboarded,
+        isAnonymous: state.user?.isAnonymous || false,
         user: state.user
       }));
     },
@@ -155,6 +158,7 @@ const userSlice = createSlice({
       localStorage.setItem('user_state', JSON.stringify({
         isAuthenticated: state.isAuthenticated,
         isOnboarded: state.isOnboarded,
+        isAnonymous: state.user?.isAnonymous || false,
         user: state.user
       }));
     },
@@ -163,6 +167,7 @@ const userSlice = createSlice({
       localStorage.setItem('user_state', JSON.stringify({
         isAuthenticated: state.isAuthenticated,
         isOnboarded: state.isOnboarded,
+        isAnonymous: state.user?.isAnonymous || false,
         user: state.user
       }));
     },

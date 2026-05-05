@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { completeOnboarding, updateUser, signOut } from "../../Redux/userSlice";
 import { useCart } from "../../Context/CartContext";
@@ -46,6 +46,7 @@ const years = Array.from(
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const { cartItems } = useCart();
@@ -74,10 +75,11 @@ const Onboarding = () => {
   // Pre-fill data if user already has some info (e.g. returning from a previous session)
   useEffect(() => {
     if (user && user.isOnboarded === false) {
+      const guestAddress = localStorage.getItem("guestAddress");
       setFormData(prev => ({
         ...prev,
         phone: user.phone?.replace(prev.countryCode, "") || user.phoneNumber?.replace(prev.countryCode, "") || prev.phone,
-        address: user.address || prev.address,
+        address: user.address || guestAddress || prev.address,
         carMake: user.vehicle?.make || prev.carMake,
         carModel: user.vehicle?.model || prev.carModel,
         carYear: user.vehicle?.year || prev.carYear,
@@ -268,7 +270,7 @@ const Onboarding = () => {
       dispatch(updateUser(updatedUserData));
       dispatch(completeOnboarding());
 
-      if (cartItems && cartItems.length > 0) {
+      if (location.state?.from === '/cart' || (cartItems && cartItems.length > 0)) {
         navigate("/cart");
       } else {
         navigate("/");
@@ -300,6 +302,23 @@ const Onboarding = () => {
               compatibility.
             </p>
           </div>
+
+          {user?.isAnonymous && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-8 flex items-center gap-4 animate-in slide-in-from-top-2 duration-500">
+              <div className="bg-yellow-400 p-2 rounded-lg shadow-sm">
+                <FastForward className="text-white w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-yellow-800 uppercase tracking-widest leading-none mb-1">
+                  Guest Checkout Active
+                </p>
+                <p className="text-[9px] font-bold text-yellow-600 uppercase tracking-widest leading-tight opacity-80">
+                  Complete these details to finalize your WhatsApp request.
+                </p>
+              </div>
+            </div>
+          )}
+
           <button
             onClick={handleSignOut}
             className="flex items-center gap-2 text-gray-400 hover:text-red-600 font-bold tracking-widest text-[10px] transition-colors"

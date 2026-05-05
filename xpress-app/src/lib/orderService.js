@@ -24,9 +24,9 @@ export async function requestParts({ cartItems, user, token }) {
 
     const orderPayload = {
       customerId: user.uid,
-      customerEmail: user.email || "",
-      customerName: user.name || user.displayName || "",
-      customerPhone: user.phone || "",
+      customerEmail: user.email || "guest@xpressautozone.com",
+      customerName: user.name || user.displayName || "Guest User",
+      customerPhone: user.phone || user.phoneNumber || "",
       deliveryAddress: user.address || "",
       paymentMethod: "whatsapp_request",
       paymentStatus: "pending",

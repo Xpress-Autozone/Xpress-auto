@@ -1,4 +1,4 @@
-import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, MessageCircle, Loader2, CheckCircle2, AlertCircle, MapPin, Navigation, Edit2 } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, MessageCircle, Loader2, CheckCircle2, AlertCircle, MapPin, Navigation, Edit2, User, ArrowRight, ShieldCheck } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,6 +23,8 @@ export default function CartPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [showConversionModal, setShowConversionModal] = useState(false);
+  const [isAnonymizing, setIsAnonymizing] = useState(false);
   const [requestStatus, setRequestStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [requestError, setRequestError] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
@@ -128,9 +130,27 @@ export default function CartPage() {
     }
   };
 
+  const handleGuestCheckout = async () => {
+    try {
+      setIsAnonymizing(true);
+      const { signInAnonymously } = await import("firebase/auth");
+      await signInAnonymously(auth);
+      setShowConversionModal(false);
+      // Small delay to ensure Redux state is updated by MainLayout's listener
+      setTimeout(() => {
+        navigate('/onboarding', { state: { from: '/cart' } });
+      }, 800);
+    } catch (error) {
+      console.error("Guest login failed:", error);
+      alert("Failed to continue as guest. Please try again.");
+    } finally {
+      setIsAnonymizing(false);
+    }
+  };
+
   const handleRequestParts = async () => {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: location } });
+      setShowConversionModal(true);
       return;
     }
     if (isAuthenticated && !isOnboarded) {
@@ -452,6 +472,66 @@ export default function CartPage() {
                     </span>{" "}
                     {cartItems.length === 1 ? "item" : "items"} in cart
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Conversion Modal */}
+        {showConversionModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <User className="w-10 h-10 text-yellow-600" />
+                </div>
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 mb-2">
+                  Almost there!
+                </h2>
+                <p className="text-gray-500 text-sm font-medium mb-8">
+                  How would you like to proceed with your request?
+                </p>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={() => navigate('/login', { state: { from: '/cart' } })}
+                    className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-all flex items-center justify-center gap-2 group"
+                  >
+                    Sign In / Create Account
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100"></div></div>
+                    <span className="relative bg-white px-4 text-[9px] font-black uppercase text-gray-300 italic tracking-widest">or</span>
+                  </div>
+
+                  <button
+                    onClick={handleGuestCheckout}
+                    disabled={isAnonymizing}
+                    className="w-full bg-white border-2 border-gray-900 text-gray-900 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {isAnonymizing ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Starting Guest Session...</>
+                    ) : (
+                      "Continue as Guest (Fast)"
+                    )}
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setShowConversionModal(false)}
+                  className="mt-6 text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
+                >
+                  Maybe later
+                </button>
+              </div>
+              
+              <div className="bg-gray-50 p-4 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest justify-center">
+                  <ShieldCheck className="w-3 h-3 text-green-500" />
+                  Verified & Secure Checkout
                 </div>
               </div>
             </div>

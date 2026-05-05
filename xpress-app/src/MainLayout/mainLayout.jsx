@@ -61,6 +61,7 @@ function LayoutContent() {
           email: user.email,
           name: user.displayName,
           photoURL: user.photoURL,
+          isAnonymous: user.isAnonymous,
         }));
         // Fetch full profile and orders
         dispatch(fetchUserProfile(user.uid));
