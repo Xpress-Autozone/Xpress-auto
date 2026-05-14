@@ -15,7 +15,7 @@ export default function CategoryPage({
   heroDescription = "",
   categoryId = null,
 }) {
-  const navigate = useNavigate();
+
 
   // Filter state
   const [priceRange, setPriceRange] = useState([0, 10000]);

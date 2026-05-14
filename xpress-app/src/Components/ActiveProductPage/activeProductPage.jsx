@@ -483,7 +483,7 @@ const ActiveProductPage = () => {
               </h1>
 
               <div className="flex items-baseline gap-4 mt-6">
-                <span className="text-2xl font-black italic">GH₵{(product.price || 0).toFixed(2)}</span>
+                <span className="text-2xl font-black italic">GH₵{Number(product.price || 0).toFixed(2)}</span>
                 <span className={`text-[10px] font-black uppercase px-2 py-0.5 border ${product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
                   }`}>
                   {product.status || "Check Availability"}

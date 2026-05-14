@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { searchProducts } from "../../lib/api";
 import SearchBar from "../../Components/Search/searchBar";
@@ -105,7 +105,7 @@ const SearchResultsPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({});
+    const [pagination, setPagination] = useState({});
   const [parsedEntities, setParsedEntities] = useState({});
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
@@ -142,9 +142,9 @@ const SearchResultsPage = () => {
 
   useEffect(() => {
     if (query) performSearch();
-  }, [query, page, filters]);
+  }, [query, page, filters, performSearch]);
 
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -186,7 +186,7 @@ const SearchResultsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, page, filters]);
 
   const handleFilterChange = (filterName, value) => {
     if (filterName === "priceMin" || filterName === "priceMax") {
@@ -612,7 +612,7 @@ const SearchResultsPage = () => {
                       <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden relative border border-gray-50 group-hover:border-black transition-all duration-500">
                         <img
                           src={product.mainImage?.url || "/placeholder.webp"}
-                          alt={product.itemName}
+                          alt={product.itemName || product.name}
                           className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
                         />
                         {/* Status overlays in the grid */}
@@ -624,10 +624,10 @@ const SearchResultsPage = () => {
                       </div>
                       <div className="space-y-2">
                         <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-yellow-600 transition-colors duration-300 italic">
-                          {product.itemName}
+                          {product.itemName || product.name}
                         </h3>
                         <div className="flex flex-col gap-1 pt-1">
-                          <span className="text-lg font-black italic tracking-tighter text-black">GH₵{(product.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                          <span className="text-lg font-black italic tracking-tighter text-black">GH₵{Number(product.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                           <div className={`text-[8px] font-black uppercase w-fit px-2 py-0.5 border ${product.quantity > 0 ? "border-green-500 text-green-600" : "border-red-500 text-red-600"
                             }`}>
                             {product.quantity > 0 ? "Available" : "Sold Out"}

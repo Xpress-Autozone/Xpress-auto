@@ -231,8 +231,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.loading = false;
-        const oldOrders = state.orders;
-        const newOrders = action.payload;
+                const newOrders = action.payload;
         state.orders = newOrders;
 
         // Calculate notification dot

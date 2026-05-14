@@ -25,7 +25,7 @@ export default function TrendingProducts() {
                     setProducts(
                         data.data.map((p) => ({
                             id: p.id,
-                            name: p.itemName,
+                            name: p.itemName || p.name,
                             price: parseFloat(p.price) || 0,
                             image: p.mainImage?.url || "https://placehold.co/200x200",
                             additionalImages: p.additionalImages || [],
