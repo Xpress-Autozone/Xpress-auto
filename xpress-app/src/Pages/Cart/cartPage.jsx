@@ -125,7 +125,7 @@ export default function CartPage() {
           alert("Failed to update address. Please try again later.");
         }
       }
-    } catch (err) {
+    } catch {
       alert("An error occurred while saving address.");
     }
   };
@@ -181,7 +181,7 @@ export default function CartPage() {
         // Try to open WhatsApp automatically (might be blocked, which is why we show the button)
         try {
           window.open(result.waUrl, "_blank");
-        } catch (e) {
+        } catch {
           console.warn("WhatsApp pop-up blocked by browser");
         }
 
@@ -193,7 +193,7 @@ export default function CartPage() {
         setRequestStatus('error');
         setRequestError(result.error || "Something went wrong. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setRequestStatus('error');
       setRequestError(err.message || "Failed to submit request.");
     }
@@ -265,7 +265,7 @@ export default function CartPage() {
                         {item.name}
                       </h3>
                       <p className="text-lg md:text-xl font-bold text-black mb-3">
-                        GH₵{item.price.toFixed(2)}
+                        GH₵{Number(item.price || 0).toFixed(2)}
                       </p>
 
                       {/* Quantity Controls */}
@@ -295,7 +295,7 @@ export default function CartPage() {
                     {/* Total and Remove */}
                     <div className="text-right">
                       <p className="text-base md:text-lg font-bold text-gray-800 mb-3">
-                        GH₵{(item.price * item.quantity).toFixed(2)}
+                        GH₵{Number((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                       </p>
                       <button
                         onClick={() => handleRemoveClick(item)}
@@ -376,14 +376,14 @@ export default function CartPage() {
                 <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
                   <div className="flex justify-between text-sm text-gray-700">
                     <span>Subtotal</span>
-                    <span>GH₵{subtotal.toFixed(2)}</span>
+                    <span>GH₵{Number(subtotal || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-700">
                     <div className="flex flex-col">
                       <span className="font-medium text-black">VAT & Statutory Levies</span>
                       <span className="text-[10px] text-gray-400">15% VAT + 5% NHIL/GETFund</span>
                     </div>
-                    <span>GH₵{tax.toFixed(2)}</span>
+                    <span>GH₵{Number(tax || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
                     <span>Delivery</span>
@@ -398,7 +398,7 @@ export default function CartPage() {
                       Total
                     </span>
                     <span className="text-xl md:text-2xl font-bold text-black">
-                      GH₵{total.toFixed(2)}
+                      GH₵{Number(total || 0).toFixed(2)}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">

@@ -13,8 +13,7 @@ import SkeletonLoader from "../../Components/SkeletonLoader/skeletonLoader";
 export default function ProductsPage() {
   const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState(1500);
-  const [selectedPartTypes, setSelectedPartTypes] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState([]);
   const [inStockOnly, setInStockOnly] = useState(true);
   const [expandedFilters, setExpandedFilters] = useState({
     price: true,
@@ -35,8 +34,7 @@ export default function ProductsPage() {
     { id: 6, name: "Bilstein B4 OE Replacement Shock", price: 98.5, image: "https://placehold.co/200x200", status: "In Stock", verified: true },
   ];
 
-  const partTypes = ["Shock Absorbers", "Coil Springs", "Bushings", "Control Arms", "Ball Joints"];
-  const brands = ["Bosch", "ACDelco", "Monroe", "KYB", "Moog", "Delphi"];
+    const brands = ["Bosch", "ACDelco", "Monroe", "KYB", "Moog", "Delphi"];
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
@@ -179,7 +177,7 @@ export default function ProductsPage() {
                       {product.name}
                     </h3>
                     <div className="flex flex-col gap-1 pt-1">
-                      <span className="text-lg font-black italic tracking-tighter text-black">GH₵{product.price.toFixed(2)}</span>
+                      <span className="text-lg font-black italic tracking-tighter text-black">GH₵{Number(product.price || 0).toFixed(2)}</span>
                       <div className={`text-[9px] font-black uppercase w-fit px-2 py-0.5 border ${
                         product.status === "In Stock" ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
                       }`}>

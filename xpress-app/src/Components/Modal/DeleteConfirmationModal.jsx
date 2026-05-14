@@ -71,7 +71,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, product }) => {
                 Quantity: {product.quantity}
               </p>
               <p className="text-lg font-bold text-gray-900">
-                GH₵{(product.price * product.quantity).toFixed(2)}
+                GH₵{Number((product.price || 0) * (product.quantity || 1)).toFixed(2)}
               </p>
             </div>
           </div>

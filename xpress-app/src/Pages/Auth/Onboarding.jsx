@@ -236,7 +236,7 @@ const Onboarding = () => {
           // Try to parse the error response as JSON
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.message || "Failed to update onboarding status.";
-        } catch (e) {
+        } catch {
           // If it's not JSON, use the raw text or a default message
           errorMessage = errorText || `Request failed with status ${response.status}`;
         }
