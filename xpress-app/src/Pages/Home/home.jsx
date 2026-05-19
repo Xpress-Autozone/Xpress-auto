@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import slideImage from "../../assets/slide.webp";
 import brakesImage from "../../assets/brakes.webp";
@@ -128,7 +128,7 @@ function Home() {
           setFeaturedProducts(
             data.data.map((p) => ({
               id: p.id,
-              name: p.itemName,
+              name: p.itemName || p.name,
               price: parseFloat(p.price) || 0,
               status: p.quantity > 0 ? "In Stock" : "Low Stock",
               verified: true,
@@ -243,7 +243,7 @@ function Home() {
     }, currentPhase.durationMs);
 
     return () => clearTimeout(timer);
-  }, [currentPhaseIndex]);
+  }, [currentPhaseIndex, heroSequence.length]);
 
   if (isLoading) {
     return <SkeletonLoader />;

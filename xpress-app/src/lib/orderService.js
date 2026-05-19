@@ -66,7 +66,7 @@ export async function requestParts({ cartItems, user, token }) {
         (item) => {
           const brandStr = item.brand ? ` [${item.brand}]` : "";
           const partNoStr = item.partNumber ? ` (P/N: ${item.partNumber})` : "";
-          return `  • *${item.name}*${brandStr}${partNoStr}\n    Qty: ${item.quantity} — GH₵${(item.price * item.quantity).toFixed(2)}`;
+          return `  • *${item.name}*${brandStr}${partNoStr}\n    Qty: ${item.quantity} — GH₵${Number((item.price || 0) * (item.quantity || 1)).toFixed(2)}`;
         }
       )
       .join("\n\n");
@@ -78,9 +78,9 @@ export async function requestParts({ cartItems, user, token }) {
       (user.phone ? `*Phone:* ${user.phone}\n` : "") +
       (user.address ? `*Delivery to:* ${user.address}\n` : "") +
       `\n*Parts Requested:*\n${itemLines}\n\n` +
-      `*Subtotal:* GH₵${subtotal.toFixed(2)}\n` +
-      `*VAT & Levies (20%):* GH₵${tax.toFixed(2)}\n` +
-      `*Total:* GH₵${total.toFixed(2)}\n\n` +
+      `*Subtotal:* GH₵${Number(subtotal || 0).toFixed(2)}\n` +
+      `*VAT & Levies (20%):* GH₵${Number(tax || 0).toFixed(2)}\n` +
+      `*Total:* GH₵${Number(total || 0).toFixed(2)}\n\n` +
       `Please confirm availability and contact the customer to arrange delivery. Thank you! 🚗`;
 
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(

@@ -177,9 +177,7 @@ export async function getAllProducts(options = {}) {
     sortOrder = "desc",
     displayOnPage = true,
     isActive = null,
-    vendorId = null,
-    category = null
-  } = options;
+          } = options;
 
   try {
     log("INFO", `🔍 Fetching all products`, {

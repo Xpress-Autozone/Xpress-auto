@@ -4,7 +4,7 @@ import { useNetworkStatus } from '../../Context/NetworkStatusContext';
 import { useNavigate } from 'react-router-dom';
 
 const OfflinePage = () => {
-  const { isOnline, isApiReachable, retryConnection } = useNetworkStatus();
+  const { isOnline, retryConnection } = useNetworkStatus();
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();

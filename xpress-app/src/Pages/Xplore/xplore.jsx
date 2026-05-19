@@ -109,7 +109,7 @@ export default function XplorePage() {
 
                             return {
                                 id: p.id,
-                                name: p.itemName,
+                                name: p.itemName || p.name,
                                 price: parseFloat(p.price) || 0,
                                 image: imageUrl,
                                 featured: p.featured,

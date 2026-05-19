@@ -589,7 +589,7 @@ const OrderCard = ({ order }) => {
             {(order.items || []).map(i => `${i.productName || i.name || i.itemName || 'Part'}`).join(', ') || '—'}
           </p>
         </div>
-        <p className="text-lg font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</p>
+        <p className="text-lg font-black italic">GH₵{Number(order.total || 0).toFixed(2)}</p>
       </div>
     </div>
   );
@@ -607,7 +607,7 @@ const OrderRow = ({ order }) => {
       <td className="py-5 text-xs font-black uppercase tracking-tight">{order.orderNumber || order.id}</td>
       <td className="py-5 text-xs font-bold text-gray-500">{dateStr}</td>
       <td className="py-5 text-xs text-gray-500 max-w-[160px] truncate">{itemSummary}</td>
-      <td className="py-5 text-sm font-black italic">GH₵{order.total?.toFixed(2) || '0.00'}</td>
+      <td className="py-5 text-sm font-black italic">GH₵{Number(order.total || 0).toFixed(2)}</td>
       <td className="py-5">
         <span className={`text-[9px] font-black uppercase px-2 py-1 border rounded-full italic ${statusInfo.cls}`}>
           {statusInfo.label}

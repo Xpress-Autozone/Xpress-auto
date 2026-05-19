@@ -248,7 +248,7 @@ export default function ProductCard({ product, variant = "default", badge }) {
         <div className="mt-auto flex flex-col gap-1 mb-3 pt-4 border-t border-gray-50">
           <div className="flex items-end justify-between">
             <span className="text-lg md:text-xl font-black italic tracking-tighter">
-              GH₵{product.price.toFixed(2)}
+              GH₵{Number(product.price || 0).toFixed(2)}
             </span>
             <div className={`text-[9px] font-black uppercase px-2 py-0.5 w-fit border ${
               product.status === "In Stock"
