@@ -8,86 +8,86 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/categories</loc>
+    <loc>https://xpressautozone.com/categories/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/xplore</loc>
+    <loc>https://xpressautozone.com/xplore/</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/xplore/featured</loc>
+    <loc>https://xpressautozone.com/xplore/featured/</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/xplore/trending</loc>
+    <loc>https://xpressautozone.com/xplore/trending/</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/xplore/new</loc>
+    <loc>https://xpressautozone.com/xplore/new/</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Category Pages -->
   <url>
-    <loc>https://xpressautozone.com/body-chassis</loc>
+    <loc>https://xpressautozone.com/body-chassis/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/engine-performance</loc>
+    <loc>https://xpressautozone.com/engine-performance/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/wheels-tires</loc>
+    <loc>https://xpressautozone.com/wheels-tires/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/accessories</loc>
+    <loc>https://xpressautozone.com/accessories/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/lighting-electronics</loc>
+    <loc>https://xpressautozone.com/lighting-electronics/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/fluids-care</loc>
+    <loc>https://xpressautozone.com/fluids-care/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/automotive-tools</loc>
+    <loc>https://xpressautozone.com/automotive-tools/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/cooling-ac</loc>
+    <loc>https://xpressautozone.com/cooling-ac/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Static Information Pages -->
   <url>
-    <loc>https://xpressautozone.com/privacy-policy</loc>
+    <loc>https://xpressautozone.com/privacy-policy/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/terms-of-service</loc>
+    <loc>https://xpressautozone.com/terms-of-service/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://xpressautozone.com/partner</loc>
+    <loc>https://xpressautozone.com/partner/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

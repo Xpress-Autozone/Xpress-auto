@@ -43,7 +43,7 @@ async function updateSitemap() {
     
     products.forEach(product => {
       productEntries += `  <url>\n`;
-      productEntries += `    <loc>https://xpressautozone.com/product/${product.id}</loc>\n`;
+      productEntries += `    <loc>https://xpressautozone.com/product/${product.id}/</loc>\n`;
       productEntries += `    <changefreq>weekly</changefreq>\n`;
       productEntries += `    <priority>0.8</priority>\n`;
       productEntries += `  </url>\n`;
