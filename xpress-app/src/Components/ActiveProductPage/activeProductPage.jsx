@@ -207,46 +207,71 @@ const ActiveProductPage = () => {
             const currentBrand = product.brand;
             const currentComp = Array.isArray(product.compatibility) ? product.compatibility : [];
 
-            // Intelligent Scoring Algorithm
-            const scored = data.data
-              .filter(p => p.id !== product.id)
-              .map(p => {
-                let score = 0;
-                const pComp = Array.isArray(p.compatibility) ? p.compatibility : [];
-                const hasSharedVehicle = currentComp.some(v1 => 
-                  pComp.some(v2 => {
-                    const s1 = (typeof v1 === 'string' ? v1 : `${v1.make} ${v1.model}`).toLowerCase();
-                    const s2 = (typeof v2 === 'string' ? v2 : `${v2.make} ${v2.model}`).toLowerCase();
-                    return s1.includes(s2) || s2.includes(s1);
-                  })
-                );
-                if (hasSharedVehicle) score += 12;
-                if (p.category === currentCat || p.categoryId === currentCat) score += 5;
-                if (p.brand === currentBrand && currentBrand) score += 3;
-                score += Math.random() * 3;
+            // Pre-compute current product compatibility strings for efficient comparison
+            const currentCompStrings = currentComp.map(v =>
+              (typeof v === 'string' ? v : `${v.make} ${v.model}`).toLowerCase()
+            );
 
-                return { ...p, _score: score, _isMatch: hasSharedVehicle };
-              });
+            // Intelligent Scoring Algorithm (Optimized Single Pass)
+            const scoredList = [];
+            for (let i = 0; i < data.data.length; i++) {
+              const p = data.data[i];
+              if (p.id === product.id) continue;
 
-            const filtered = scored
-              .sort((a, b) => b._score - a._score)
-              .slice(0, 8)
-              .map(p => {
-                let imageUrl = "https://placehold.co/400x320";
-                if (p.mainImage?.url) imageUrl = p.mainImage.url;
-                else if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) imageUrl = p.mainImage;
-                else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) imageUrl = p.image;
+              let score = 0;
+              const pComp = Array.isArray(p.compatibility) ? p.compatibility : [];
 
-                return {
-                  id: p.id,
-                  name: p.itemName || p.name || "Unnamed Product",
-                  price: `GH₵${parseFloat(p.price || 0).toFixed(2)}`,
-                  image: imageUrl,
-                  badge: p._isMatch ? "COMPATIBLE FIT" : (p.brand || "Verified"),
-                  isMatch: p._isMatch,
-                  fullProduct: p
-                };
-              });
+              let hasSharedVehicle = false;
+              for (let j = 0; j < currentCompStrings.length; j++) {
+                const s1 = currentCompStrings[j];
+                let found = false;
+                for (let k = 0; k < pComp.length; k++) {
+                  const v2 = pComp[k];
+                  const s2 = (typeof v2 === 'string' ? v2 : `${v2.make} ${v2.model}`).toLowerCase();
+                  if (s1.includes(s2) || s2.includes(s1)) {
+                    found = true;
+                    break;
+                  }
+                }
+                if (found) {
+                  hasSharedVehicle = true;
+                  break;
+                }
+              }
+
+              if (hasSharedVehicle) score += 12;
+              if (p.category === currentCat || p.categoryId === currentCat) score += 5;
+              if (p.brand === currentBrand && currentBrand) score += 3;
+              score += Math.random() * 3;
+
+              scoredList.push({ product: p, score, isMatch: hasSharedVehicle });
+            }
+
+            // Sort by score
+            scoredList.sort((a, b) => b.score - a.score);
+
+            // Map top 8 items directly to final shape
+            const limit = Math.min(scoredList.length, 8);
+            const filtered = new Array(limit);
+
+            for (let i = 0; i < limit; i++) {
+              const { product: p, isMatch } = scoredList[i];
+
+              let imageUrl = "https://placehold.co/400x320";
+              if (p.mainImage?.url) imageUrl = p.mainImage.url;
+              else if (typeof p.mainImage === 'string' && p.mainImage.startsWith('http')) imageUrl = p.mainImage;
+              else if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) imageUrl = p.image;
+
+              filtered[i] = {
+                id: p.id,
+                name: p.itemName || p.name || "Unnamed Product",
+                price: `GH₵${parseFloat(p.price || 0).toFixed(2)}`,
+                image: imageUrl,
+                badge: isMatch ? "COMPATIBLE FIT" : (p.brand || "Verified"),
+                isMatch: isMatch,
+                fullProduct: p
+              };
+            }
 
             console.log(`[ActiveProductPage] ✅ Found ${filtered.length} matching recommendations`);
             setRelatedProducts(filtered);
